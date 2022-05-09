@@ -19,6 +19,7 @@
   ],
   "providers": [
     "./providers/AppProvider",
+    "./src/Activity/ActivityProvider",
     "@adonisjs/core"
   ],
   "aceProviders": [
