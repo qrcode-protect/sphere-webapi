@@ -9,9 +9,15 @@
  * File src/Common/Model
  */
 
-import Application                                                       from "@ioc:Adonis/Core/Application"
-import { DocumentData, Firestore, QueryDocumentSnapshot, QuerySnapshot } from "@google-cloud/firestore";
-import { ClassConstructor }                                              from "class-transformer";
+import Application          from "@ioc:Adonis/Core/Application"
+import {
+    DocumentData,
+    DocumentReference,
+    Firestore,
+    QueryDocumentSnapshot,
+    QuerySnapshot
+}                           from "@google-cloud/firestore";
+import { ClassConstructor } from "class-transformer";
 
 interface ModelConstructor {
     collectionName: string;
@@ -33,19 +39,23 @@ export default class Model {
     }
 
     _objectModel() {
-        return new this.model({ childOnly: true })
+        return new this.model()
     }
 
     createWithAttributes(attributes) {
-        const object: any = this._objectModel();
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const object: any = this;
         Object.keys(attributes).forEach((key) => object[key] = attributes[key]);
 
-        [
+
+        const item = [
             "collection",
             "instance",
             "firebaseAppName",
             "model",
-        ].forEach((attribute) => delete object[attribute]);
+        ];
+
+        item.forEach((attribute) => delete object[attribute]);
 
         return object;
     }
@@ -59,6 +69,16 @@ export default class Model {
             results.push(this.casting((await documentSnapshot.get()).data()));
         }
         return results;
+    }
+
+    async store(data) {
+        if (!data.id) {
+            data.id = "";
+        }
+
+        const documentReference: DocumentReference = await this.collection.add({ ...data });
+        await documentReference.update({ id: documentReference.id })
+        return this.casting(documentReference);
     }
 
     private casting(data) {
