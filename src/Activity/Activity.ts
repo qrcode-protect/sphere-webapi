@@ -13,7 +13,7 @@ import Model              from "QRCP/Sphere/Common/Model";
 import ActivityAttributes from "QRCP/Sphere/Activity/ActivityAttributes";
 
 export default class Activity extends Model {
-    id?: string;
+    id: string;
     name?: Nullable<string> = null;
     label: string;
 
