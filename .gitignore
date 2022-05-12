@@ -7,3 +7,6 @@ coverage
 .env
 tmp
 firebase-adminsdk*.json
+
+storage
+release.txt
