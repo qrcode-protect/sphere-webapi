@@ -49,4 +49,16 @@ export default class MemberController extends Controller {
         return unknown(response, await this.service.store(<MemberAttributes>request.body(), request.file("certificate")));
     }
 
+    public async active(httpContextContract: HttpContextContract) {
+        return super.findBy("active", true, httpContextContract);
+    }
+
+    public async inactive(httpContextContract: HttpContextContract) {
+        return super.findBy("active", false, httpContextContract);
+    }
+
+    public async validate(httpContextContract: HttpContextContract) {
+        return super.update(httpContextContract)
+    }
+
 }

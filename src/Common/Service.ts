@@ -34,7 +34,7 @@ export default class Service {
 
     public async findBy(column: string, value: unknown) {
         try {
-            const data = await this.model.query().where(column, value)
+            const data = await this.model.where(column, value) || []
             return Result.success(data)
         } catch (e) {
             Log.error(e, true)
@@ -98,9 +98,10 @@ export default class Service {
         }
     }
 
-    public async update(value: unknown, updatable, column = "id") {
+    public async update(value: unknown, updatable) {
+        console.log(updatable)
         try {
-            const data = await this.model.query().where(column, value).update(updatable)
+            const data = await this.model.update(value, updatable)
             return Result.success(data)
         } catch (e) {
             Log.error(e, true)

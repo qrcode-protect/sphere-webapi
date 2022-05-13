@@ -3,7 +3,7 @@ import Firebase                             from "App/Firebase";
 import Config                               from "@ioc:Adonis/Core/Config";
 import Log                                  from "@sofiakb/adonis-logger";
 import path                                 from "path";
-import { Bucket }                           from "@google-cloud/storage";
+import { Bucket, Storage }                  from "@google-cloud/storage";
 
 export default class AppProvider {
     constructor(protected app: ApplicationContract) {
@@ -11,14 +11,16 @@ export default class AppProvider {
 
     public register() {
         // Register your own bindings
-        this.app.container.singleton("db", () => (new Firebase({
+
+        const firebase = (new Firebase({
             projectId  : Config.get("firebase.projectId"),
             keyFilename: Config.get("firebase.keyFile"),
-        })).db)
-        this.app.container.singleton("firebase.storage", (): Bucket => (new Firebase({
-            projectId  : Config.get("firebase.projectId"),
-            keyFilename: Config.get("firebase.keyFile"),
-        })).storage)
+        }))
+
+        this.app.container.singleton("db", () => firebase.db)
+        this.app.container.singleton("firebase.storage", (): Storage => firebase.storage)
+        this.app.container.singleton("firebase.storage", (): Bucket => firebase.storageBucket)
+
         this.app.container.singleton("logger", () => new Log(path.resolve(Application.appRoot, "storage/logs")))
     }
 

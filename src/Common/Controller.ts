@@ -29,6 +29,10 @@ export default class Controller {
         return unknown(response, await this.service.findById(request.param("id")));
     }
 
+    public async findBy(column: string, value: unknown, { response }: HttpContextContract) {
+        return unknown(response, await this.service.findBy(column, value));
+    }
+
     public async search({ request, response }: HttpContextContract) {
         return unknown(response, await this.service.search(request.input("query")));
     }
@@ -42,7 +46,7 @@ export default class Controller {
     }
 
     public async update({ request, response }: HttpContextContract) {
-        return unknown(response, await this.service.update(request.param("id"), request.body()));
+        return unknown(response, await this.service.update(request.param("id"), request.body().data));
     }
 
     public async destroy({ request, response }: HttpContextContract) {

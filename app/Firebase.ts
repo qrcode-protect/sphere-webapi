@@ -19,7 +19,8 @@ interface FirebaseConstructor {
 
 export default class Firebase {
     private readonly _db: Firestore;
-    private readonly _storage;
+    private readonly _storage: Storage;
+    private readonly _storageBucket: Bucket;
 
     constructor({ projectId, keyFilename }: FirebaseConstructor) {
         this._db = new Firestore({
@@ -30,15 +31,23 @@ export default class Firebase {
         this._storage = new Storage({
             projectId  : projectId,
             keyFilename: keyFilename,
-        }).bucket(`${projectId}.appspot.com`);
+        });
+
+        console.log("")
+
+        this._storageBucket = this._storage.bucket(`${projectId}.appspot.com`);
     }
 
     get db(): FirebaseFirestore.Firestore {
         return this._db;
     }
 
-    get storage(): Bucket {
+    get storage(): Storage {
         return this._storage;
+    }
+
+    get storageBucket(): Bucket {
+        return this._storageBucket;
     }
 }
 
