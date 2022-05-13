@@ -156,7 +156,6 @@ export default class Model {
     async where(column: string, value: string, operator = "=="): Promise<any[] | null> {
         const snapshot: QuerySnapshot = await this.collection.where(column, operator, value).get();
         if (snapshot.empty) {
-            console.log("No matching documents.");
             return null;
         }
         return snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => this.casting(doc.data()))

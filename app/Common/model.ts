@@ -11,6 +11,8 @@
 
 import Application from "@ioc:Adonis/Core/Application";
 import Activity    from "QRCP/Sphere/Activity/Activity";
+import Member      from "QRCP/Sphere/Member/Member";
 
 
 export const activityModel = (): Activity => Application.container.use("activity.model")
+export const memberModel = (): Member => Application.container.use("member.model")

@@ -5,9 +5,13 @@
  * file.
  */
 
-declare module '@ioc:Adonis/Core/Drive' {
+declare module "@ioc:Adonis/Core/Drive" {
   interface DisksList {
     local: {
+      config: LocalDriverConfig
+      implementation: LocalDriverContract
+    },
+    uploads: {
       config: LocalDriverConfig
       implementation: LocalDriverContract
     }

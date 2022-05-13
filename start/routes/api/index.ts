@@ -16,7 +16,8 @@ Route.group(() => {
      * Rôles autorisés :
      * * Tous
      ******************************/
-    // require("./restaurants")
+    require("./members")
+    require("./activities")
     /*******************************
      FIN ROLE AUTORISES
      ******************************/

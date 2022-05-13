@@ -9,4 +9,4 @@
  * File src/Common/types/Nullable
  */
 
-type Nullable<T> = T | null;
+type Nullable<T> = T | null | undefined;
