@@ -39,7 +39,7 @@ export default class MemberService extends Service {
             const certificatePath: string = Drive.disks.uploads.root
             const certificateFullPath: string = path.resolve(Drive.disks.uploads.root, certificateFilename)
             await certificate.move(certificatePath, { name: certificateFilename })
-            
+
             await (<Bucket>Application.container.use("firebase.storage"))
                 .upload(certificateFullPath, {
                     destination: `members/certificates/${certificateFilename}`,
