@@ -5,7 +5,6 @@ import MemberAttributes        from "QRCP/Sphere/Member/MemberAttributes";
 import DuplicateEntryException from "QRCP/Sphere/Exceptions/DuplicateEntryException";
 import MemberService           from "QRCP/Sphere/Member/MemberService";
 import { Success }             from "@sofiakb/adonis-response";
-import MemberController        from "QRCP/Sphere/Member/MemberController";
 
 test.group("Members 00 create", () => {
     test("Store member", async ({ assert }) => {
