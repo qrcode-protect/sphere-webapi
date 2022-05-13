@@ -5,6 +5,8 @@ coverage
 .vscode
 .DS_STORE
 .env
+.env.production
+app.yaml
 tmp
 firebase-adminsdk*.json
 
