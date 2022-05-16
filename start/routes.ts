@@ -24,5 +24,5 @@ import "./routes/api"
 
 
 Route.get("/", async () => {
-    return { hello: "world" }
+    return { hello: "world1" }
 })
