@@ -3,7 +3,8 @@
   "commands": [
     "./commands",
     "@adonisjs/core/build/commands/index.js",
-    "@adonisjs/repl/build/commands"
+    "@adonisjs/repl/build/commands",
+    "@adonisjs/mail/build/commands"
   ],
   "exceptionHandlerNamespace": "App/Exceptions/Handler",
   "aliases": {
@@ -21,15 +22,19 @@
     "./providers/AppProvider",
     "./src/Activity/ActivityProvider",
     "./src/Member/MemberProvider",
-    "@adonisjs/core"
+    "./src/User/UserProvider",
+    "./src/Authentication/AuthProvider",
+    "@adonisjs/core",
+    "@adonisjs/mail",
+    "@adonisjs/view"
   ],
   "aceProviders": [
     "@adonisjs/repl"
   ],
-  "namespaces"               : {
+  "namespaces": {
     "httpControllers": "QRCP/Sphere/Http/Controllers",
-    "models"         : "QRCP/Sphere/Models",
-    "middleware"     : "QRCP/Sphere/Http/Middleware"
+    "models": "QRCP/Sphere/Models",
+    "middleware": "QRCP/Sphere/Http/Middleware"
   },
   "tests": {
     "suites": [
@@ -51,5 +56,11 @@
   },
   "testProviders": [
     "@japa/preset-adonis/TestsProvider"
+  ],
+  "metaFiles": [
+    {
+      "pattern": "resources/views/**/*.edge",
+      "reloadServer": false
+    }
   ]
 }

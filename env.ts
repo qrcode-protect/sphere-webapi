@@ -28,4 +28,12 @@ export default Env.rules({
 
     FIREBASE_KEY_FILE            : Env.schema.string(),
     FIREBASE_PROJECT_ID         : Env.schema.string(),
+
+    SMTP_HOST: Env.schema.string({ format: "host" }),
+    SMTP_PORT: Env.schema.number(),
+    SMTP_USERNAME: Env.schema.string(),
+    SMTP_PASSWORD: Env.schema.string(),
+
+    JWT_SECRET: Env.schema.string(),
+    JWT_TTL: Env.schema.number.optional(),
 })

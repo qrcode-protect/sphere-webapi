@@ -41,4 +41,6 @@ Server.middleware.register([
 |
 */
 Server.middleware.registerNamed({
+    customSignIn: () => import("QRCP/Sphere/Authentication/Middleware/SignInWithTokenMiddleware"),
+    auth        : () => import("QRCP/Sphere/Authentication/Middleware/AuthMiddleware"),
 })
