@@ -21,5 +21,6 @@ export default interface MemberAttributes {
     certificate: string,
     siret: string,
     active?: boolean,
-    available?: boolean
+    available?: boolean,
+    uid?: string,
 }

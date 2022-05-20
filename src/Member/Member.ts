@@ -9,11 +9,10 @@
  * File src/Member/Member
  */
 
-import Model                      from "QRCP/Sphere/Common/Model";
-import MemberAttributes           from "QRCP/Sphere/Member/MemberAttributes";
-import { lower, name, normalize } from "App/Common/string";
-import PhoneCleaner               from "App/Common/phone-cleaner";
-import DuplicateEntryException    from "QRCP/Sphere/Exceptions/DuplicateEntryException";
+import Model                                       from "QRCP/Sphere/Common/Model";
+import MemberAttributes                            from "QRCP/Sphere/Member/MemberAttributes";
+import DuplicateEntryException                     from "QRCP/Sphere/Exceptions/DuplicateEntryException";
+import { cleanPersonalInformations, personalKeys } from "App/Common";
 
 export default class Member extends Model {
     id: string;
@@ -28,6 +27,7 @@ export default class Member extends Model {
     siret: string;
     active: boolean;
     available: boolean;
+    uid?: string;
 
 
     constructor(attributes?: MemberAttributes) {
@@ -38,22 +38,15 @@ export default class Member extends Model {
     }
 
     async store(data): Promise<Member> {
-        const names: string[] = [
-            "lastname",
-            "firstname",
-        ]
+        const personalInfo = cleanPersonalInformations({
+            firstname: data.firstname,
+            lastname : data.lastname,
+            username : data.username,
+            phone    : data.phone,
+            email    : data.email
+        })
 
-        const lowers: string[] = [
-            "email",
-        ]
-
-        names.forEach(item => data[item] = name(data[item]))
-        lowers.forEach(item => data[item] = lower(data[item]))
-
-        data.username = normalize(`${data.firstname[0]}${data.lastname}`)?.replace(RegExp(/-/g), "")
-
-        if (data.phone)
-            data.phone = (new PhoneCleaner(data.phone)).number || null
+        personalKeys.forEach((key) => data[key] = personalInfo[key])
 
         if (typeof data.active === "undefined")
             data.active = false;
