@@ -1,0 +1,20 @@
+@layout('layouts/app')
+
+@section('body')
+<tr>
+    <td valign="middle" class="hero bg_white" style="padding: 2em 0 4em 0;">
+        <table>
+            <tr>
+                <td>
+                    <div class="text" style="padding: 0 2.5em; text-align: center;">
+                        <h2>Bienvenue {{ user.fullName }} !</h2>
+                        <h3>Votre accès au dashboard en tant que {{ role.label }} a été créé</h3>
+                        <h5>Cliquez sur le lien ci-dessous afin de créer votre mot de passe</h5>
+                        <p><a href="{{ url }}" target="_blank" class="btn btn-primary">Oui! Je veux continuer...</a></p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr><!-- end tr -->
+@end
