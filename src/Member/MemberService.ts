@@ -21,6 +21,10 @@ import { Result }                from "@sofiakb/adonis-response";
 import Log                       from "QRCP/Sphere/Common/Log";
 import DuplicateEntryException   from "QRCP/Sphere/Exceptions/DuplicateEntryException";
 import Config                    from "@ioc:Adonis/Core/Config";
+import UserService               from "QRCP/Sphere/User/UserService";
+import { RoleType }              from "QRCP/Sphere/Authentication/utils/roles";
+import AuthMail                  from "QRCP/Sphere/Authentication/AuthMail";
+import User                      from "QRCP/Sphere/User/User";
 
 interface StoreMemberAttributes extends MemberAttributes {
     upload?: unknown
@@ -54,8 +58,11 @@ export default class MemberService extends Service {
 
         try {
             const result = await this.model.store(data)
-            if (result.id)
+            if (result.id) {
+                await this.createUser(result.id, result)
+
                 return Result.success(result)
+            }
             throw new Error("Error while saving")
         } catch (e) {
             Log.error(e, true)
@@ -67,10 +74,52 @@ export default class MemberService extends Service {
 
     }
 
-    /*private async createCertificatesBucket(bucketName = "sphere-dev") {
-        // Creates the new bucket
-        await Application.container.use("firebase.storage").createBucket(bucketName);
-        console.log(`Bucket ${bucketName} created.`);
-    }*/
+    public async createUser(memberId: string, member: Member) {
+
+        try {
+            const userService = new UserService()
+            const user = (await userService.store({
+                lastname : member.lastname,
+                firstname: member.firstname,
+                email    : member.email,
+                phone    : member.phone,
+                roleType : RoleType.member
+            }, false)).data
+            const authUser = user
+
+            await this.model.update(memberId, { uid: authUser.uid })
+
+            return Result.success(authUser)
+        } catch (e) {
+            Log.error(e, true)
+            if (e instanceof DuplicateEntryException) {
+                return Result.duplicate()
+            }
+            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+        }
+
+    }
+
+    public async validate(docID: string) {
+        try {
+            const result = await this.model.update(docID, { active: true, available: true })
+            if (result.id) {
+                const user = (await (new UserService()).enableWithUid(result.uid)).data
+
+                if (user instanceof User) {
+                    await AuthMail.register(user, "website")
+                }
+
+                return Result.success(result)
+            }
+            throw new Error("Error while saving")
+        } catch (e) {
+            Log.error(e, true)
+            if (e instanceof DuplicateEntryException) {
+                return Result.duplicate()
+            }
+            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+        }
+    }
 
 }

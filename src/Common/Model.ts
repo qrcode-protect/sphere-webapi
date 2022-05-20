@@ -9,21 +9,22 @@
  * File src/Common/Model
  */
 
-import Application from "@ioc:Adonis/Core/Application"
+import Application          from "@ioc:Adonis/Core/Application"
 import {
+    CollectionReference,
     DocumentData,
     DocumentReference,
     DocumentSnapshot,
+    FieldPath,
     Firestore,
+    OrderByDirection,
+    Query,
     QueryDocumentSnapshot,
-    QuerySnapshot
-}                  from "@google-cloud/firestore";
-import {
-    ClassConstructor
-}                  from "class-transformer";
-import {
-    firestore
-}                  from "firebase-admin";
+    QuerySnapshot,
+    WhereFilterOp
+}                           from "@google-cloud/firestore";
+import { ClassConstructor } from "class-transformer";
+import { firestore }        from "firebase-admin";
 
 interface ModelConstructor {
     collectionName: string;
@@ -32,10 +33,12 @@ interface ModelConstructor {
 }
 
 export default class Model {
-    collection;
+    collection: CollectionReference;
     instance: Firestore;
     firebaseAppName?: string;
     model: ClassConstructor<any>;
+
+    snapshot: Query<DocumentData>;
 
     constructor({ collectionName, firebaseAppName, model }: ModelConstructor) {
         this.firebaseAppName = firebaseAppName;
@@ -66,7 +69,7 @@ export default class Model {
         return object;
     }
 
-    private cleanup(data) {
+    cleanup(data) {
         const object: any = new this.model(data);
 
         const item = [
@@ -142,9 +145,9 @@ export default class Model {
         return (new this.model()).createWithAttributes(data);
     }
 
-    async docs() {
-        return (await this.collection.docs()).docs.map((doc: QueryDocumentSnapshot) => this.casting(doc.data()))
-    }
+    // async docs() {
+    //     return (await this.collection.docs()).docs.map((doc: QueryDocumentSnapshot) => this.casting(doc.data()))
+    // }
 
     async doc(docID: string) {
         if (docID.trim() === "")
@@ -153,11 +156,48 @@ export default class Model {
         return documentData.exists ? this.casting(documentData.data()) : null;
     }
 
-    async where(column: string, value: string, operator = "=="): Promise<any[] | null> {
-        const snapshot: QuerySnapshot = await this.collection.where(column, operator, value).get();
+    async where(column: string, value: string | string[] | number, operator: WhereFilterOp = "=="): Promise<any[] | null> {
+        let snapshot: QuerySnapshot;
+
+        if (this.snapshot)
+            snapshot = await this.snapshot.where(column, operator, value).get()
+        else
+            snapshot = await this.collection.where(column, operator, value).get();
         if (snapshot.empty) {
             return null;
         }
         return snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => this.casting(doc.data()))
+    }
+
+    whereSnapshot(column: string, value: string | string[] | number, operator: WhereFilterOp = "=="): this {
+        this.snapshot = (this.snapshot ?? this.collection).where(column, operator, value)
+        return this;
+    }
+
+    public async findOneBy(column: string, value: string): Promise<any> {
+        const data = await this.where(column, value)
+        return data ? data[0] || null : data
+    }
+
+    async get(snapshot?: QuerySnapshot): Promise<any[] | null> {
+
+        if (this.snapshot) {
+            snapshot = await this.snapshot.get()
+        }
+
+        if (!snapshot || snapshot.empty) {
+            return null;
+        }
+
+        return snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => this.casting(doc.data()))
+    }
+
+    orderBy(fieldPath: string | FieldPath, directionStr?: OrderByDirection): this {
+
+        if (this.snapshot) {
+            this.snapshot = this.snapshot.orderBy(fieldPath, directionStr)
+        }
+
+        return this
     }
 }

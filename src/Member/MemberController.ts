@@ -57,8 +57,8 @@ export default class MemberController extends Controller {
         return super.findBy("active", false, httpContextContract);
     }
 
-    public async validate(httpContextContract: HttpContextContract) {
-        return super.update(httpContextContract)
+    public async validate({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.validate(request.param("id")));
     }
 
 }

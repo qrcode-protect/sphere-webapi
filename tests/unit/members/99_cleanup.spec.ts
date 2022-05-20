@@ -20,5 +20,5 @@ test.group("Members 99 cleanup", () => {
                 }
             }
         }
-    }).skip();
+    });
 })

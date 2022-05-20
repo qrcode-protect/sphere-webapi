@@ -42,7 +42,7 @@ export default class Controller {
     }
 
     public async store({ request, response }: HttpContextContract) {
-        return unknown(response, await this.service.store(request.body()));
+        return unknown(response, await this.service.store(request.body().data));
     }
 
     public async update({ request, response }: HttpContextContract) {

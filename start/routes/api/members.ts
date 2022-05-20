@@ -14,12 +14,13 @@ import Route from "@ioc:Adonis/Core/Route";
 
 Route.group(() => {
 
-    Route.get("", "MemberController.all")
-    Route.get("/active", "MemberController.active")
-    Route.get("/inactive", "MemberController.inactive")
+    Route.group(() => {
+        Route.get("", "MemberController.all")
+        Route.get("/active", "MemberController.active")
+        Route.get("/inactive", "MemberController.inactive")
 
-    Route.put("/validate/:id", "MemberController.validate")
-    // Route.get("/:id", "RestaurantController.findById")
+        Route.put("/validate/:id", "MemberController.validate")
+    }).middleware("admin")
 
     Route.post("", "MemberController.store")
 })
