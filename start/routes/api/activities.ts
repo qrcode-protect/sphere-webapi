@@ -13,10 +13,14 @@ import Route from "@ioc:Adonis/Core/Route";
 
 Route.group(() => {
 
-    Route.get("", "ActivityController.all")
-    // Route.get("/:id", "RestaurantController.findById")
+    Route.group(() => {
+        // create
+        // update
+        // delete
+    }).middleware("admin")
 
-    // Route.post("", "ActivityController.store")
+    Route.get("", "ActivityController.all")
+
 })
     .namespace("QRCP/Sphere/Activity")
     .prefix("/activities")

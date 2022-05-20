@@ -27,5 +27,5 @@ Route.group(() => {
 
 })
     .namespace("QRCP/Sphere/User")
-    .middleware("auth")
+    .middleware("admin")
     .prefix("/users")
