@@ -20,7 +20,11 @@ export default Env.rules({
 
     APP_KEY : Env.schema.string(),
     APP_NAME: Env.schema.string(),
-    APP_URL : Env.schema.string.optional(),
+    APP_URL : Env.schema.string(),
+
+    WEBSITE_URL : Env.schema.string(),
+    DASHBOARD_URL : Env.schema.string(),
+    PARTNER_URL : Env.schema.string(),
 
     DRIVE_DISK: Env.schema.enum([ "local" ] as const),
 
