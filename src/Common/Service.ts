@@ -99,7 +99,6 @@ export default class Service {
     }
 
     public async update(value: unknown, updatable) {
-        console.log(updatable)
         try {
             const data = await this.model.update(value, updatable)
             return Result.success(data)
@@ -109,10 +108,9 @@ export default class Service {
         }
     }
 
-    public async destroy(value: unknown, column = "id") {
+    public async destroy(value: unknown) {
         try {
-            const data = await this.model.findByOrFail(column, value)
-            return Result.success(await data.delete())
+            return Result.success(await this.model.delete(value))
         } catch (e) {
             Log.error(e, true)
             return Result.notFound(`La ressource #${value} demandée n'existe pas.`)
