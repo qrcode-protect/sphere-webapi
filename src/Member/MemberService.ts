@@ -24,9 +24,7 @@ import Config                    from "@ioc:Adonis/Core/Config";
 import UserService               from "QRCP/Sphere/User/UserService";
 import { RoleType }              from "QRCP/Sphere/Authentication/utils/roles";
 import AuthMail                  from "QRCP/Sphere/Authentication/AuthMail";
-import PasswordService           from "QRCP/Sphere/Authentication/Password/PasswordService";
 import User                      from "QRCP/Sphere/User/User";
-import PasswordReset             from "QRCP/Sphere/Authentication/Password/PasswordReset";
 
 interface StoreMemberAttributes extends MemberAttributes {
     upload?: unknown
@@ -109,12 +107,7 @@ export default class MemberService extends Service {
                 const user = (await (new UserService()).enableWithUid(result.uid)).data
 
                 if (user instanceof User) {
-                    const passwordService = new PasswordService()
-                    const passwordReset = await passwordService.create(user.email)
-
-                    if (passwordReset instanceof PasswordReset) {
-                        await AuthMail.register(user,  "website")
-                    }
+                    await AuthMail.register(user, "website")
                 }
 
                 return Result.success(result)
