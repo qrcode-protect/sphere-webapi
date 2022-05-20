@@ -1,5 +1,17 @@
 {
   "commands": {
+    "seed:role": {
+      "settings": {
+        "loadApp": false,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/SeedRole",
+      "commandName": "seed:role",
+      "description": "",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
     "dump:rcfile": {
       "settings": {},
       "commandPath": "@adonisjs/core/build/commands/DumpRc",
@@ -92,6 +104,23 @@
       "commandName": "repl",
       "description": "Start a new REPL session",
       "args": [],
+      "aliases": [],
+      "flags": []
+    },
+    "make:mailer": {
+      "settings": {},
+      "commandPath": "@adonisjs/mail/build/commands/MakeMailer",
+      "commandName": "make:mailer",
+      "description": "Make a new mailer class",
+      "args": [
+        {
+          "type": "string",
+          "propertyName": "name",
+          "name": "name",
+          "required": true,
+          "description": "Name of the mailer class"
+        }
+      ],
       "aliases": [],
       "flags": []
     }
