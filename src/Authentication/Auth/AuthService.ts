@@ -25,6 +25,7 @@ import { appUrl }                        from "Config/app";
 import firebaseConfig                    from "Config/firebase";
 import ApiTokenAttributes                from "QRCP/Sphere/Authentication/ApiToken/ApiTokenAttributes";
 import { firestore }                     from "firebase-admin";
+import { retrieveRole, rolesByLevel }    from "QRCP/Sphere/Authentication/utils/roles";
 import SignOptions = JWT.SignOptions;
 
 
@@ -57,6 +58,8 @@ export default class AuthService extends Service {
 
             if (user === null)
                 return resolve(Result.unauthorized());
+
+            user.role = retrieveRole(user.roleType)
 
             return resolve(user);
         });
@@ -97,6 +100,8 @@ export default class AuthService extends Service {
     }
 
     /**
+     * Load user by email.
+     *
      * @param email
      * @return User|null
      */
@@ -105,6 +110,8 @@ export default class AuthService extends Service {
     }
 
     /**
+     * Load user by username
+     *
      * @param username
      * @return User|null
      */
@@ -145,14 +152,18 @@ export default class AuthService extends Service {
     }
 
     /**
+     * Token expiration.
+     *
      * @return int
      * @param remember
      */
     public getTTL(remember = false) {
-        return remember ? 525600 : jwtConfig.ttl * 60;
+        return (remember ? 525600 : jwtConfig.ttl * 60) * 1000;
     }
 
     /**
+     * Validate fields.
+     *
      * @param values
      * @param fields
      * @param validator
@@ -209,6 +220,12 @@ export default class AuthService extends Service {
         return this.jwt.encode(payload, signOptions)
     }
 
+    /**
+     * Save token in database.
+     *
+     * @param user
+     * @param bearerToken
+     */
     public async registerApiToken(user: User, bearerToken: string) {
         const attributes: ApiTokenAttributes = {
             loggedAt: firestore.Timestamp.now().toDate(),
@@ -223,6 +240,14 @@ export default class AuthService extends Service {
             await this.apiTokenModel.store(attributes)
         } else await this.apiTokenModel.update(apiToken.id, attributes)
 
+    }
+
+    /**
+     * Retrieve roles
+     *
+     */
+    public roles(reason?: string) {
+        return rolesByLevel(reason)
     }
 
 

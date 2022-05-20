@@ -24,7 +24,7 @@ export type LoginResult = {
 
 export default class LoginService extends AuthService {
 
-    public async login(email: string, password: string): Promise<LoginResult | null | Success | SofiakbError> {
+    public async login(email: string, password: string, remember = false): Promise<LoginResult | null | Success | SofiakbError> {
 
         if (email === null || password === null) {
             return null;
@@ -55,7 +55,7 @@ export default class LoginService extends AuthService {
             return this.unauthorized()
         }
 
-        const bearer = this.generateToken(user)
+        const bearer = this.generateToken(user, remember)
 
         if (bearer === null) {
             return this.unauthorized()

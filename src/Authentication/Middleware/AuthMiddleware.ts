@@ -6,6 +6,7 @@ import ApiToken                     from "QRCP/Sphere/Authentication/ApiToken/Ap
 import Jwt                          from "QRCP/Sphere/Authentication/Jwt";
 import Application                  from "@ioc:Adonis/Core/Application";
 import User                         from "QRCP/Sphere/User/User";
+import { retrieveRole }             from "QRCP/Sphere/Authentication/utils/roles";
 
 export default class AuthMiddleware {
 
@@ -16,6 +17,7 @@ export default class AuthMiddleware {
     public async handle({ request, response }: HttpContextContract, next: () => Promise<void>) {
 
         const _bearerToken = bearerToken(request);
+
         let apiToken: ApiToken
         if (!_bearerToken || _bearerToken.trim() === "" || !this.jwt.verify(_bearerToken) || ((apiToken = (await this.apiTokenModel.findOneBy("token", _bearerToken))) === null)) {
             return unknown(response, Result.unauthorized());
@@ -29,6 +31,7 @@ export default class AuthMiddleware {
             return unknown(response, Result.unauthorized());
         }
 
+        user.role = retrieveRole(user.roleType)
         Application.container.bind("current.user", (): User => user)
 
 

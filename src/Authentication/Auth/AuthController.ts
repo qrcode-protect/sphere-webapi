@@ -51,8 +51,17 @@ export default class AuthController extends Controller {
      *
      * @return bool
      */
-    public logout({ request, response }: HttpContextContract) {
-        return success(response, 200, this.service.logout(bearerToken(request)))
+    public async logout({ request, response }: HttpContextContract) {
+        return success(response, 200, { result: await this.service.logout(bearerToken(request)) })
+    }
+
+    /**
+     * Retrieve roles.
+     *
+     * @return bool
+     */
+    public dashboardRoles({ response }: HttpContextContract) {
+        return success(response, 200, this.service.roles("dashboard"))
     }
 
 
