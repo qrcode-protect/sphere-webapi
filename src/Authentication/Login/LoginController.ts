@@ -46,7 +46,7 @@ export default class LoginController extends Controller {
             return unknown(response, Result.badRequest());
 
         Log.info("Connexion de " + data.email);
-        const token = await this.service.login(data.email, data.password)
+        const token = await this.service.login(data.email, data.password, data.remember)
 
         if (token === null)
             return unknown(response, Result.unauthorized());

@@ -158,7 +158,7 @@ export default class AuthService extends Service {
      * @param remember
      */
     public getTTL(remember = false) {
-        return (remember ? 525600 : jwtConfig.ttl * 60) * 1000;
+        return (remember ? 86400 * 60 * 60 : jwtConfig.ttl * 60) * 1000;
     }
 
     /**
