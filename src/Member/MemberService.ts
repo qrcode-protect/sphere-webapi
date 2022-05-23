@@ -84,10 +84,18 @@ export default class MemberService extends Service {
                 email    : member.email,
                 phone    : member.phone,
                 roleType : RoleType.member
-            }, false)).data
-            const authUser = user
+            }, false))
+            const authUser = user.data
 
-            await this.model.update(memberId, { uid: authUser.uid })
+            if (authUser instanceof User && authUser.uid) {
+                await this.model.update(memberId, { uid: authUser.uid })
+            } else {
+                if (user.code === 419) {
+                    const authUser2 = (await userService.findOneBy("email", member.email)).data
+                    if (authUser2 instanceof User)
+                        await this.model.update(memberId, { uid: authUser2.uid })
+                }
+            }
 
             return Result.success(authUser)
         } catch (e) {
@@ -119,6 +127,25 @@ export default class MemberService extends Service {
                 return Result.duplicate()
             }
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+        }
+    }
+
+    public async deny(docID: string) {
+        return this.destroy(docID)
+    }
+
+    async destroy(docID: string) {
+        try {
+            const member: Member | null = await this.model.doc(docID)
+
+            if (member && member.uid && member.uid.trim() !== "") {
+                await (new UserService()).destroyByUid(member.uid)
+            }
+
+            return Result.success(await this.model.delete(docID))
+        } catch (e) {
+            Log.error(e, true)
+            return Result.notFound(`La ressource #${docID} demandée n'existe pas.`)
         }
     }
 

@@ -36,7 +36,7 @@ export default class PasswordController extends Controller {
             return unknown(response, Result.badRequest());
 
         Log.info(`Mot de passe oublié (email : ${data.email})`);
-        const passwordReset = await this.service.forgot(data.email)
+        const passwordReset = await this.service.forgot(data.email, request.input("app", "dashboard"))
         if (passwordReset === null)
             return error(400);
 

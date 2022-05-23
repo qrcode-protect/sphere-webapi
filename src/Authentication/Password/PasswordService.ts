@@ -26,7 +26,7 @@ export default class PasswordService extends AuthService {
 
 
     public create(email: string, app = "website") {
-        return this.forgot(email, app);
+        return this.forgot(email, app, false);
     }
 
     async forgot(email: string, app = "website", sendMail = true): Promise<PasswordReset | SofiakbError> {
@@ -44,7 +44,7 @@ export default class PasswordService extends AuthService {
             "date" : moment().unix()
         })))).toString("base64");
 
-        const redirectTo = (linkConfig[app].password.reset + `/${user.id}/?app=${app}&continue=${encodeURIComponent(linkConfig[app].url)}`).replace(RegExp(/\/\//g), "/")
+        const redirectTo = (linkConfig[app].password.reset + `/${user.id}/?app=${app}&continue=${encodeURIComponent(linkConfig[app].url)}`).replace(RegExp(/\/\//g), "/").replace("http:/", "http://").replace("https:/", "https://")
 
         const passwordReset = (new PasswordReset({ userId: user.id, token, email, redirectTo }))
         const passwordSaved = await passwordReset.firstOrCreate()
