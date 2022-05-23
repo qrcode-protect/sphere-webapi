@@ -20,6 +20,8 @@ Route.group(() => {
         Route.get("/inactive", "MemberController.inactive")
 
         Route.put("/validate/:id", "MemberController.validate")
+        Route.put("/deny/:id", "MemberController.deny")
+        Route.put("/:id", "MemberController.update")
     }).middleware("admin")
 
     Route.post("", "MemberController.store")
