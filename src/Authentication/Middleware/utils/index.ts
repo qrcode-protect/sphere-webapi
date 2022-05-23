@@ -41,7 +41,6 @@ export const validateRole = async (roleType: RoleType, request: RequestContract,
 
     user.role = retrieveRole(user.roleType)
     const requiredRole = retrieveRole(roleType)
-    console.log(user.role, requiredRole)
     if (roleType === RoleType.user || user.role.level <= requiredRole.level) {
         Application.container.bind("current.user", (): User => user)
         return await next()
