@@ -9,22 +9,24 @@
  * File src/Member/Member
  */
 
-import Service                   from "QRCP/Sphere/Common/Service";
-import MemberAttributes          from "QRCP/Sphere/Member/MemberAttributes";
-import Member                    from "QRCP/Sphere/Member/Member";
-import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
-import Drive                     from "../../config/drive";
-import path                      from "path";
-import Application               from "@ioc:Adonis/Core/Application";
-import { Bucket }                from "@google-cloud/storage";
-import { Result }                from "@sofiakb/adonis-response";
-import Log                       from "QRCP/Sphere/Common/Log";
-import DuplicateEntryException   from "QRCP/Sphere/Exceptions/DuplicateEntryException";
-import Config                    from "@ioc:Adonis/Core/Config";
-import UserService               from "QRCP/Sphere/User/UserService";
-import { RoleType }              from "QRCP/Sphere/Authentication/utils/roles";
-import AuthMail                  from "QRCP/Sphere/Authentication/AuthMail";
-import User                      from "QRCP/Sphere/User/User";
+import Service                          from "QRCP/Sphere/Common/Service";
+import MemberAttributes                 from "QRCP/Sphere/Member/MemberAttributes";
+import Member                           from "QRCP/Sphere/Member/Member";
+import { MultipartFileContract }        from "@ioc:Adonis/Core/BodyParser";
+import Drive                            from "../../config/drive";
+import path                             from "path";
+import Application                      from "@ioc:Adonis/Core/Application";
+import { Bucket, GetSignedUrlResponse } from "@google-cloud/storage";
+import { Result }                       from "@sofiakb/adonis-response";
+import Log                              from "QRCP/Sphere/Common/Log";
+import DuplicateEntryException          from "QRCP/Sphere/Exceptions/DuplicateEntryException";
+import Config                           from "@ioc:Adonis/Core/Config";
+import UserService                      from "QRCP/Sphere/User/UserService";
+import { RoleType }                     from "QRCP/Sphere/Authentication/utils/roles";
+import AuthMail                         from "QRCP/Sphere/Authentication/AuthMail";
+import User                             from "QRCP/Sphere/User/User";
+import moment                           from "moment";
+import { name }                         from "App/Common/string";
 
 interface StoreMemberAttributes extends MemberAttributes {
     upload?: unknown
@@ -40,10 +42,10 @@ export default class MemberService extends Service {
         delete data.upload
 
         if (certificate) {
-            const certificateFilename = `${data.companyName}.${certificate.extname}`;
+            const certificateFilename = `${moment().unix()}.${certificate.extname}`;
             const certificatePath: string = Drive.disks.uploads.root
             const certificateFullPath: string = path.resolve(Drive.disks.uploads.root, certificateFilename)
-            const destinationPath = `members/certificates/${certificateFilename}`
+            const destinationPath = `members/certificates/${name(data.companyName, "-")}/${certificateFilename}`
             await certificate.move(certificatePath, { name: certificateFilename })
 
             const bucket: Bucket = <Bucket>Application.container.use("firebase.storage")
@@ -52,8 +54,12 @@ export default class MemberService extends Service {
                 destination: destinationPath,
             });
 
+            await bucket.file(destinationPath)
+                .getSignedUrl({ action: "read", expires: "01-01-2491" })
+                .then((signedUrl: GetSignedUrlResponse) => data.certificate = signedUrl[0])
+                .catch(() => data.certificate = data.certificate = `https://firebasestorage.googleapis.com/v0/b/${Config.get("firebase.projectId")}.appspot.com/o/${encodeURIComponent(destinationPath)}?alt=media`)
 
-            data.certificate = `https://firebasestorage.googleapis.com/v0/b/${Config.get("firebase.projectId")}.appspot.com/o/${encodeURIComponent(destinationPath)}?alt=media`
+
         }
 
         try {
