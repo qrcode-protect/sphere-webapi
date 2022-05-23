@@ -90,7 +90,6 @@ export default class UserService extends Service {
     async destroy(docID: string) {
         try {
             const user = await this.model.doc(docID)
-
             if (user && user.uid && user.uid.trim() !== "")
                 await this.auth.deleteUser(user.uid)
 
@@ -99,6 +98,14 @@ export default class UserService extends Service {
             Log.error(e, true)
             return Result.notFound(`La ressource #${docID} demandée n'existe pas.`)
         }
+    }
+
+    async destroyByUid(uid: string) {
+        const user: User | null = await this.model.findOneBy("uid", uid)
+        if (user instanceof User) {
+            return await this.destroy(user.id)
+        }
+
     }
 
     async enable(docID: unknown): Promise<Success | SofiakbError> {
