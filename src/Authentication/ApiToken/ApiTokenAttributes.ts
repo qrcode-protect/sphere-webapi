@@ -15,4 +15,5 @@ export default interface ApiTokenAttributes {
     token: string;
     loggedAt: Date;
     userId: string;
+    email: string;
 }

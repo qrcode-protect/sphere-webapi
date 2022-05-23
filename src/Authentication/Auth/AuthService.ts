@@ -231,7 +231,8 @@ export default class AuthService extends Service {
             loggedAt: firestore.Timestamp.now().toDate(),
             token   : bearerToken,
             uid     : user.uid,
-            userId  : user.id
+            userId  : user.id,
+            email   : user.email
         }
 
         const apiToken = await this.apiTokenModel.findOneBy("userId", user.id)

@@ -18,6 +18,7 @@ export default class ApiToken extends Model {
     token: string;
     loggedAt: Date;
     userId: string;
+    email: string;
 
     constructor(attributes?: ApiTokenAttributes) {
         super({ collectionName: "api_tokens", model: ApiToken });
