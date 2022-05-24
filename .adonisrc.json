@@ -22,6 +22,7 @@
     "./providers/AppProvider",
     "./src/Activity/ActivityProvider",
     "./src/Member/MemberProvider",
+    "./src/Partner/PartnerProvider",
     "./src/User/UserProvider",
     "./src/Authentication/AuthProvider",
     "@adonisjs/core",

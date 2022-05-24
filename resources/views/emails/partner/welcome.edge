@@ -1,0 +1,23 @@
+@layout('layouts/app')
+
+@section('body')
+<tr>
+    <td valign="middle" class="hero bg_white" style="padding: 2em 0 4em 0;">
+        <table>
+            <tr>
+                <td>
+                    <div class="text" style="padding: 0 2.5em; text-align: center;">
+                        <h2>Bienvenue {{ user.fullName }} !</h2>
+                        <h3>Un réseau tah sah (ou pas...)</h3>
+                        <h5>Nous avons le plaisir de vous accueillir dans notre réseau</h5>
+                        <h6>Cliquez sur le lien ci-dessous afin de créer votre mot de passe*</h6>
+                        <p><a href="{{ url }}" target="_blank" class="btn btn-primary">Oui! Je veux continuer...</a></p>
+                        <p style="color: #CC0000; font-weight: bold">Le lien est valable pendant 24 heures à compter de
+                            la réception de cet e-mail.</p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr><!-- end tr -->
+@end

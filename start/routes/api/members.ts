@@ -22,6 +22,8 @@ Route.group(() => {
         Route.put("/validate/:id", "MemberController.validate")
         Route.put("/deny/:id", "MemberController.deny")
         Route.put("/:id", "MemberController.update")
+
+        Route.delete("/:id", "MemberController.destroy")
     }).middleware("admin")
 
     Route.post("", "MemberController.store")

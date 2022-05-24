@@ -32,6 +32,9 @@ export default class AuthMail extends Mail {
                 case "website": {
                     return super.registerMember(user, `${link}`)
                 }
+                case "partner": {
+                    return super.registerPartner(user, `${link}`)
+                }
                 case "dashboard": {
                     return super.registerDashboard(user, `${link}`)
                 }
@@ -64,6 +67,9 @@ export default class AuthMail extends Mail {
                 }
                 case "dashboard": {
                     return super.forgotPasswordDashUser(user, `${link}`)
+                }
+                case "partner": {
+                    return super.forgotPasswordPartner(user, `${link}`)
                 }
             }
     }

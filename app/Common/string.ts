@@ -11,7 +11,7 @@
 
 export const lower = (value: string): string => value?.toLowerCase();
 
-export const name = (value: string) => lower(value)?.replace(/[^A-Za-zàáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ-]/g, "")
+export const name = (value: string, replaceValue: string = "") => lower(value)?.replace(/[^A-Za-zàáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ-]/g, replaceValue)
 
 export const normalize = (value: Nullable<string>) => value?.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 

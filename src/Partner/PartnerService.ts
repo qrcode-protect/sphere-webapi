@@ -6,12 +6,12 @@
  * (c) Sofiane Akbly <sofiane.akbly@qrcode-protect.com>
  *
  * Created by WebStorm on 12/05/2022 at 10:54
- * File src/Member/Member
+ * File src/Partner/Partner
  */
 
 import Service                          from "QRCP/Sphere/Common/Service";
-import MemberAttributes                 from "QRCP/Sphere/Member/MemberAttributes";
-import Member                           from "QRCP/Sphere/Member/Member";
+import PartnerAttributes                from "QRCP/Sphere/Partner/PartnerAttributes";
+import Partner                          from "QRCP/Sphere/Partner/Partner";
 import { MultipartFileContract }        from "@ioc:Adonis/Core/BodyParser";
 import Drive                            from "../../config/drive";
 import path                             from "path";
@@ -28,24 +28,24 @@ import User                             from "QRCP/Sphere/User/User";
 import moment                           from "moment";
 import { name }                         from "App/Common/string";
 
-interface StoreMemberAttributes extends MemberAttributes {
+interface StorePartnerAttributes extends PartnerAttributes {
     upload?: unknown
 }
 
-export default class MemberService extends Service {
+export default class PartnerService extends Service {
 
-    constructor(model = Member) {
+    constructor(model = Partner) {
         super(model);
     }
 
-    public async store(data: StoreMemberAttributes, certificate?: Nullable<MultipartFileContract>) {
+    public async store(data: StorePartnerAttributes, certificate?: Nullable<MultipartFileContract>, fromDashboard = false) {
         delete data.upload
 
         if (certificate) {
             const certificateFilename = `${moment().unix()}.${certificate.extname}`;
             const certificatePath: string = Drive.disks.uploads.root
             const certificateFullPath: string = path.resolve(Drive.disks.uploads.root, certificateFilename)
-            const destinationPath = `members/certificates/${name(data.companyName, "-")}/${certificateFilename}`
+            const destinationPath = `partners/certificates/${name(data.companyName, "-")}/${certificateFilename}`
             await certificate.move(certificatePath, { name: certificateFilename })
 
             const bucket: Bucket = <Bucket>Application.container.use("firebase.storage")
@@ -67,39 +67,43 @@ export default class MemberService extends Service {
             if (result.id) {
                 await this.createUser(result.id, result)
 
+                if (fromDashboard) {
+                    await this.validate(result.id)
+                }
+
                 return Result.success(result)
             }
             throw new Error("Error while saving")
         } catch (e) {
             Log.error(e, true)
             if (e instanceof DuplicateEntryException) {
-                return Result.duplicate("Un espace membre existe déjà avec cette adresse e-mail")
+                return Result.duplicate("Un espace partenaire existe déjà avec cette adresse e-mail")
             }
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
         }
 
     }
 
-    public async createUser(memberId: string, member: Member) {
+    public async createUser(partnerId: string, partner: Partner) {
 
         try {
             const userService = new UserService()
             const user = (await userService.store({
-                lastname : member.lastname,
-                firstname: member.firstname,
-                email    : member.email,
-                phone    : member.phone,
-                roleType : RoleType.member
+                lastname : partner.lastname,
+                firstname: partner.firstname,
+                email    : partner.email,
+                phone    : partner.phone,
+                roleType : RoleType.partner
             }, false))
             const authUser = user.data
 
             if (authUser instanceof User && authUser.uid) {
-                await this.model.update(memberId, { uid: authUser.uid })
+                await this.model.update(partnerId, { uid: authUser.uid })
             } else {
                 if (user.code === 419) {
-                    const authUser2 = (await userService.findOneBy("email", member.email)).data
+                    const authUser2 = (await userService.findOneBy("email", partner.email)).data
                     if (authUser2 instanceof User)
-                        await this.model.update(memberId, { uid: authUser2.uid })
+                        await this.model.update(partnerId, { uid: authUser2.uid })
                 }
             }
 
@@ -121,7 +125,7 @@ export default class MemberService extends Service {
                 const user = (await (new UserService()).enableWithUid(result.uid)).data
 
                 if (user instanceof User) {
-                    await AuthMail.register(user, "website")
+                    await AuthMail.register(user, "partner")
                 }
 
                 return Result.success(result)
@@ -142,10 +146,10 @@ export default class MemberService extends Service {
 
     async destroy(docID: string) {
         try {
-            const member: Member | null = await this.model.doc(docID)
+            const partner: Partner | null = await this.model.doc(docID)
 
-            if (member && member.uid && member.uid.trim() !== "") {
-                await (new UserService()).destroyByUid(member.uid)
+            if (partner && partner.uid && partner.uid.trim() !== "") {
+                await (new UserService()).destroyByUid(partner.uid)
             }
 
             return Result.success(await this.model.delete(docID))
