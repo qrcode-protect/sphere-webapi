@@ -73,7 +73,7 @@ export default class MemberService extends Service {
         } catch (e) {
             Log.error(e, true)
             if (e instanceof DuplicateEntryException) {
-                return Result.duplicate()
+                return Result.duplicate("Un espace membre existe déjà avec cette adresse e-mail")
             }
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
         }
