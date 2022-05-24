@@ -18,19 +18,23 @@ import { ClassConstructor } from "class-transformer";
 
 export default class Service {
 
-    private model
+    public model
 
     constructor(model: ClassConstructor<Model>) {
         this.model = new model
     }
 
-    public all = async () => Result.success(await this.model.all())
+    public async all() {
+        return Result.success(await this.model.all());
+    }
 
-    public findById = async (id: number | string, columnID = "id") => this.findOneBy(columnID, id)
+    public async findById(id: number | string, columnID = "id") {
+        return this.findOneBy(columnID, id);
+    }
 
-    public findBy = async (column: string, value: unknown) => {
+    public async findBy(column: string, value: unknown) {
         try {
-            const data = await this.model.query().where(column, value)
+            const data = await this.model.where(column, value) || []
             return Result.success(data)
         } catch (e) {
             Log.error(e, true)
@@ -38,7 +42,7 @@ export default class Service {
         }
     }
 
-    public findOneBy = async (column: string, value: unknown) => {
+    public async findOneBy(column: string, value: unknown) {
         try {
             const data = (await this.model.where(column, value))[0] || null
             return data === null ? Result.notFound(`La ressource #${value} demandée n'existe pas.`) : Result.success(data)
@@ -48,7 +52,7 @@ export default class Service {
         }
     }
 
-    public search = async (query, searchable: string[] = []) => {
+    public async search(query, searchable: string[] = []) {
         if (size(searchable) === 0 || searchable === null)
             searchable = this.model?.searchable || []
         query = `%${query}%`.toLowerCase().trim()
@@ -64,7 +68,7 @@ export default class Service {
         return Result.success(await queryBuilder)
     }
 
-    public paginate = async (page: number, limit: number) => {
+    public async paginate(page: number, limit: number) {
         const total = await this.model.count();
         const latest = Math.ceil(total / limit);
 
@@ -82,10 +86,10 @@ export default class Service {
         });
     }
 
-    public store = async (data: any) => {
+    public async store(data: any) {
         try {
-            const result = await this.model.create(data)
-            if (result.$isPersisted)
+            const result = await this.model.store(data)
+            if (result.id)
                 return Result.success(result)
             throw new Error("Error while saving")
         } catch (e) {
@@ -94,9 +98,9 @@ export default class Service {
         }
     }
 
-    public update = async (value: unknown, updatable, column = "id") => {
+    public async update(value: unknown, updatable) {
         try {
-            const data = await this.model.query().where(column, value).update(updatable)
+            const data = await this.model.update(value, updatable)
             return Result.success(data)
         } catch (e) {
             Log.error(e, true)
@@ -104,10 +108,9 @@ export default class Service {
         }
     }
 
-    public destroy = async (value: unknown, column = "id") => {
+    public async destroy(value: unknown) {
         try {
-            const data = await this.model.findByOrFail(column, value)
-            return Result.success(await data.delete())
+            return Result.success(await this.model.delete(value))
         } catch (e) {
             Log.error(e, true)
             return Result.notFound(`La ressource #${value} demandée n'existe pas.`)

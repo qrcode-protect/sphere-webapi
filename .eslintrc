@@ -25,22 +25,25 @@
         "adonis"
     ],
     "rules"         : {
-        "quotes"                            : [
+        "quotes"                               : [
             "error",
             "double"
         ],
-        "import/no-unresolved"              : 0,
-        "indent"                            : [
+        "import/no-unresolved"                 : 0,
+        "indent"                               : [
             "warn",
             4,
             {
-                "MemberExpression": 1
+                "MemberExpression": 1,
+                "SwitchCase"      : 1
             }
         ],
-        "key-spacing"                       : "off",
-        "max-len"                           : "off",
-        "object-curly-spacing"              : "off",
-        "no-multi-spaces"                   : "off",
-        "@typescript-eslint/no-var-requires": "off"
+        "key-spacing"                          : "off",
+        "max-len"                              : "off",
+        "object-curly-spacing"                 : "off",
+        "no-multi-spaces"                      : "off",
+        "no-async-promise-executor"            : "off",
+        "@typescript-eslint/no-var-requires"   : "off",
+        "@typescript-eslint/no-explication-any": "off"
     }
 }

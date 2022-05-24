@@ -20,7 +20,11 @@ export default Env.rules({
 
     APP_KEY : Env.schema.string(),
     APP_NAME: Env.schema.string(),
-    APP_URL : Env.schema.string.optional(),
+    APP_URL : Env.schema.string(),
+
+    WEBSITE_URL : Env.schema.string(),
+    DASHBOARD_URL : Env.schema.string(),
+    PARTNER_URL : Env.schema.string(),
 
     DRIVE_DISK: Env.schema.enum([ "local" ] as const),
 
@@ -28,4 +32,12 @@ export default Env.rules({
 
     FIREBASE_KEY_FILE            : Env.schema.string(),
     FIREBASE_PROJECT_ID         : Env.schema.string(),
+
+    SMTP_HOST: Env.schema.string({ format: "host" }),
+    SMTP_PORT: Env.schema.number(),
+    SMTP_USERNAME: Env.schema.string(),
+    SMTP_PASSWORD: Env.schema.string(),
+
+    JWT_SECRET: Env.schema.string(),
+    JWT_TTL: Env.schema.number.optional(),
 })

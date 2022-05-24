@@ -29,7 +29,7 @@ export default class ExceptionHandler extends HttpExceptionHandler {
   }
 
   handle(error: any, ctx: HttpContextContract): Promise<any> {
-    Log.error(error, true);
+    // Log.error(error, true);
     return super.handle(error, ctx);
   }
 }

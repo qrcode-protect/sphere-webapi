@@ -1,0 +1,23 @@
+@layout('layouts/app')
+
+@section('body')
+<tr>
+    <td valign="middle" class="hero bg_white" style="padding: 2em 0 4em 0;">
+        <table>
+            <tr>
+                <td>
+                    <div class="text" style="padding: 0 2.5em; text-align: center;">
+                        <h2>Bonjour {{ user.fullName }} !</h2>
+                        <h3>Changement de mot de passe</h3>
+                        <h5>Vous avez récemment fait une demande de réinitialisation de votre mot de passe SPHÈRE (dashboard)</h5>
+                        <h6>Cliquez sur le lien ci-dessous afin de poursuivre*</h6>
+                        <p><a href="{{ url }}" target="_blank" class="btn btn-primary">Poursuivre la modification</a></p>
+                        <p style="color: #CC0000; font-weight: bold">* Le lien est valable pendant 24 heures à compter de
+                            la réception de cet e-mail.</p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr><!-- end tr -->
+@end

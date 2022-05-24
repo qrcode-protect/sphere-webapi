@@ -24,5 +24,23 @@ import "./routes/api"
 
 
 Route.get("/", async () => {
-    return { hello: "world" }
+    return { hello: "world1" }
+})
+
+Route.group(() => {
+
+    /****************************
+     ***** PASSWORD ROUTES ******
+     ****************************/
+    Route.get("/password/reset/:email/:token", "Password/PasswordController.verifyToken").as("password.reset.verify");
+})
+    .namespace("QRCP/Sphere/Authentication")
+    .prefix("/auth");
+
+Route.get("/test", async ({ view }) => {
+    const html = await view.render("layouts/app", {
+        greeting: "Hello"
+    })
+
+    return html
 })

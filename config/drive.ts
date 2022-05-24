@@ -5,9 +5,10 @@
  * file.
  */
 
-import Env from '@ioc:Adonis/Core/Env'
-import { DriveConfig } from '@ioc:Adonis/Core/Drive'
-import Application from '@ioc:Adonis/Core/Application'
+import Env             from "@ioc:Adonis/Core/Env"
+import { DriveConfig } from "@ioc:Adonis/Core/Drive"
+import Application     from "@ioc:Adonis/Core/Application"
+import path            from "path";
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +20,7 @@ import Application from '@ioc:Adonis/Core/Application'
 |
 */
 const driveConfig: DriveConfig = {
-  /*
+    /*
   |--------------------------------------------------------------------------
   | Default disk
   |--------------------------------------------------------------------------
@@ -28,23 +29,23 @@ const driveConfig: DriveConfig = {
   | the `DRIVE_DISK` environment variable.
   |
   */
-  disk: Env.get('DRIVE_DISK'),
+    disk: Env.get("DRIVE_DISK"),
 
-  disks: {
-    /*
-    |--------------------------------------------------------------------------
-    | Local
-    |--------------------------------------------------------------------------
-    |
-    | Uses the local file system to manage files. Make sure to turn off serving
-    | files when not using this disk.
-    |
-    */
-    local: {
-      driver: 'local',
-      visibility: 'public',
+    disks: {
+        /*
+        |--------------------------------------------------------------------------
+        | Local
+        |--------------------------------------------------------------------------
+        |
+        | Uses the local file system to manage files. Make sure to turn off serving
+        | files when not using this disk.
+        |
+        */
+        local: {
+            driver    : "local",
+            visibility: "public",
 
-      /*
+            /*
       |--------------------------------------------------------------------------
       | Storage root - Local driver only
       |--------------------------------------------------------------------------
@@ -53,9 +54,9 @@ const driveConfig: DriveConfig = {
       | files.
       |
       */
-      root: Application.tmpPath('uploads'),
+            root: path.resolve(Application.appRoot, "storage"),
 
-      /*
+            /*
       |--------------------------------------------------------------------------
       | Serve files - Local driver only
       |--------------------------------------------------------------------------
@@ -65,9 +66,9 @@ const driveConfig: DriveConfig = {
       | storage services that has inbuilt capabilities to serve files.
       |
       */
-      serveFiles: true,
+            serveFiles: false,
 
-      /*
+            /*
       |--------------------------------------------------------------------------
       | Base path - Local driver only
       |--------------------------------------------------------------------------
@@ -77,10 +78,49 @@ const driveConfig: DriveConfig = {
       | you are not registering routes with this prefix.
       |
       */
-      basePath: '/uploads',
-    },
+            basePath: "/uploads",
+        },
 
-    /*
+        uploads: {
+            driver    : "local",
+            visibility: "public",
+            /*
+            |--------------------------------------------------------------------------
+            | Storage root - Local driver only
+            |--------------------------------------------------------------------------
+            |
+            | Define an absolute path to the storage directory from where to read the
+            | files.
+            |
+            */
+            root: path.resolve(Application.appRoot, "storage", "files", "certificates"),
+
+            /*
+            |--------------------------------------------------------------------------
+            | Serve files - Local driver only
+            |--------------------------------------------------------------------------
+            |
+            | When this is set to true, AdonisJS will configure a files server to serve
+            | files from the disk root. This is done to mimic the behavior of cloud
+            | storage services that has inbuilt capabilities to serve files.
+            |
+            */
+            serveFiles: false,
+
+            /*
+            |--------------------------------------------------------------------------
+            | Base path - Local driver only
+            |--------------------------------------------------------------------------
+            |
+            | Base path is always required when "serveFiles = true". Also make sure
+            | the `basePath` is unique across all the disks using "local" driver and
+            | you are not registering routes with this prefix.
+            |
+            */
+            basePath: "/uploads",
+        },
+
+        /*
     |--------------------------------------------------------------------------
     | S3 Driver
     |--------------------------------------------------------------------------
@@ -93,17 +133,17 @@ const driveConfig: DriveConfig = {
     |**************************************************************************
     |
     */
-    // s3: {
-    //   driver: 's3',
-    //   visibility: 'public',
-    //   key: Env.get('S3_KEY'),
-    //   secret: Env.get('S3_SECRET'),
-    //   region: Env.get('S3_REGION'),
-    //   bucket: Env.get('S3_BUCKET'),
-    //   endpoint: Env.get('S3_ENDPOINT'),
-    // },
+        // s3: {
+        //   driver: 's3',
+        //   visibility: 'public',
+        //   key: Env.get('S3_KEY'),
+        //   secret: Env.get('S3_SECRET'),
+        //   region: Env.get('S3_REGION'),
+        //   bucket: Env.get('S3_BUCKET'),
+        //   endpoint: Env.get('S3_ENDPOINT'),
+        // },
 
-    /*
+        /*
     |--------------------------------------------------------------------------
     | GCS Driver
     |--------------------------------------------------------------------------
@@ -116,13 +156,13 @@ const driveConfig: DriveConfig = {
     |**************************************************************************
     |
     */
-    // gcs: {
-    //   driver: 'gcs',
-    //   visibility: 'public',
-    //   keyFilename: Env.get('GCS_KEY_FILENAME'),
-    //   bucket: Env.get('GCS_BUCKET'),
+        // gcs: {
+        //   driver: 'gcs',
+        //   visibility: 'public',
+        //   keyFilename: Env.get('GCS_KEY_FILENAME'),
+        //   bucket: Env.get('GCS_BUCKET'),
 
-      /*
+        /*
       |--------------------------------------------------------------------------
       | Uniform ACL - Google cloud storage only
       |--------------------------------------------------------------------------
@@ -140,9 +180,9 @@ const driveConfig: DriveConfig = {
       | console.
       |
       */
-    //   usingUniformAcl: false
-    // },
-  },
+        //   usingUniformAcl: false
+        // },
+    },
 }
 
 export default driveConfig

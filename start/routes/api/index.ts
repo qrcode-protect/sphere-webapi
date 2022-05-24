@@ -12,11 +12,16 @@
 import Route from "@ioc:Adonis/Core/Route"
 
 Route.group(() => {
+    require("./auth")
+
     /*******************************
      * Rôles autorisés :
      * * Tous
      ******************************/
-    // require("./restaurants")
+    require("./members")
+    require("./partners")
+    require("./activities")
+    require("./users")
     /*******************************
      FIN ROLE AUTORISES
      ******************************/

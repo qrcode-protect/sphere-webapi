@@ -21,23 +21,35 @@ export default class Controller {
         this.service = service
     }
 
-    public all = async ({ response }: HttpContextContract) => unknown(response, await this.service.all());
+    public async all({ response }: HttpContextContract) {
+        return unknown(response, await this.service.all());
+    }
 
-    public findById = async ({ request, response }: HttpContextContract) =>
-        unknown(response, await this.service.findById(request.param("id")));
+    public async findById({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.findById(request.param("id")));
+    }
 
-    public search = async ({ request, response }: HttpContextContract) =>
-        unknown(response, await this.service.search(request.input("query")));
+    public async findBy(column: string, value: unknown, { response }: HttpContextContract) {
+        return unknown(response, await this.service.findBy(column, value));
+    }
 
-    public paginate = async ({ request, response }: HttpContextContract) =>
-        unknown(response, await this.service.paginate(request.param("page", 0), request.input("limit", 18)));
+    public async search({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.search(request.input("query")));
+    }
 
-    public store = async ({ request, response }: HttpContextContract) =>
-        unknown(response, await this.service.store(request.body()));
+    public async paginate({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.paginate(request.param("page", 0), request.input("limit", 18)));
+    }
 
-    public update = async ({ request, response }: HttpContextContract) =>
-        unknown(response, await this.service.update(request.param("id"), request.body()));
+    public async store({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.store(request.body().data));
+    }
 
-    public destroy = async ({ request, response }: HttpContextContract) =>
-        unknown(response, await this.service.destroy(request.param("id")));
+    public async update({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.update(request.param("id"), request.body().data));
+    }
+
+    public async destroy({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.destroy(request.param("id")));
+    }
 }

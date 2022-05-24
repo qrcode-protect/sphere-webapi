@@ -1,8 +1,14 @@
 node_modules
 build
 coverage
+.idea
 .vscode
 .DS_STORE
 .env
+.env.production
+app.yaml
 tmp
-firebase-adminsdk.json
+firebase-adminsdk*.json
+
+storage
+release.txt
