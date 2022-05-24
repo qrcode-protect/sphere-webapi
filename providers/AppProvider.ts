@@ -6,7 +6,6 @@ import path                                 from "path";
 import { Bucket, Storage }                  from "@google-cloud/storage";
 import { Auth }                             from "firebase-admin/auth";
 import { Auth as firebaseAuth }             from "firebase/auth";
-import firebase                                   from "firebase/compat/app";
 
 export default class AppProvider {
     constructor(protected app: ApplicationContract) {
