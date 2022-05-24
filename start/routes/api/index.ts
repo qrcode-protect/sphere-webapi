@@ -19,6 +19,7 @@ Route.group(() => {
      * * Tous
      ******************************/
     require("./members")
+    require("./partners")
     require("./activities")
     require("./users")
     /*******************************

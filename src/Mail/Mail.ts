@@ -37,7 +37,15 @@ export default class Mail {
 
     static async registerMember(user: User, link: string | null) {
         await Mail.send("sofiane.akbly@qrcode-protect.com", "Bienvenue chez SPHÈRE !", "member/welcome", {
-            // await Mail.send(user.email, "Bienvenue chez SPHÈRE !", "welcome", {
+            // await Mail.send(user.email, "Bienvenue chez SPHÈRE !", "member/welcome", {
+            user: { fullName: `${capitalize(user.firstname)} ${capitalize(user.lastname)}` },
+            url : link,
+        })
+    }
+
+    static async registerPartner(user: User, link: string | null) {
+        await Mail.send("sofiane.akbly@qrcode-protect.com", "Bienvenue chez SPHÈRE !", "partner/welcome", {
+            // await Mail.send(user.email, "Bienvenue chez SPHÈRE !", "partner/welcome", {
             user: { fullName: `${capitalize(user.firstname)} ${capitalize(user.lastname)}` },
             url : link,
         })
@@ -55,6 +63,14 @@ export default class Mail {
 
     static async forgotPasswordMember(user: User, link: string | null) {
         await Mail.send("sofiane.akbly@qrcode-protect.com", "Réinitialisation de votre mot de passe SPHÈRE !", "member/auth/password/forgot", {
+            // await Mail.send(user.email, "Bienvenue chez SPHÈRE !", "welcome", {
+            user: { fullName: `${capitalize(user.firstname)}` },
+            url : link,
+        })
+    }
+
+    static async forgotPasswordPartner(user: User, link: string | null) {
+        await Mail.send("sofiane.akbly@qrcode-protect.com", "Réinitialisation de votre mot de passe SPHÈRE !", "partner/auth/password/forgot", {
             // await Mail.send(user.email, "Bienvenue chez SPHÈRE !", "welcome", {
             user: { fullName: `${capitalize(user.firstname)}` },
             url : link,
