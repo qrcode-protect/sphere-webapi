@@ -12,11 +12,15 @@
 import AuthService from "QRCP/Sphere/Authentication/Auth/AuthService";
 import User        from "QRCP/Sphere/User/User";
 
-import bcrypt                             from "bcryptjs"
-import Log                                from "QRCP/Sphere/Common/Log";
-import { Error as SofiakbError, Success } from "@sofiakb/adonis-response";
+import bcrypt                                     from "bcryptjs"
+import Log                                        from "QRCP/Sphere/Common/Log";
+import { Error as SofiakbError, Result, Success } from "@sofiakb/adonis-response";
 
-import { signInWithEmailAndPassword } from "@firebase/auth";
+import { signInWithEmailAndPassword }           from "@firebase/auth";
+import { memberModel, partnerModel, userModel } from "App/Common/model";
+import Model                                    from "QRCP/Sphere/Common/Model";
+import { rolesByLevel, RoleType }               from "QRCP/Sphere/Authentication/utils/roles";
+import { map }                                  from "lodash";
 
 export type LoginResult = {
     token: { bearer: string },
@@ -24,7 +28,7 @@ export type LoginResult = {
 
 export default class LoginService extends AuthService {
 
-    public async login(email: string, password: string, remember = false): Promise<LoginResult | null | Success | SofiakbError> {
+    public async login(email: string, password: string, remember = false, loginType?: Nullable<string>): Promise<LoginResult | null | Success | SofiakbError> {
 
         if (email === null || password === null) {
             return null;
@@ -64,7 +68,46 @@ export default class LoginService extends AuthService {
         await this.registerApiToken(user, bearer)
 
         Log.info(`Token généré pour ${user.email}`);
+
+        if (loginType) {
+            const loginSpecialResult = await this.loginSpecial(loginType, email)
+            if (loginSpecialResult instanceof SofiakbError)
+                return loginSpecialResult
+        }
+
         return { token: { bearer } };
+    }
+
+    public async loginSpecial(loginType: string, email: string): Promise<Success | SofiakbError> {
+        let model: Model | null = null
+        switch (loginType) {
+            case "dashboard": {
+                const result = (await userModel().whereSnapshot("email", email).where("roleType", map(rolesByLevel(RoleType.marketing), role => role.name), "in"))
+                return result ? Result.success() : this.unauthorized()
+            }
+            case "partners": {
+                model = partnerModel()
+                break;
+            }
+            case "members": {
+                model = memberModel()
+                break;
+            }
+            default:
+                break;
+        }
+
+        if (model) {
+            const result = await model.whereSnapshot("available", true).where("email", email)
+
+            if (result === null) {
+                return this.blocked()
+            }
+
+            return Result.success()
+        }
+
+        return Result.badRequest()
     }
 
 

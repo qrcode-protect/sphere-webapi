@@ -17,7 +17,7 @@ Route.group(() => {
     /****************************
      ******* LOGIN ROUTES *******
      ****************************/
-    Route.post("/login", "Login/LoginController.login")
+    Route.post("/login/:loginType?", "Login/LoginController.login")
 
     Route.group(() => {
 
