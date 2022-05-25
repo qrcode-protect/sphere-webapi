@@ -16,7 +16,7 @@ Route.group(() => {
 
     Route.group(() => {
         Route.get("", "MemberController.all")
-        Route.get("/active", "MemberController.active")
+        Route.get("/active/:activityId?", "MemberController.active")
         Route.get("/inactive", "MemberController.inactive")
 
         Route.put("/validate/:id", "MemberController.validate")

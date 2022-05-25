@@ -155,4 +155,16 @@ export default class MemberService extends Service {
         }
     }
 
+    public async findActive(activityId?: string) {
+        try {
+            const query = this.model.whereSnapshot("active", true)
+
+            const data = await (activityId ? query.where("activityId", activityId) : query.get()) || []
+            return Result.success(data)
+        } catch (e) {
+            Log.error(e, true)
+            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+        }
+    }
+
 }

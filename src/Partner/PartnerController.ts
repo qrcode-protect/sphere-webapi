@@ -11,9 +11,9 @@
 
 import Controller              from "QRCP/Sphere/Common/Controller";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import PartnerService           from "QRCP/Sphere/Partner/PartnerService";
-import { unknown }       from "@sofiakb/adonis-response";
-import PartnerAttributes from "./PartnerAttributes";
+import PartnerService          from "QRCP/Sphere/Partner/PartnerService";
+import { unknown }             from "@sofiakb/adonis-response";
+import PartnerAttributes       from "./PartnerAttributes";
 
 
 export default class PartnerController extends Controller {
@@ -53,8 +53,8 @@ export default class PartnerController extends Controller {
         return unknown(response, await this.service.store(<PartnerAttributes>request.body(), request.file("certificate"), true));
     }
 
-    public async active(httpContextContract: HttpContextContract) {
-        return super.findBy("active", true, httpContextContract);
+    public async active({ response, params }: HttpContextContract) {
+        return unknown(response, await this.service.findActive(params.activityId));
     }
 
     public async inactive(httpContextContract: HttpContextContract) {
@@ -68,5 +68,10 @@ export default class PartnerController extends Controller {
     public async deny({ request, response }: HttpContextContract) {
         return unknown(response, await this.service.deny(request.param("id")));
     }
+
+    public async groupBy({ response, params }: HttpContextContract) {
+        return unknown(response, await this.service.groupBy(params.group));
+    }
+
 
 }

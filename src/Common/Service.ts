@@ -14,6 +14,7 @@ import { size, each }       from "lodash"
 import Log                  from "QRCP/Sphere/Common/Log";
 import Model                from "QRCP/Sphere/Common/Model";
 import { ClassConstructor } from "class-transformer";
+import { FieldPath }        from "@google-cloud/firestore";
 
 
 export default class Service {
@@ -114,6 +115,16 @@ export default class Service {
         } catch (e) {
             Log.error(e, true)
             return Result.notFound(`La ressource #${value} demandée n'existe pas.`)
+        }
+    }
+
+    public async groupBy(column: string | FieldPath) {
+        try {
+            const data = await this.model.groupBy(column) || []
+            return Result.success(data)
+        } catch (e) {
+            Log.error(e, true)
+            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
         }
     }
 
