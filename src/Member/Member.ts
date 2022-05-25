@@ -28,6 +28,7 @@ export default class Member extends Model {
     active: boolean;
     available: boolean;
     uid?: string;
+    premium = false;
 
 
     constructor(attributes?: MemberAttributes) {
@@ -53,6 +54,9 @@ export default class Member extends Model {
 
         if (typeof data.available === "undefined")
             data.available = false;
+
+        if (typeof data.premium === "undefined")
+            data.premium = false;
 
         if ((await this.where("email", data.email)) !== null) {
             throw new DuplicateEntryException()
