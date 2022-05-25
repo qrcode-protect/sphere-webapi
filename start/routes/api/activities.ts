@@ -15,8 +15,11 @@ Route.group(() => {
 
     Route.group(() => {
         // create
+        Route.post("", "ActivityController.store")
         // update
+        Route.put("/:id", "ActivityController.update")
         // delete
+        Route.delete("/:id", "ActivityController.delete")
     }).middleware("admin")
 
     Route.get("", "ActivityController.all")
