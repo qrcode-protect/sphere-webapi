@@ -152,6 +152,14 @@ export default class AuthService extends Service {
     }
 
     /**
+     * Blocked.
+     *
+     */
+    public blocked() {
+        return Result.forbidden("Votre accès a été désactiver, merci de contacter le support.");
+    }
+
+    /**
      * Token expiration.
      *
      * @return int

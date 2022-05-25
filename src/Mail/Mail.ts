@@ -14,6 +14,7 @@ import MailAddons       from "@ioc:Adonis/Addons/Mail";
 import User             from "QRCP/Sphere/User/User";
 import { retrieveRole } from "QRCP/Sphere/Authentication/utils/roles";
 import { capitalize }   from "lodash";
+import mailConfig       from "Config/mail";
 
 export default class Mail {
 
@@ -29,6 +30,7 @@ export default class Mail {
             )
 
             message
+                .from(mailConfig.mailers.smtp.auth?.user ?? "noreply@reseau-sphere.com", "SPHÈRE")
                 .to(to)
                 .subject(subject)
                 .htmlView(`emails/${view}`, data)
