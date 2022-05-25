@@ -16,12 +16,15 @@ Route.group(() => {
 
     Route.group(() => {
         Route.get("", "PartnerController.all")
-        Route.get("/active", "PartnerController.active")
+        Route.get("/active/:activityId?", "PartnerController.active")
         Route.get("/inactive", "PartnerController.inactive")
+        Route.get("/group-by/:group", "PartnerController.groupBy")
 
         Route.put("/validate/:id", "PartnerController.validate")
         Route.put("/deny/:id", "PartnerController.deny")
         Route.put("/:id", "PartnerController.update")
+
+
 
         Route.delete("/:id", "PartnerController.destroy")
     }).middleware("admin")

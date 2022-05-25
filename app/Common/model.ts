@@ -20,5 +20,5 @@ import Partner     from "QRCP/Sphere/Partner/Partner";
 export const activityModel = (): Activity => Application.container.use("activity.model")
 export const memberModel = (): Member => Application.container.use("member.model")
 export const partnerModel = (): Partner => Application.container.use("partner.model")
-export const userModel = (): User => Application.container.use("user.model")
+export const userModel = (): User => new User()
 export const apiTokenModel = (): ApiToken => Application.container.use("auth.apiToken.model")

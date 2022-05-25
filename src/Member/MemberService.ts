@@ -144,14 +144,29 @@ export default class MemberService extends Service {
         try {
             const member: Member | null = await this.model.doc(docID)
 
-            if (member && member.uid && member.uid.trim() !== "") {
+            /*if (member && member.uid && member.uid.trim() !== "") {
                 await (new UserService()).destroyByUid(member.uid)
-            }
+            }*/
+
+            if (member === null)
+                throw new Error(`Member "${docID} not found`)
 
             return Result.success(await this.model.delete(docID))
         } catch (e) {
             Log.error(e, true)
             return Result.notFound(`La ressource #${docID} demandée n'existe pas.`)
+        }
+    }
+
+    public async findActive(activityId?: string) {
+        try {
+            const query = this.model.whereSnapshot("active", true)
+
+            const data = await (activityId ? query.where("activityId", activityId) : query.get()) || []
+            return Result.success(data)
+        } catch (e) {
+            Log.error(e, true)
+            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
         }
     }
 

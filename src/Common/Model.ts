@@ -25,6 +25,7 @@ import {
 }                           from "@google-cloud/firestore";
 import { ClassConstructor } from "class-transformer";
 import { firestore }        from "firebase-admin";
+import { groupBy, Dictionary }          from "lodash";
 
 interface ModelConstructor {
     collectionName: string;
@@ -156,7 +157,7 @@ export default class Model {
         return documentData.exists ? this.casting(documentData.data()) : null;
     }
 
-    async where(column: string, value: string | string[] | number, operator: WhereFilterOp = "=="): Promise<any[] | null> {
+    async where(column: string, value: string | string[] | number | boolean, operator: WhereFilterOp = "=="): Promise<any[] | null> {
         let snapshot: QuerySnapshot;
 
         if (this.snapshot)
@@ -169,7 +170,7 @@ export default class Model {
         return snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => this.casting(doc.data()))
     }
 
-    whereSnapshot(column: string, value: string | string[] | number, operator: WhereFilterOp = "=="): this {
+    whereSnapshot(column: string, value: string | string[] | number | boolean, operator: WhereFilterOp = "=="): this {
         this.snapshot = (this.snapshot ?? this.collection).where(column, operator, value)
         return this;
     }
@@ -193,11 +194,19 @@ export default class Model {
     }
 
     orderBy(fieldPath: string | FieldPath, directionStr?: OrderByDirection): this {
-
-        if (this.snapshot) {
-            this.snapshot = this.snapshot.orderBy(fieldPath, directionStr)
-        }
+        this.snapshot = (this.snapshot ?? this.collection).orderBy(fieldPath, directionStr)
 
         return this
+    }
+
+    async groupBy(fieldPath: string | FieldPath) {
+        const orderedResult = await this.orderBy(fieldPath).get()
+        let result: Nullable<Dictionary<any[]>> = null
+
+        if (orderedResult && orderedResult.length) {
+            result = groupBy(orderedResult, fieldPath)
+        }
+
+        return result;
     }
 }

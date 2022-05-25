@@ -11,6 +11,7 @@
 
 import Model              from "QRCP/Sphere/Common/Model";
 import ActivityAttributes from "QRCP/Sphere/Activity/ActivityAttributes";
+import moment             from "moment";
 
 export default class Activity extends Model {
     id: string;
@@ -25,9 +26,13 @@ export default class Activity extends Model {
         }
     }
 
+    public async all(): Promise<any[]> {
+        return (await super.orderBy("label").get()) ?? [];
+    }
+
     public async store(data: Activity) {
         if (!data.name) {
-            data.name = data.label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(RegExp(/ +/g), "-")
+            data.name = [data.label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(RegExp(/ +/g), "-"), moment().unix()].join("-")
         }
 
         return await super.store(data);
