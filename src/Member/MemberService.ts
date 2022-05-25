@@ -144,9 +144,12 @@ export default class MemberService extends Service {
         try {
             const member: Member | null = await this.model.doc(docID)
 
-            if (member && member.uid && member.uid.trim() !== "") {
+            /*if (member && member.uid && member.uid.trim() !== "") {
                 await (new UserService()).destroyByUid(member.uid)
-            }
+            }*/
+
+            if (member === null)
+                throw new Error(`Member "${docID} not found`)
 
             return Result.success(await this.model.delete(docID))
         } catch (e) {

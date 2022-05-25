@@ -160,9 +160,12 @@ export default class PartnerService extends Service {
         try {
             const partner: Partner | null = await this.model.doc(docID)
 
-            if (partner && partner.uid && partner.uid.trim() !== "") {
+            /*if (partner && partner.uid && partner.uid.trim() !== "") {
                 await (new UserService()).destroyByUid(partner.uid)
-            }
+            }*/
+
+            if (partner === null)
+                throw new Error(`Partner "${docID} not found`)
 
             return Result.success(await this.model.delete(docID))
         } catch (e) {
