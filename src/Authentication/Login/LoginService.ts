@@ -70,7 +70,7 @@ export default class LoginService extends AuthService {
         Log.info(`Token généré pour ${user.email}`);
 
         if (loginType) {
-            const loginSpecialResult = await this.loginSpecial(loginType, email)
+            const loginSpecialResult = await this.loginSpecial(loginType, user.email)
             if (loginSpecialResult instanceof SofiakbError)
                 return loginSpecialResult
         }
