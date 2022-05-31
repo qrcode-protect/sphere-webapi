@@ -118,6 +118,7 @@ export default class Article extends Model {
 
         const paragraphs = updatable.paragraphs
         delete updatable.paragraphs
+        delete updatable.createdAt
 
         batch.set(article, { ...updatable, ...{ updatedAt: Model._now() } })
 

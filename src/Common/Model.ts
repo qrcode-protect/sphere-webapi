@@ -119,6 +119,7 @@ export default class Model {
 
         const documentReference: DocumentReference = (await this.collection.doc(docID))
         data.updatedAt = Model._now();
+        delete data.createdAt
         if (force) {
             await documentReference.set({ ...this.cleanup(data) })
         } else {

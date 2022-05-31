@@ -19,4 +19,5 @@ export default interface ArticleAttributes {
     title: string,
     paragraphs?: ArticleParagraph[],
     networks: string[] | null,
+    createdAt?: any | null,
 }
