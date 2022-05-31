@@ -85,7 +85,7 @@ export default class Model {
         return object;
     }
 
-    private static _now(): Date {
+    static _now(): Date {
         return firestore.Timestamp.now().toDate()
     }
 
@@ -95,7 +95,7 @@ export default class Model {
 
         const results: (typeof object)[] = [];
         for (const documentSnapshot of documentsRefs) {
-            results.push(this.casting((await documentSnapshot.get()).data()));
+            results.push(await this.casting((await documentSnapshot.get()).data()));
         }
         return results;
     }
@@ -110,7 +110,7 @@ export default class Model {
 
         const documentReference: DocumentReference = await this.collection.add({ ...this.cleanup(data) });
         await documentReference.update({ id: documentReference.id })
-        return this.casting({ ...data, id: documentReference.id, });
+        return await this.casting({ ...data, id: documentReference.id, });
     }
 
     async update(docID: string, data, force = false): Promise<any> {
@@ -141,23 +141,23 @@ export default class Model {
 
     }
 
-    private casting(data) {
+    async casting(data) {
         // eslint-disable-next-line @typescript-eslint/ban-types
         return (new this.model()).createWithAttributes(data);
     }
 
     // async docs() {
-    //     return (await this.collection.docs()).docs.map((doc: QueryDocumentSnapshot) => this.casting(doc.data()))
+    //     return (await this.collection.docs()).docs.map((doc: QueryDocumentSnapshot) => await this.casting(doc.data()))
     // }
 
     async doc(docID: string) {
         if (docID.trim() === "")
             return null;
         const documentData: DocumentSnapshot = await (await this.collection.doc(docID)).get()
-        return documentData.exists ? this.casting(documentData.data()) : null;
+        return documentData.exists ? await this.casting(documentData.data()) : null;
     }
 
-    async where(column: string, value: string | string[] | number | boolean, operator: WhereFilterOp = "=="): Promise<any[] | null> {
+    async where(column: string, value: string | string[] | number | boolean | null, operator: WhereFilterOp = "=="): Promise<any[] | null> {
         let snapshot: QuerySnapshot;
 
         if (this.snapshot)
@@ -167,10 +167,10 @@ export default class Model {
         if (snapshot.empty) {
             return null;
         }
-        return snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => this.casting(doc.data()))
+        return await Promise.all(snapshot.docs.map(async (doc: QueryDocumentSnapshot<DocumentData>) => await this.casting(doc.data())))
     }
 
-    whereSnapshot(column: string, value: string | string[] | number | boolean, operator: WhereFilterOp = "=="): this {
+    whereSnapshot(column: string, value: string | string[] | number | boolean | null, operator: WhereFilterOp = "=="): this {
         this.snapshot = (this.snapshot ?? this.collection).where(column, operator, value)
         return this;
     }
@@ -190,7 +190,7 @@ export default class Model {
             return null;
         }
 
-        return snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => this.casting(doc.data()))
+        return await Promise.all(snapshot.docs.map(async (doc: QueryDocumentSnapshot<DocumentData>) => await this.casting(doc.data())))
     }
 
     orderBy(fieldPath: string | FieldPath, directionStr?: OrderByDirection): this {
