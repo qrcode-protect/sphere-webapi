@@ -1,17 +1,5 @@
 {
   "commands": {
-    "seed:role": {
-      "settings": {
-        "loadApp": false,
-        "stayAlive": false
-      },
-      "commandPath": "./commands/SeedRole",
-      "commandName": "seed:role",
-      "description": "",
-      "args": [],
-      "aliases": [],
-      "flags": []
-    },
     "dump:rcfile": {
       "settings": {},
       "commandPath": "@adonisjs/core/build/commands/DumpRc",
