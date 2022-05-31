@@ -21,6 +21,8 @@ Route.group(() => {
     require("./members")
     require("./partners")
     require("./activities")
+    require("./articles")
+    require("./networks")
     require("./users")
     /*******************************
      FIN ROLE AUTORISES
