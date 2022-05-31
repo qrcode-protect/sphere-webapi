@@ -26,6 +26,8 @@ export default Env.rules({
     DASHBOARD_URL : Env.schema.string(),
     PARTNER_URL : Env.schema.string(),
 
+    ADMIN_IPS : Env.schema.string(),
+
     DRIVE_DISK: Env.schema.enum([ "local" ] as const),
 
     NODE_ENV: Env.schema.enum([ "development", "production", "test", "local" ] as const),

@@ -1,10 +1,10 @@
 {
     "name"           : "sphere-webapi",
-    "version"        : "1.0.0-beta.3",
+    "version"        : "1.0.1-beta.4",
     "private"        : true,
     "scripts"        : {
         "dev"  : "node ace serve --watch",
-        "build": "node ace build --production && cp .env build/.env; cp app.yaml build/app.yaml; cp firebase-adminsdk.json build/firebase-adminsdk.json",
+        "build": "node ace build --production && cp .env build/.env; cp app.yaml build/app.yaml; cp firebase-adminsdk.json build/firebase-adminsdk.json && cp -R public/ build/public",
         "start": "node server.js",
         "lint" : "eslint . --ext=.ts"
     },
