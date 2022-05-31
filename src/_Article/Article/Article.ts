@@ -54,7 +54,7 @@ export default class Article extends Model {
 
         // console.log(await articles)
         // return await this.collection.doc('8D05P4c9KMDZeR1H3OZX').get()
-        return (await (networks ? this.whereSnapshot("networks", networks, "array-contains") : this.whereSnapshot("networks", null)).orderBy("createdAt", "desc").get()) ?? [];
+        return (await (networks ? this.whereSnapshot("networks", networks, "array-contains") : this).orderBy("createdAt", "desc").get()) ?? [];
     }
 
     async casting(data): Promise<any> {
