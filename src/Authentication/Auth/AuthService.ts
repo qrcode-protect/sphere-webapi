@@ -219,7 +219,7 @@ export default class AuthService extends Service {
             user: {
                 firstname: user.firstname,
                 lastname : user.lastname,
-                email    : user.lastname,
+                email    : user.email,
                 id       : user.id,
                 uid      : user.uid
             },
