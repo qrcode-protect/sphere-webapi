@@ -64,11 +64,13 @@ export default class User extends Model {
             throw new DuplicateEntryException()
         }
 
+        if (data.uid)
+            data.id = data.uid
+
         return super.store(data);
     }
 
     async update(docID: string, data, force = false): Promise<User> {
-
         const dataKeys = Object.keys(data)
         const personalInfo = cleanPersonalInformations({
             firstname: data.firstname,
