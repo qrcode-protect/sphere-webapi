@@ -23,4 +23,5 @@ export default interface PartnerAttributes {
     active?: boolean,
     available?: boolean,
     uid?: string,
+    partnerNumber?: string,
 }
