@@ -19,7 +19,7 @@ Route.group(() => {
         // update
         Route.put("/:id", "ActivityController.update")
         // delete
-        Route.delete("/:id", "ActivityController.delete")
+        Route.delete("/:id", "ActivityController.destroy")
     }).middleware("admin")
 
     Route.get("", "ActivityController.all")
