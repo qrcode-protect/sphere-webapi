@@ -108,8 +108,10 @@ export default class Model {
         data.createdAt = Model._now();
         data.updatedAt = Model._now();
 
-        const documentReference: DocumentReference = await this.collection.add({ ...this.cleanup(data) });
-        await documentReference.update({ id: documentReference.id })
+        const documentReference: DocumentReference = await (data.id && data.id.trim() !== "" ? this.collection.doc(data.id) : this.collection.doc());
+        await documentReference.set({ ...this.cleanup(data), id: documentReference.id })
+
+        // await documentReference.update({ id: documentReference.id })
         return await this.casting({ ...data, id: documentReference.id, });
     }
 

@@ -35,6 +35,14 @@ export default class UserService extends Service {
     public async store(data: UserAttributes, admin = true) {
 
         try {
+            let authUser: UserRecord | null
+
+            try {
+                authUser = await this.auth.getUserByEmail(data.email)
+                data.uid = authUser.uid
+            } catch (e) {
+                authUser = null
+            }
 
             const result = await this.model.store({ ...data, ...{ active: admin ? true : data.active } })
 
@@ -42,11 +50,8 @@ export default class UserService extends Service {
 
                 if (result instanceof User) {
                     const user: User = result
-                    let authUser: UserRecord
 
-                    try {
-                        authUser = await this.auth.getUserByEmail(user.email)
-                    } catch (e) {
+                    if (authUser === null) {
                         authUser = await this.createAuthUser(user)
                     }
 
@@ -149,6 +154,7 @@ export default class UserService extends Service {
 
     private async createAuthUser(user: User) {
         return await this.auth.createUser({
+            uid          : user.id,
             email        : user.email,
             emailVerified: false,
             // phoneNumber  : user.phone ? `+33${user.phone.substring(1)}` : "",
