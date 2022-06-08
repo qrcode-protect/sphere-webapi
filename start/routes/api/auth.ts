@@ -30,6 +30,7 @@ Route.group(() => {
          ****** ROLES ROUTES *******
          ****************************/
         Route.get("/roles/dashboard", "Auth/AuthController.dashboardRoles")
+        Route.get("/roles/partners", "Auth/AuthController.partnerRoles")
 
         /****************************
          ****** LOGGED ROUTES *******

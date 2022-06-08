@@ -52,6 +52,9 @@ export const rolesByLevel = (reason?: string) => {
         case "dashboard": {
             return filter(roles, (role) => role.level < 200)
         }
+        case "partner": {
+            return filter(roles, (role) => role.level === retrieveRole(RoleType.partner).level)
+        }
         default: {
             const role = filter(roles, (roleItem) => roleItem.name === reason)[0] ?? null
             return role ? filter(roles, (roleItem) => roleItem.level <= role.level) : roles
