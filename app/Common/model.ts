@@ -9,11 +9,13 @@
  * File app/Common/model
  */
 
-import Activity from "QRCP/Sphere/Activity/Activity";
-import Member   from "QRCP/Sphere/Member/Member";
-import User     from "QRCP/Sphere/User/User";
-import ApiToken from "QRCP/Sphere/Authentication/ApiToken/ApiToken";
-import Partner  from "QRCP/Sphere/Partner/Partner";
+import Activity     from "QRCP/Sphere/Activity/Activity";
+import Member       from "QRCP/Sphere/Member/Member";
+import User         from "QRCP/Sphere/User/User";
+import ApiToken     from "QRCP/Sphere/Authentication/ApiToken/ApiToken";
+import Partner      from "QRCP/Sphere/Partner/Partner";
+import Conversation from "QRCP/Sphere/_Chat/Conversation/Conversation";
+import Message      from "QRCP/Sphere/_Chat/Message/Message";
 
 
 export const activityModel = (): Activity => new Activity()
@@ -21,3 +23,6 @@ export const memberModel = (): Member => new Member()
 export const partnerModel = (): Partner => new Partner()
 export const userModel = (): User => new User()
 export const apiTokenModel = (): ApiToken => new ApiToken()
+
+export const conversationModel = (): Conversation => new Conversation()
+export const messageModel = (): Message => new Message()
