@@ -33,6 +33,10 @@ export default class Controller {
         return unknown(response, await this.service.findBy(column, value));
     }
 
+    public async findOneBy(column: string, value: unknown, { response }: HttpContextContract) {
+        return unknown(response, await this.service.findOneBy(column, value));
+    }
+
     public async search({ request, response }: HttpContextContract) {
         return unknown(response, await this.service.search(request.input("query")));
     }
