@@ -24,6 +24,7 @@ Route.group(() => {
     require("./articles")
     require("./networks")
     require("./users")
+    require("./chat")
     /*******************************
      FIN ROLE AUTORISES
      ******************************/
