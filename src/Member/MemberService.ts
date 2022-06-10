@@ -67,13 +67,17 @@ export default class MemberService extends Service {
             if (result.id) {
                 await this.createUser(result.id, result)
 
+                if (result.premium !== true) {
+                    await this.validate(result.id)
+                }
+
                 return Result.success(result)
             }
             throw new Error("Error while saving")
         } catch (e) {
             Log.error(e, true)
             if (e instanceof DuplicateEntryException) {
-                return Result.duplicate("Un espace membre existe déjà avec cette adresse e-mail")
+                return Result.duplicate("Un espace existe déjà avec cette adresse e-mail")
             }
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
         }
@@ -97,9 +101,10 @@ export default class MemberService extends Service {
                 await this.model.update(memberId, { uid: authUser.uid })
             } else {
                 if (user.code === 419) {
-                    const authUser2 = (await userService.findOneBy("email", member.email)).data
-                    if (authUser2 instanceof User)
-                        await this.model.update(memberId, { uid: authUser2.uid })
+                    throw new DuplicateEntryException()
+                    // const authUser2 = (await userService.findOneBy("email", member.email)).data
+                    // if (authUser2 instanceof User)
+                    //     await this.model.update(memberId, { uid: authUser2.uid })
                 }
             }
 
@@ -107,7 +112,7 @@ export default class MemberService extends Service {
         } catch (e) {
             Log.error(e, true)
             if (e instanceof DuplicateEntryException) {
-                return Result.duplicate()
+                throw e
             }
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
         }

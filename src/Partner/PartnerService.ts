@@ -89,7 +89,7 @@ export default class PartnerService extends Service {
         } catch (e) {
             Log.error(e, true)
             if (e instanceof DuplicateEntryException) {
-                return Result.duplicate("Un espace partenaire existe déjà avec cette adresse e-mail")
+                return Result.duplicate("Un espace existe déjà avec cette adresse e-mail")
             }
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
         }
@@ -113,9 +113,10 @@ export default class PartnerService extends Service {
                 await this.model.update(partnerId, { uid: authUser.uid })
             } else {
                 if (user.code === 419) {
-                    const authUser2 = (await userService.findOneBy("email", partner.email)).data
-                    if (authUser2 instanceof User)
-                        await this.model.update(partnerId, { uid: authUser2.uid })
+                    throw new DuplicateEntryException()
+                    // const authUser2 = (await userService.findOneBy("email", partner.email)).data
+                    // if (authUser2 instanceof User)
+                    //     await this.model.update(partnerId, { uid: authUser2.uid })
                 }
             }
 
@@ -123,7 +124,7 @@ export default class PartnerService extends Service {
         } catch (e) {
             Log.error(e, true)
             if (e instanceof DuplicateEntryException) {
-                return Result.duplicate()
+                throw e
             }
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
         }
