@@ -45,4 +45,5 @@ Server.middleware.registerNamed({
     auth        : () => import("QRCP/Sphere/Authentication/Middleware/AuthMiddleware"),
     admin       : () => import("QRCP/Sphere/Authentication/Middleware/AdminMiddleware"),
     marketing   : () => import("QRCP/Sphere/Authentication/Middleware/MarketingMiddleware"),
+    partner     : () => import("QRCP/Sphere/Authentication/Middleware/PartnerMiddleware"),
 })

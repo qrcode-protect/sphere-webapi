@@ -57,6 +57,10 @@ export default class MemberController extends Controller {
         return super.findBy("active", false, httpContextContract);
     }
 
+    public async byUid(httpContextContract: HttpContextContract) {
+        return super.findOneBy("uid", httpContextContract.params.uid, httpContextContract);
+    }
+
     public async premium(httpContextContract: HttpContextContract) {
         return super.findBy("premium", true, httpContextContract);
     }
