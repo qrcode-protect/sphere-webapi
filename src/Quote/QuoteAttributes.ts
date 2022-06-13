@@ -10,14 +10,14 @@
  */
 
 export default interface QuoteAttributes {
-    id: string
+    id?: string
     transmitter: string
     customer: string
-    amount: number
-    accepted: boolean
-    declined: boolean
-    acceptedAt: Date
-    declinedAt: Date
+    amount: number | string
+    accepted: boolean | string
+    declined: boolean | string
+    acceptedAt?: Date
+    declinedAt?: Date
     file: string
     conversationId: string
     messageId: string
