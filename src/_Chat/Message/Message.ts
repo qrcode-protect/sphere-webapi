@@ -16,9 +16,11 @@ import { conversationModel } from "App/Common/model";
 export default class Message extends Model {
     id: string
     attachment: Nullable<string>
+    attachmentId: Nullable<string>
     sender: string
     content: string
     date: Date
+    automatic = false
 
     constructor(attributes?: MessageAttributes) {
         super({ collectionName: "messages", model: Message });
@@ -39,6 +41,12 @@ export default class Message extends Model {
 
         if (typeof data.attachment === "undefined")
             data.attachment = null;
+
+        if (typeof data.attachmentId === "undefined")
+            data.attachmentId = null;
+
+        if (typeof data.automatic === "undefined")
+            data.automatic = false;
 
         if (typeof data.date === "undefined")
             data.date = now;
