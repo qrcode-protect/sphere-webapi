@@ -65,7 +65,8 @@ export default class MemberService extends Service {
         try {
             const result = await this.model.store(data)
             if (result.id) {
-                await this.createUser(result.id, result)
+                const authUser = (await this.createUser(result.id, result)).data
+                result.uid = authUser.uid;
 
                 if (result.premium !== true) {
                     await this.validate(result.id)

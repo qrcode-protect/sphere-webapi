@@ -13,7 +13,7 @@ test.group("Partners 00 create", () => {
             certificate: "", companyName: "qrcode-protect", siret: "",
             firstname  : "sOfi-àne",
             lastname   : "ak-bly",
-            email      : "sofiane.AkblY@gmail.com",
+            email      : "sofiane.AkblY.partner@gmail.com",
             phone      : "+331.23.456.78/9",
             activityId : "strest"
         }
@@ -24,7 +24,7 @@ test.group("Partners 00 create", () => {
         assert.instanceOf(partner, Partner);
         assert.equal(partner.firstname, "sofi-àne")
         assert.equal(partner.lastname, "ak-bly")
-        assert.equal(partner.email, "sofiane.akbly@gmail.com")
+        assert.equal(partner.email, "sofiane.akbly.partner@gmail.com")
         assert.equal(partner.username, "sakbly")
         assert.equal(partner.phone, "0123456789")
         assert.equal(partner.partnerNumber, "PRT-00YLB987")
@@ -36,7 +36,7 @@ test.group("Partners 00 create", () => {
             certificate: "", companyName: "qrcode-protect", siret: "",
             firstname  : "sOfi-àne",
             lastname   : "ak-bly",
-            email      : "sofiane.AkblY@gmail.com",
+            email      : "sofiane.AkblY.partner@gmail.com",
             phone      : "+341.23.456.78/9",
             activityId : "strest"
         }
@@ -56,7 +56,7 @@ test.group("Partners 00 create", () => {
             certificate: "", companyName: "qrcode-protect", siret: "",
             firstname  : "sOfi-àne",
             lastname   : "ak-bly2",
-            email      : "sofiane.AkblY2@gmail.com",
+            email      : "sofiane.AkblY2.partner@gmail.com",
             phone      : "+332.23.456.78/9",
             activityId : "strest2"
         }
@@ -71,7 +71,7 @@ test.group("Partners 00 create", () => {
         assert.instanceOf(partner, Partner)
         assert.equal(partner.firstname, "sofi-àne")
         assert.equal(partner.lastname, "ak-bly")
-        assert.equal(partner.email, "sofiane.akbly2@gmail.com")
+        assert.equal(partner.email, "sofiane.akbly2.partner@gmail.com")
         assert.equal(partner.username, "sakbly")
         assert.equal(partner.phone, "0223456789")
     });

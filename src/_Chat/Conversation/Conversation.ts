@@ -68,14 +68,20 @@ export default class Conversation extends Model {
         const message = conversation.collection("messages").doc()
 
         await messageModel().store({
-            id        : message.id,
-            attachment: null,
-            sender    : data.userCreator,
-            content   : "Message automatique : Nouvelle conversation",
-            date      : now,
-            conversationId: conversation.id
+            id            : message.id,
+            attachment    : null,
+            attachmentId  : null,
+            sender        : data.userCreator,
+            content       : "Nouvelle conversation",
+            date          : now,
+            conversationId: conversation.id,
+            automatic     : true
         })
 
         return await this.casting((await (await this.collection.doc(conversation.id)).get()).data());
+    }
+
+    async updateMessage(docID: string, messageId: string, data, force= false): Promise<any> {
+        return super.update(`${docID}/${messageModel().collection.path}/${messageId}`, data, force);
     }
 }

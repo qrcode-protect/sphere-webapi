@@ -12,8 +12,10 @@
 export default interface MessageAttributes {
     id?: string
     attachment?: Nullable<string>
+    attachmentId?: Nullable<string>
     sender?: string
     content: string
     date?: Date
-    conversationId?: string
+    conversationId?: string,
+    automatic?: boolean
 }

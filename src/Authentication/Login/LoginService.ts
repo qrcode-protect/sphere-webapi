@@ -24,6 +24,7 @@ import { map }                                  from "lodash";
 
 export type LoginResult = {
     token: { bearer: string },
+    email: string
 }
 
 export default class LoginService extends AuthService {
@@ -75,7 +76,7 @@ export default class LoginService extends AuthService {
                 return loginSpecialResult
         }
 
-        return { token: { bearer } };
+        return { token: { bearer }, email: user.email };
     }
 
     public async loginSpecial(loginType: string, email: string): Promise<Success | SofiakbError> {

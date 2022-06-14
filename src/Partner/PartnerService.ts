@@ -77,7 +77,8 @@ export default class PartnerService extends Service {
         try {
             const result = await this.model.store(data)
             if (result.id) {
-                await this.createUser(result.id, result)
+                const authUser = (await this.createUser(result.id, result)).data
+                result.uid = authUser.uid;
 
                 if (fromDashboard) {
                     await this.validate(result.id)

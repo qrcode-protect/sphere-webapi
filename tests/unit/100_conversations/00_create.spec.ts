@@ -22,14 +22,16 @@ test.group("Conversations 00 create", () => {
     });
 
     test("Store conversation service", async ({ assert }) => {
+        const memberId = userId
+        const partnerId = "test-conversation-partner-id"
 
         const attributes: ConversationAttributes = {
-            users      : [ "ttotototoi", userId ],
-            userCreator: userId
+            users      : [ partnerId, memberId ],
+            userCreator: memberId
         }
 
         const conversationService = new ConversationService()
-        const conversationServiceResult = await conversationService.store(attributes, userId)
+        const conversationServiceResult = await conversationService.store(attributes, memberId)
 
         const conversation = conversationServiceResult.data
 
