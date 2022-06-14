@@ -14,6 +14,7 @@ import MessageAttributes from "QRCP/Sphere/_Chat/Message/MessageAttributes";
 import Message           from "QRCP/Sphere/_Chat/Message/Message";
 import { Result }        from "@sofiakb/adonis-response";
 import Log               from "QRCP/Sphere/Common/Log";
+import ChatMail          from "QRCP/Sphere/_Chat/ChatMail";
 
 export default class MessageService extends Service {
 
@@ -27,9 +28,17 @@ export default class MessageService extends Service {
                 return Result.badRequest("Sender ID is missing.")
             }
 
-            const conversation = await this.model.store({ ...data, sender: senderId })
+            const message = await this.model.store({ ...data, sender: senderId })
 
-            return conversation === null ? Result.error() : Result.success(conversation)
+            if (message=== null) {
+                return Result.error();
+            }
+
+            if (message.id && message.senderUser && message.recipients) {
+                await ChatMail.notification(message.senderUser, message.recipients)
+            }
+
+            return Result.success(message)
         } catch (e) {
             Log.error(e, true)
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
