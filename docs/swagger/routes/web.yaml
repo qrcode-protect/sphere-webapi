@@ -1,0 +1,35 @@
+paths:
+  /:
+    get:
+      summary: Retrieve API version
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                example: { version: "x.y.z" }
+
+  /auth/password/reset/{email}/{token}:
+    get:
+      summary: Verify password reset token and redirect to url
+      parameters:
+        - in: path
+          name: email
+          schema:
+            type: string
+          required: true
+          description: Base64 email address of user
+        - in: path
+          name: token
+          schema:
+            type: string
+          required: true
+          description: Password resets token
+      produces:
+        - application/json
+      responses:
+        302:
+          description: RedirectResponse
