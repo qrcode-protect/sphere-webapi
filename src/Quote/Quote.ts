@@ -12,6 +12,8 @@
 import Model           from "QRCP/Sphere/Common/Model";
 import QuoteAttributes from "QRCP/Sphere/Quote/QuoteAttributes";
 import { toBool }      from "App/Common";
+import { memberModel } from "App/Common/model";
+import Member          from "QRCP/Sphere/Member/Member";
 
 export default class Quote extends Model {
     id: string
@@ -34,6 +36,16 @@ export default class Quote extends Model {
         }
     }
 
+    async casting(data): Promise<any> {
+        const memberReference: Member | null = await memberModel().findOneBy("uid", data.customer);
+
+        if (memberReference) {
+            data.member = memberReference;
+        }
+
+        return super.casting(data);
+    }
+
     async store(data): Promise<Quote> {
 
         data.accepted = typeof data.accepted === "undefined" ? false : toBool(data.accepted);
@@ -48,6 +60,10 @@ export default class Quote extends Model {
         data.amount = parseFloat(data.amount.toString())
 
         return super.store(data);
+    }
+
+    async findByTransmitterId(transmitterId: string): Promise<any> {
+        return super.where("transmitter", transmitterId);
     }
 
 

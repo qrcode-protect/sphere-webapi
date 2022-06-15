@@ -28,6 +28,11 @@ interface StoreQuoteAttributes extends QuoteAttributes {
     upload?: unknown
 }
 
+interface FetchByStatusParameters {
+    accepted?: boolean,
+    declined?: boolean
+}
+
 export default class QuoteService extends Service {
 
     constructor(model = Quote) {
@@ -72,6 +77,31 @@ export default class QuoteService extends Service {
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
         }
 
+    }
+
+    public async byCurrentTransmitterWithStatus({ accepted, declined }: FetchByStatusParameters, currentTransmitterId?: string) {
+        try {
+            if (currentTransmitterId) {
+                return Result.success(await this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true).get())
+            }
+            throw new Error("Error while fetching")
+        } catch (e) {
+            Log.error(e, true)
+            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+        }
+
+    }
+
+    public async acceptedByCurrentTransmitter(currentTransmitterId?: string) {
+        return this.byCurrentTransmitterWithStatus({ accepted: true }, currentTransmitterId)
+    }
+
+    public async declinedByCurrentTransmitter(currentTransmitterId?: string) {
+        return this.byCurrentTransmitterWithStatus({ declined: true }, currentTransmitterId)
+    }
+
+    public async pendingByCurrentTransmitter(currentTransmitterId?: string) {
+        return this.byCurrentTransmitterWithStatus({ accepted: false, declined: false }, currentTransmitterId)
     }
 
     public async answer(docId: string, userId: string, accepted: boolean) {

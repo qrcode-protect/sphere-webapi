@@ -29,6 +29,18 @@ export default class QuoteController extends Controller {
         return unknown(response, await this.service.store(<QuoteAttributes>request.body(), request.file("file"), (await currentUser())?.id));
     }
 
+    public async acceptedByCurrentTransmitter({ response }: HttpContextContract) {
+        return unknown(response, await this.service.acceptedByCurrentTransmitter((await currentUser())?.id));
+    }
+
+    public async declinedByCurrentTransmitter({ response }: HttpContextContract) {
+        return unknown(response, await this.service.declinedByCurrentTransmitter((await currentUser())?.id));
+    }
+
+    public async pendingByCurrentTransmitter({ response }: HttpContextContract) {
+        return unknown(response, await this.service.pendingByCurrentTransmitter((await currentUser())?.id));
+    }
+
 
 
 }
