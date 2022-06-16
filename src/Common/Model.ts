@@ -160,7 +160,7 @@ export default class Model {
         return documentData.exists ? await this.casting(documentData.data()) : null;
     }
 
-    async where(column: string, value: string | string[] | number | boolean | null, operator: WhereFilterOp = "=="): Promise<any[] | null> {
+    async where(column: string, value: string | string[] | number | boolean | null | Date, operator: WhereFilterOp = "=="): Promise<any[] | null> {
         let snapshot: QuerySnapshot;
 
         if (this.snapshot)
@@ -173,7 +173,7 @@ export default class Model {
         return await Promise.all(snapshot.docs.map(async (doc: QueryDocumentSnapshot<DocumentData>) => await this.casting(doc.data())))
     }
 
-    whereSnapshot(column: string, value: string | string[] | number | boolean | null, operator: WhereFilterOp = "=="): this {
+    whereSnapshot(column: string, value: string | string[] | number | boolean | null | Date, operator: WhereFilterOp = "=="): this {
         this.snapshot = (this.snapshot ?? this.collection).where(column, operator, value)
         return this;
     }
