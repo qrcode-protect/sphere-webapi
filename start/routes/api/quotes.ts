@@ -17,6 +17,9 @@ Route.group(() => {
     Route.group(() => {
         Route.post("", "QuoteController.store")
     }).middleware("partner")
+    Route.get("/by-current-transmitter/accepted", "QuoteController.acceptedByCurrentTransmitter")
+    Route.get("/by-current-transmitter/declined", "QuoteController.declinedByCurrentTransmitter")
+    Route.get("/by-current-transmitter/pending", "QuoteController.pendingByCurrentTransmitter")
 })
     .namespace("QRCP/Sphere/Quote")
     .prefix("/quotes")
