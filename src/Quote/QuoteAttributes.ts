@@ -18,6 +18,7 @@ export default interface QuoteAttributes {
     declined: boolean | string
     acceptedAt?: Date
     declinedAt?: Date
+    expiresAt?: Date
     file: string
     conversationId: string
     messageId: string
