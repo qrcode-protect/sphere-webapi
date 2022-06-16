@@ -20,6 +20,7 @@ Route.group(() => {
     Route.get("/by-current-transmitter/accepted", "QuoteController.acceptedByCurrentTransmitter")
     Route.get("/by-current-transmitter/declined", "QuoteController.declinedByCurrentTransmitter")
     Route.get("/by-current-transmitter/pending", "QuoteController.pendingByCurrentTransmitter")
+    Route.get("/by-current-transmitter/expired", "QuoteController.expiredByCurrentTransmitter")
 })
     .namespace("QRCP/Sphere/Quote")
     .prefix("/quotes")

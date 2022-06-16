@@ -30,7 +30,9 @@ interface StoreQuoteAttributes extends QuoteAttributes {
 
 interface FetchByStatusParameters {
     accepted?: boolean,
-    declined?: boolean
+    declined?: boolean,
+    withoutExpires?: boolean,
+    onlyExpired?: boolean,
 }
 
 export default class QuoteService extends Service {
@@ -79,10 +81,16 @@ export default class QuoteService extends Service {
 
     }
 
-    public async byCurrentTransmitterWithStatus({ accepted, declined }: FetchByStatusParameters, currentTransmitterId?: string) {
+    public async byCurrentTransmitterWithStatus({
+                                                    accepted,
+                                                    declined,
+                                                    withoutExpires,
+                                                    onlyExpired,
+                                                }: FetchByStatusParameters, currentTransmitterId?: string) {
         try {
             if (currentTransmitterId) {
-                return Result.success(await this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true).get())
+                const query = this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true);
+                return Result.success(await (withoutExpires === true ? query.whereSnapshot("expiresAt", moment().toDate(), ">") : onlyExpired === true ? query.whereSnapshot("expiresAt", moment().toDate(), "<") : query).get())
             }
             throw new Error("Error while fetching")
         } catch (e) {
@@ -101,7 +109,19 @@ export default class QuoteService extends Service {
     }
 
     public async pendingByCurrentTransmitter(currentTransmitterId?: string) {
-        return this.byCurrentTransmitterWithStatus({ accepted: false, declined: false }, currentTransmitterId)
+        return this.byCurrentTransmitterWithStatus({
+            accepted      : false,
+            declined      : false,
+            withoutExpires: true
+        }, currentTransmitterId)
+    }
+
+    public async expiredByCurrentTransmitter(currentTransmitterId?: string) {
+        return this.byCurrentTransmitterWithStatus({
+            accepted   : false,
+            declined   : false,
+            onlyExpired: true
+        }, currentTransmitterId)
     }
 
     public async answer(docId: string, userId: string, accepted: boolean) {
