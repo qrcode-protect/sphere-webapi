@@ -14,6 +14,8 @@ import QuoteAttributes from "QRCP/Sphere/Quote/QuoteAttributes";
 import { toBool }      from "App/Common";
 import { memberModel } from "App/Common/model";
 import Member          from "QRCP/Sphere/Member/Member";
+import { firestore }   from "firebase-admin";
+import Log             from "QRCP/Sphere/Common/Log";
 
 export default class Quote extends Model {
     id: string
@@ -24,6 +26,7 @@ export default class Quote extends Model {
     declined = false
     acceptedAt: Date
     declinedAt: Date
+    expiresAt: Date
     file: string
     conversationId: string
     messageId: string
@@ -56,6 +59,13 @@ export default class Quote extends Model {
 
         if (typeof data.declinedAt === "undefined")
             data.declinedAt = null;
+
+        try {
+            data.expiresAt = typeof data.expiresAt === "undefined" || data.expiresAt === null || data.expiresAt === "null" ? null : firestore.Timestamp.fromMillis(data.expiresAt).toDate();
+        } catch (e) {
+            Log.error(e, true)
+            data.expiresAt = null
+        }
 
         data.amount = parseFloat(data.amount.toString())
 
