@@ -23,6 +23,7 @@ import Config                           from "@ioc:Adonis/Core/Config";
 import moment                           from "moment";
 import { conversationModel }            from "App/Common/model";
 import Model                            from "QRCP/Sphere/Common/Model";
+import { concat, map, orderBy }         from "lodash";
 
 interface StoreQuoteAttributes extends QuoteAttributes {
     upload?: unknown
@@ -30,7 +31,9 @@ interface StoreQuoteAttributes extends QuoteAttributes {
 
 interface FetchByStatusParameters {
     accepted?: boolean,
-    declined?: boolean
+    declined?: boolean,
+    withoutExpires?: boolean,
+    onlyExpired?: boolean,
 }
 
 export default class QuoteService extends Service {
@@ -79,12 +82,26 @@ export default class QuoteService extends Service {
 
     }
 
-    public async byCurrentTransmitterWithStatus({ accepted, declined }: FetchByStatusParameters, currentTransmitterId?: string) {
+    public async byCurrentTransmitterWithStatus({
+                                                    accepted,
+                                                    declined,
+                                                    withoutExpires,
+                                                    onlyExpired,
+                                                }: FetchByStatusParameters, currentTransmitterId?: string) {
         try {
             if (currentTransmitterId) {
-                return Result.success(await this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true).get())
+                const query = this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true);
+
+                if (withoutExpires === true) {
+                    const expired = await query.whereSnapshot("expiresAt", moment().toDate(), "<").get()
+                    const notExpired = await (this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true)).whereSnapshot("expiresAt", moment().toDate(), ">=").get()
+                    const withoutExpiresAt = await (this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true)).whereSnapshot("expiresAt", null).whereSnapshot("id", map(expired, _item => _item.id), "not-in").orderBy("id", "desc").orderBy("createdAt", "desc").get()
+                    return Result.success(orderBy(concat(withoutExpiresAt, notExpired).filter(_item => _item !== null), 'createdAt', 'desc'))
+                }
+
+                return Result.success(await (onlyExpired === true ? query.whereSnapshot("expiresAt", moment().toDate(), "<") : query).orderBy("expiresAt", "desc").orderBy("createdAt", "desc").get())
             }
-            throw new Error("Error while fetching")
+            throw new Error(`Target [currentTransmitterId] is missing ${currentTransmitterId}`)
         } catch (e) {
             Log.error(e, true)
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
@@ -101,7 +118,19 @@ export default class QuoteService extends Service {
     }
 
     public async pendingByCurrentTransmitter(currentTransmitterId?: string) {
-        return this.byCurrentTransmitterWithStatus({ accepted: false, declined: false }, currentTransmitterId)
+        return this.byCurrentTransmitterWithStatus({
+            accepted      : false,
+            declined      : false,
+            withoutExpires: true
+        }, currentTransmitterId)
+    }
+
+    public async expiredByCurrentTransmitter(currentTransmitterId?: string) {
+        return this.byCurrentTransmitterWithStatus({
+            accepted   : false,
+            declined   : false,
+            onlyExpired: true
+        }, currentTransmitterId)
     }
 
     public async answer(docId: string, userId: string, accepted: boolean) {

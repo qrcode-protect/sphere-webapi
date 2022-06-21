@@ -41,6 +41,10 @@ export default class QuoteController extends Controller {
         return unknown(response, await this.service.pendingByCurrentTransmitter((await currentUser())?.id));
     }
 
+    public async expiredByCurrentTransmitter({ response }: HttpContextContract) {
+        return unknown(response, await this.service.expiredByCurrentTransmitter((await currentUser())?.id));
+    }
+
 
 
 }

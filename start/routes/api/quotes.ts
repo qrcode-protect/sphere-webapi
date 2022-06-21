@@ -17,9 +17,13 @@ Route.group(() => {
     Route.group(() => {
         Route.post("", "QuoteController.store")
     }).middleware("partner")
-    Route.get("/by-current-transmitter/accepted", "QuoteController.acceptedByCurrentTransmitter")
-    Route.get("/by-current-transmitter/declined", "QuoteController.declinedByCurrentTransmitter")
-    Route.get("/by-current-transmitter/pending", "QuoteController.pendingByCurrentTransmitter")
+
+    Route.group(() => {
+        Route.get("/by-current-transmitter/accepted", "QuoteController.acceptedByCurrentTransmitter")
+        Route.get("/by-current-transmitter/declined", "QuoteController.declinedByCurrentTransmitter")
+        Route.get("/by-current-transmitter/pending", "QuoteController.pendingByCurrentTransmitter")
+        Route.get("/by-current-transmitter/expired", "QuoteController.expiredByCurrentTransmitter")
+    }).middleware("auth")
 })
     .namespace("QRCP/Sphere/Quote")
     .prefix("/quotes")
