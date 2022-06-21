@@ -23,6 +23,7 @@ import Config                           from "@ioc:Adonis/Core/Config";
 import moment                           from "moment";
 import { conversationModel }            from "App/Common/model";
 import Model                            from "QRCP/Sphere/Common/Model";
+import { concat, map, orderBy }         from "lodash";
 
 interface StoreQuoteAttributes extends QuoteAttributes {
     upload?: unknown
@@ -90,9 +91,17 @@ export default class QuoteService extends Service {
         try {
             if (currentTransmitterId) {
                 const query = this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true);
-                return Result.success(await (withoutExpires === true ? query.whereSnapshot("expiresAt", moment().toDate(), ">") : onlyExpired === true ? query.whereSnapshot("expiresAt", moment().toDate(), "<") : query).get())
+
+                if (withoutExpires === true) {
+                    const expired = await query.whereSnapshot("expiresAt", moment().toDate(), "<").get()
+                    const notExpired = await (this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true)).whereSnapshot("expiresAt", moment().toDate(), ">=").get()
+                    const withoutExpiresAt = await (this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true)).whereSnapshot("expiresAt", null).whereSnapshot("id", map(expired, _item => _item.id), "not-in").orderBy("id", "desc").orderBy("createdAt", "desc").get()
+                    return Result.success(orderBy(concat(withoutExpiresAt, notExpired).filter(_item => _item !== null), 'createdAt', 'desc'))
+                }
+
+                return Result.success(await (onlyExpired === true ? query.whereSnapshot("expiresAt", moment().toDate(), "<") : query).orderBy("expiresAt", "desc").orderBy("createdAt", "desc").get())
             }
-            throw new Error("Error while fetching")
+            throw new Error(`Target [currentTransmitterId] is missing ${currentTransmitterId}`)
         } catch (e) {
             Log.error(e, true)
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
