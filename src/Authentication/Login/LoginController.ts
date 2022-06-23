@@ -20,7 +20,7 @@ import Log                                                          from "QRCP/S
 export default class LoginController extends Controller {
     protected service: LoginService
 
-    private logged =false
+    private logged = false
 
     constructor() {
         super(new LoginService())
@@ -75,6 +75,15 @@ export default class LoginController extends Controller {
                 return loginResult
             } else return unknown(httpContextContract.response, loginSpecialResult);
         } else return loginResult;
+    }
+
+    /**
+     * Retrieve login url.
+     *
+     * @return string
+     */
+    public async getLoginUrl({response, params}: HttpContextContract) {
+        return unknown(response, this.service.getLoginUrl(params.loginType));
     }
 
 

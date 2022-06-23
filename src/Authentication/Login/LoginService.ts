@@ -21,6 +21,7 @@ import { memberModel, partnerModel, userModel } from "App/Common/model";
 import Model                                    from "QRCP/Sphere/Common/Model";
 import { rolesByLevel, RoleType }               from "QRCP/Sphere/Authentication/utils/roles";
 import { map }                                  from "lodash";
+import linkConfig                               from "Config/link";
 
 export type LoginResult = {
     token: { bearer: string },
@@ -109,6 +110,29 @@ export default class LoginService extends AuthService {
         }
 
         return Result.badRequest()
+    }
+
+    public getLoginUrl(loginType: string): Success | SofiakbError {
+        let baseUrlObject;
+
+        switch (loginType) {
+            case "dashboard": {
+                baseUrlObject = linkConfig.dashboard;
+                break;
+            }
+            case "partners": {
+                baseUrlObject = linkConfig.partner;
+                break;
+            }
+            case "members": {
+                baseUrlObject = linkConfig.webapp;
+                break;
+            }
+            default:
+                return Result.badRequest();
+        }
+
+        return Result.success(baseUrlObject.login)
     }
 
 
