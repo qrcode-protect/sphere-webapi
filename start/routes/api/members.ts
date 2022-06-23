@@ -30,6 +30,7 @@ Route.group(() => {
         }).middleware("admin")
 
         Route.post("", "MemberController.store")
+        Route.post("from-dashboard", "MemberController.storeFromDashboard")
     })
         .prefix("/members")
 
