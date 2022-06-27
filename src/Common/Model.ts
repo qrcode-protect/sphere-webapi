@@ -55,8 +55,9 @@ export default class Model {
     createWithAttributes(attributes) {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const object: any = this;
-        Object.keys(attributes).forEach((key) => object[key] = attributes[key]);
-
+        if (object && attributes) {
+            Object.keys(attributes).forEach((key) => object[key] = attributes[key]);
+        }
 
         const item = [
             // "collection",
@@ -116,7 +117,7 @@ export default class Model {
     }
 
     async update(docID: string, data, force = false): Promise<any> {
-        if (docID.trim() === "")
+        if (!docID || docID.trim() === "")
             return null;
 
         const documentReference: DocumentReference = (await this.collection.doc(docID))
@@ -132,7 +133,7 @@ export default class Model {
     }
 
     async delete(docID: string): Promise<boolean> {
-        if (docID.trim() === "")
+        if (!docID || docID.trim() === "")
             return false;
 
         return new Promise<boolean>((resolve, reject) => {
@@ -154,7 +155,7 @@ export default class Model {
     // }
 
     async doc(docID: string) {
-        if (docID.trim() === "")
+        if (!docID || docID.trim() === "")
             return null;
         const documentData: DocumentSnapshot = await (await this.collection.doc(docID)).get()
         return documentData.exists ? await this.casting(documentData.data()) : null;
