@@ -12,7 +12,7 @@ test.group("Users 00 create", () => {
         const attributes: UserAttributes = {
             firstname  : "sOfi-àne",
             lastname   : "ak-bly",
-            email      : "sofiane.AkblY@gmail.com",
+            email      : "sofiane.AkblY@digi-service.fr",
             phone      : "+331.23.456.78/9",
         }
 
@@ -22,7 +22,7 @@ test.group("Users 00 create", () => {
         assert.instanceOf(user, User);
         assert.equal(user.firstname, "sofi-àne")
         assert.equal(user.lastname, "ak-bly")
-        assert.equal(user.email, "sofiane.akbly@gmail.com")
+        assert.equal(user.email, "sofiane.akbly@digi-service.fr")
         assert.equal(user.username, "sakbly")
         assert.equal(user.phone, "0123456789")
     });
@@ -32,7 +32,7 @@ test.group("Users 00 create", () => {
         const attributes: UserAttributes = {
             firstname  : "sOfi-àne",
             lastname   : "ak-bly",
-            email      : "sofiane.AkblY@gmail.com",
+            email      : "sofiane.AkblY@digi-service.fr",
             phone      : "+331.23.456.78/9",
         }
 
