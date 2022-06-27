@@ -13,6 +13,7 @@ import Model                                       from "QRCP/Sphere/Common/Mode
 import MemberAttributes                            from "QRCP/Sphere/Member/MemberAttributes";
 import DuplicateEntryException                     from "QRCP/Sphere/Exceptions/DuplicateEntryException";
 import { cleanPersonalInformations, personalKeys } from "App/Common";
+import { generateNumber }                          from "App/Common/string";
 
 export default class Member extends Model {
     id: string;
@@ -29,6 +30,7 @@ export default class Member extends Model {
     available: boolean;
     uid?: string;
     premium = false;
+    memberNumber: string;
 
 
     constructor(attributes?: MemberAttributes) {
@@ -57,6 +59,9 @@ export default class Member extends Model {
 
         if (typeof data.premium === "undefined")
             data.premium = false;
+
+        if (typeof data.memberNumber === "undefined")
+            data.memberNumber = generateNumber(data.lastname, data.phone, "ADH");
 
         if ((await this.where("email", data.email)) !== null) {
             throw new DuplicateEntryException()

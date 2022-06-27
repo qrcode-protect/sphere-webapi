@@ -10,9 +10,10 @@
  */
 
 import Model                                       from "QRCP/Sphere/Common/Model";
-import PartnerAttributes                            from "QRCP/Sphere/Partner/PartnerAttributes";
+import PartnerAttributes                           from "QRCP/Sphere/Partner/PartnerAttributes";
 import DuplicateEntryException                     from "QRCP/Sphere/Exceptions/DuplicateEntryException";
 import { cleanPersonalInformations, personalKeys } from "App/Common";
+import { generateNumber }                          from "App/Common/string";
 
 export default class Partner extends Model {
     id: string;
@@ -28,6 +29,7 @@ export default class Partner extends Model {
     active: boolean;
     available: boolean;
     uid?: string;
+    partnerNumber: string;
 
 
     constructor(attributes?: PartnerAttributes) {
@@ -53,6 +55,9 @@ export default class Partner extends Model {
 
         if (typeof data.available === "undefined")
             data.available = false;
+
+        if (typeof data.parnterNumber === "undefined")
+            data.partnerNumber = generateNumber(data.lastname, data.phone, "PRT");
 
         if ((await this.where("email", data.email)) !== null) {
             throw new DuplicateEntryException()

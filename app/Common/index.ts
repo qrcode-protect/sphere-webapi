@@ -69,3 +69,5 @@ export const makeid = (length) => {
     }
     return result;
 }
+
+export const toBool = (value: any) => value === "true" || value === true

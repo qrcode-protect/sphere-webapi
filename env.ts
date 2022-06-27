@@ -25,6 +25,7 @@ export default Env.rules({
     WEBSITE_URL : Env.schema.string(),
     DASHBOARD_URL : Env.schema.string(),
     PARTNER_URL : Env.schema.string(),
+    WEBAPP_URL : Env.schema.string(),
 
     ADMIN_IPS : Env.schema.string(),
 

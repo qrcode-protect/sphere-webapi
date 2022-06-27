@@ -12,3 +12,4 @@ Cette [API](https://sphere-350012.ey.r.appspot.com/) permet de gérer les donné
 #### [v1.0.1-beta.1](./changelogs/v1.0.1-beta.1.md)
 #### [v1.0.1-beta.3](./changelogs/v1.0.1-beta.3.md)
 #### [v1.0.1-beta.4](./changelogs/v1.0.1-beta.4.md)
+#### [v1.0.1-beta.5](./changelogs/v1.0.1-beta.5.md)

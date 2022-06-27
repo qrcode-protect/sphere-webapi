@@ -39,7 +39,7 @@ export default class Model {
     firebaseAppName?: string;
     model: ClassConstructor<any>;
 
-    snapshot: Query<DocumentData>;
+    snapshot: Nullable<Query<DocumentData>>;
 
     constructor({ collectionName, firebaseAppName, model }: ModelConstructor) {
         this.firebaseAppName = firebaseAppName;
@@ -55,8 +55,9 @@ export default class Model {
     createWithAttributes(attributes) {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const object: any = this;
-        Object.keys(attributes).forEach((key) => object[key] = attributes[key]);
-
+        if (object && attributes) {
+            Object.keys(attributes).forEach((key) => object[key] = attributes[key]);
+        }
 
         const item = [
             // "collection",
@@ -108,13 +109,15 @@ export default class Model {
         data.createdAt = Model._now();
         data.updatedAt = Model._now();
 
-        const documentReference: DocumentReference = await this.collection.add({ ...this.cleanup(data) });
-        await documentReference.update({ id: documentReference.id })
+        const documentReference: DocumentReference = await (data.id && data.id.trim() !== "" ? this.collection.doc(data.id) : this.collection.doc());
+        await documentReference.set({ ...this.cleanup(data), id: documentReference.id })
+
+        // await documentReference.update({ id: documentReference.id })
         return await this.casting({ ...data, id: documentReference.id, });
     }
 
     async update(docID: string, data, force = false): Promise<any> {
-        if (docID.trim() === "")
+        if (!docID || docID.trim() === "")
             return null;
 
         const documentReference: DocumentReference = (await this.collection.doc(docID))
@@ -130,7 +133,7 @@ export default class Model {
     }
 
     async delete(docID: string): Promise<boolean> {
-        if (docID.trim() === "")
+        if (!docID || docID.trim() === "")
             return false;
 
         return new Promise<boolean>((resolve, reject) => {
@@ -152,13 +155,13 @@ export default class Model {
     // }
 
     async doc(docID: string) {
-        if (docID.trim() === "")
+        if (!docID || docID.trim() === "")
             return null;
         const documentData: DocumentSnapshot = await (await this.collection.doc(docID)).get()
         return documentData.exists ? await this.casting(documentData.data()) : null;
     }
 
-    async where(column: string, value: string | string[] | number | boolean | null, operator: WhereFilterOp = "=="): Promise<any[] | null> {
+    async where(column: string, value: string | any[] | number | boolean | null | Date, operator: WhereFilterOp = "=="): Promise<any[] | null> {
         let snapshot: QuerySnapshot;
 
         if (this.snapshot)
@@ -171,7 +174,7 @@ export default class Model {
         return await Promise.all(snapshot.docs.map(async (doc: QueryDocumentSnapshot<DocumentData>) => await this.casting(doc.data())))
     }
 
-    whereSnapshot(column: string, value: string | string[] | number | boolean | null, operator: WhereFilterOp = "=="): this {
+    whereSnapshot(column: string, value: string | any[] | number | boolean | null | Date, operator: WhereFilterOp = "=="): this {
         this.snapshot = (this.snapshot ?? this.collection).where(column, operator, value)
         return this;
     }
@@ -186,6 +189,8 @@ export default class Model {
         if (this.snapshot) {
             snapshot = await this.snapshot.get()
         }
+
+        this.snapshot = null
 
         if (!snapshot || snapshot.empty) {
             return null;

@@ -18,6 +18,7 @@ Route.group(() => {
      ******* LOGIN ROUTES *******
      ****************************/
     Route.post("/login/:loginType?", "Login/LoginController.login")
+    Route.get("/login/url/:loginType", "Login/LoginController.getLoginUrl")
 
     Route.group(() => {
 
@@ -30,6 +31,7 @@ Route.group(() => {
          ****** ROLES ROUTES *******
          ****************************/
         Route.get("/roles/dashboard", "Auth/AuthController.dashboardRoles")
+        Route.get("/roles/partners", "Auth/AuthController.partnerRoles")
 
         /****************************
          ****** LOGGED ROUTES *******

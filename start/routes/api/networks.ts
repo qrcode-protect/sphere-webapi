@@ -19,7 +19,7 @@ Route.group(() => {
         // update
         Route.put("/:id", "NetworkController.update")
         // delete
-        Route.delete("/:id", "NetworkController.delete")
+        Route.delete("/:id", "NetworkController.destroy")
     }).middleware("marketing")
 
     Route.get("", "NetworkController.all")

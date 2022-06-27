@@ -64,5 +64,14 @@ export default class AuthController extends Controller {
         return success(response, 200, this.service.roles("dashboard"))
     }
 
+    /**
+     * Retrieve roles.
+     *
+     * @return bool
+     */
+    public partnerRoles({ response }: HttpContextContract) {
+        return success(response, 200, this.service.roles("partner"))
+    }
+
 
 }

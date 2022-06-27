@@ -9,11 +9,13 @@
  * File config/link
  */
 
-import Env from "@ioc:Adonis/Core/Env";
+import Env                      from "@ioc:Adonis/Core/Env";
+import { urlSingleBackslashes } from "App/Common/string";
 
-/*type LinkObject = {
+type LinkObject = {
     url: string,
-    children?: LinkObject
+    password?: { reset: string }
+    login?: string
 }
 
 type LinkConfig = {
@@ -21,13 +23,17 @@ type LinkConfig = {
     dashboard: LinkObject,
     partner: LinkObject,
     website: LinkObject,
-}*/
+    webapp: LinkObject,
+}
 
 const appUrl = Env.get("APP_URL")
 const dashboardUrl = Env.get("DASHBOARD_URL")
 const partnerUrl = Env.get("PARTNER_URL")
 const websiteUrl = Env.get("WEBSITE_URL")
+const webappUrl = Env.get("WEBAPP_URL")
 const resetPasswordUrl = `${websiteUrl}/password/reset`
+
+const loginUrl = (baseUrl: string) => urlSingleBackslashes(`${baseUrl}/login`)
 
 /*
 |--------------------------------------------------------------------------
@@ -35,27 +41,34 @@ const resetPasswordUrl = `${websiteUrl}/password/reset`
 |--------------------------------------------------------------------------
 |
 */
-const linkConfig = {
+const linkConfig: LinkConfig = {
     app      : {
-        url     : appUrl
+        url: appUrl
     },
     dashboard: {
         url     : dashboardUrl,
+        login   : loginUrl(dashboardUrl),
         password: {
             reset: resetPasswordUrl
         }
     },
     partner  : {
         url     : partnerUrl,
+        login   : loginUrl(partnerUrl),
         password: {
             reset: resetPasswordUrl
         }
     },
     website  : {
         url     : websiteUrl,
+        login   : loginUrl(websiteUrl),
         password: {
             reset: resetPasswordUrl
         }
+    },
+    webapp   : {
+        url  : webappUrl,
+        login: webappUrl,
     },
 }
 

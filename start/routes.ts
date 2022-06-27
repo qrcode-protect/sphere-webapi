@@ -24,7 +24,7 @@ import "./routes/api"
 
 
 Route.get("/", async () => {
-    return { version: "1.0.1-beta.4" }
+    return { version: "1.0.1-beta.5" }
 })
 
 Route.group(() => {
@@ -36,11 +36,3 @@ Route.group(() => {
 })
     .namespace("QRCP/Sphere/Authentication")
     .prefix("/auth");
-
-Route.get("/test", async ({ view }) => {
-    const html = await view.render("layouts/app", {
-        greeting: "Hello"
-    })
-
-    return html
-})

@@ -57,6 +57,10 @@ export default class MemberController extends Controller {
         return super.findBy("active", false, httpContextContract);
     }
 
+    public async byUid(httpContextContract: HttpContextContract) {
+        return super.findOneBy("uid", httpContextContract.params.uid, httpContextContract);
+    }
+
     public async premium(httpContextContract: HttpContextContract) {
         return super.findBy("premium", true, httpContextContract);
     }
@@ -67,6 +71,10 @@ export default class MemberController extends Controller {
 
     public async deny({ request, response }: HttpContextContract) {
         return unknown(response, await this.service.deny(request.param("id")));
+    }
+
+    public async storeFromDashboard({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.store(<MemberAttributes>request.body(), request.file("certificate")));
     }
 
 }

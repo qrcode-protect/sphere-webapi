@@ -124,7 +124,8 @@ export default class AuthService extends Service {
      *
      */
     public notExists() {
-        return Result.unauthorized("Le nom d'utilisateur ou l'adresse mail n'existe pas");
+        return Result.unauthorized("L'identifiant ou le mot de passe est incorrect");
+        // return Result.unauthorized("Le nom d'utilisateur ou l'adresse mail n'existe pas");
     }
 
     /**
@@ -132,7 +133,8 @@ export default class AuthService extends Service {
      *
      */
     public wrongPassword() {
-        return Result.unauthorized("Le mot de passe est incorrect");
+        return Result.unauthorized("L'identifiant ou le mot de passe est incorrect");
+        // return Result.unauthorized("Le mot de passe est incorrect");
     }
 
     /**

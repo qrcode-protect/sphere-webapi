@@ -15,19 +15,31 @@ import Route from "@ioc:Adonis/Core/Route";
 Route.group(() => {
 
     Route.group(() => {
-        Route.get("", "MemberController.all")
-        Route.get("/active/:activityId?", "MemberController.active")
-        Route.get("/inactive", "MemberController.inactive")
-        Route.get("/premium", "MemberController.premium")
 
-        Route.put("/validate/:id", "MemberController.validate")
-        Route.put("/deny/:id", "MemberController.deny")
-        Route.put("/:id", "MemberController.update")
+        Route.group(() => {
+            Route.get("", "MemberController.all")
+            Route.get("/active/:activityId?", "MemberController.active")
+            Route.get("/inactive", "MemberController.inactive")
+            Route.get("/premium", "MemberController.premium")
 
-        Route.delete("/:id", "MemberController.destroy")
-    }).middleware("admin")
+            Route.put("/validate/:id", "MemberController.validate")
+            Route.put("/deny/:id", "MemberController.deny")
+            Route.put("/:id", "MemberController.update")
 
-    Route.post("", "MemberController.store")
+            Route.delete("/:id", "MemberController.destroy")
+        }).middleware("admin")
+
+        Route.post("", "MemberController.store")
+        Route.post("from-dashboard", "MemberController.storeFromDashboard")
+    })
+        .prefix("/members")
+
+    Route.group(() => {
+
+        Route.group(() => {
+            Route.get("/uid/:uid", "MemberController.byUid")
+        }).middleware("partner")
+    })
+        .prefix("/members-partner")
 })
     .namespace("QRCP/Sphere/Member")
-    .prefix("/members")

@@ -1,0 +1,20 @@
+@layout('layouts/app')
+
+@section('body')
+<tr>
+    <td valign="middle" class="hero bg_white" style="padding: 2em 0 4em 0;">
+        <table>
+            <tr>
+                <td>
+                    <div class="text" style="padding: 0 2.5em; text-align: center;">
+                        <h2>Bonjour {{ user.firstname }} !</h2>
+                        <h5>Vous avez reçu un message de <span style="font-weight: bold">{{ sender.fullName }}</span></h5>
+                        <h6>Retrouvez-le dans votre messagerie SPHÈRE</h6>
+<!--                        <p><a href="{{ url }}" target="_blank" class="btn btn-primary">Accéder à la messagerie</a></p>-->
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr><!-- end tr -->
+@end
