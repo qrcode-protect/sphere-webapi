@@ -1,6 +1,6 @@
 {
     "name": "sphere-webapi",
-    "version": "1.0.1-beta.4",
+    "version": "1.0.1-beta.5",
     "private": true,
     "scripts": {
         "dev": "node ace serve --watch",

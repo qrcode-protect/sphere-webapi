@@ -24,7 +24,7 @@ import "./routes/api"
 
 
 Route.get("/", async () => {
-    return { version: "1.0.1-beta.4" }
+    return { version: "1.0.1-beta.5" }
 })
 
 Route.group(() => {
