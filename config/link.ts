@@ -68,7 +68,7 @@ const linkConfig: LinkConfig = {
     },
     webapp   : {
         url  : webappUrl,
-        login: loginUrl(webappUrl),
+        login: webappUrl,
     },
 }
 

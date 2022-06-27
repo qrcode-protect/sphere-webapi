@@ -47,7 +47,7 @@ test.group("Messages 00 create", () => {
             activityId : "",
             certificate: "",
             companyName: "",
-            email      : "sofiane.akbly@gmail.com",
+            email      : "contact.sofiakb@gmail.com",
             firstname  : "partenaire",
             lastname   : "test",
             phone      : undefined,
