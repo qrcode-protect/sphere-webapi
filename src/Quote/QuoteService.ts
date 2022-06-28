@@ -83,11 +83,11 @@ export default class QuoteService extends Service {
     }
 
     public async byCurrentTransmitterWithStatus({
-                                                    accepted,
-                                                    declined,
-                                                    withoutExpires,
-                                                    onlyExpired,
-                                                }: FetchByStatusParameters, currentTransmitterId?: string) {
+        accepted,
+        declined,
+        withoutExpires,
+        onlyExpired,
+    }: FetchByStatusParameters, currentTransmitterId?: string) {
         try {
             if (currentTransmitterId) {
                 const query = this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true);
@@ -95,8 +95,8 @@ export default class QuoteService extends Service {
                 if (withoutExpires === true) {
                     const expired = await query.whereSnapshot("expiresAt", moment().toDate(), "<").get()
                     const notExpired = await (this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true)).whereSnapshot("expiresAt", moment().toDate(), ">=").get()
-                    const withoutExpiresAt = await (this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true)).whereSnapshot("expiresAt", null).whereSnapshot("id", map(expired, _item => _item.id), "not-in").orderBy("id", "desc").orderBy("createdAt", "desc").get()
-                    return Result.success(orderBy(concat(withoutExpiresAt, notExpired).filter(_item => _item !== null), 'createdAt', 'desc'))
+                    const withoutExpiresAt = expired && expired.length > 0 ? await (this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true)).whereSnapshot("expiresAt", null).whereSnapshot("id", map(expired, _item => _item.id), "not-in").orderBy("id", "desc").orderBy("createdAt", "desc").get() : []
+                    return Result.success(orderBy(concat(withoutExpiresAt, notExpired).filter(_item => _item !== null), "createdAt", "desc"))
                 }
 
                 return Result.success(await (onlyExpired === true ? query.whereSnapshot("expiresAt", moment().toDate(), "<") : query).orderBy("expiresAt", "desc").orderBy("createdAt", "desc").get())
