@@ -26,6 +26,7 @@ Route.group(() => {
     require("./users")
     require("./chat")
     require("./quotes")
+    require("./contact")
     /*******************************
      FIN ROLE AUTORISES
      ******************************/

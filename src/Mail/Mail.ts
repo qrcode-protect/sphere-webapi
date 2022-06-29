@@ -9,12 +9,12 @@
  * File src/Mail/Mail
  */
 
-import Application      from "@ioc:Adonis/Core/Application";
-import MailAddons       from "@ioc:Adonis/Addons/Mail";
-import User             from "QRCP/Sphere/User/User";
-import { retrieveRole } from "QRCP/Sphere/Authentication/utils/roles";
-import { capitalize }   from "lodash";
-import mailConfig       from "Config/mail";
+import Application          from "@ioc:Adonis/Core/Application";
+import MailAddons           from "@ioc:Adonis/Addons/Mail";
+import User                 from "QRCP/Sphere/User/User";
+import { retrieveRole }     from "QRCP/Sphere/Authentication/utils/roles";
+import { capitalize, each } from "lodash";
+import mailConfig           from "Config/mail";
 
 export default class Mail {
 
@@ -37,9 +37,23 @@ export default class Mail {
         })
     }
 
+    static async text(to: string | string[], subject: string, content: string) {
+        await MailAddons.send((message) => {
+
+            if (Array.isArray(to)) {
+                each(to, recipient => message.to(recipient))
+            } else message.to(to)
+
+            message
+                .from(mailConfig.mailers.smtp.auth?.user ?? "noreply@reseau-sphere.com", "SPHÈRE")
+                .subject(subject)
+                .text(content)
+        })
+    }
+
     static async registerMember(user: User, link: string | null) {
         await Mail.send(user.email, "Bienvenue chez SPHÈRE !", "member/welcome", {
-        // await Mail.send("sofiane.akbly@qrcode-protect.com", "Bienvenue chez SPHÈRE !", "member/welcome", {
+            // await Mail.send("sofiane.akbly@qrcode-protect.com", "Bienvenue chez SPHÈRE !", "member/welcome", {
             user: { fullName: `${capitalize(user.firstname)} ${capitalize(user.lastname)}` },
             url : link,
         })
@@ -47,7 +61,7 @@ export default class Mail {
 
     static async registerPartner(user: User, link: string | null) {
         await Mail.send(user.email, "Bienvenue chez SPHÈRE !", "partner/welcome", {
-        // await Mail.send("sofiane.akbly@qrcode-protect.com", "Bienvenue chez SPHÈRE !", "partner/welcome", {
+            // await Mail.send("sofiane.akbly@qrcode-protect.com", "Bienvenue chez SPHÈRE !", "partner/welcome", {
             user: { fullName: `${capitalize(user.firstname)} ${capitalize(user.lastname)}` },
             url : link,
         })
@@ -56,7 +70,7 @@ export default class Mail {
     static async registerDashboard(user: User, link: string) {
 
         await Mail.send(user.email, "Votre accès au dashboard SPHÈRE a été créé", "dashboard/welcome", {
-        // await Mail.send("sofiane.akbly@qrcode-protect.com", "Votre accès au dashboard SPHÈRE a été créé", "dashboard/welcome", {
+            // await Mail.send("sofiane.akbly@qrcode-protect.com", "Votre accès au dashboard SPHÈRE a été créé", "dashboard/welcome", {
             user: { fullName: `${capitalize(user.firstname)}` },
             url : link,
             role: retrieveRole(user.roleType)
@@ -65,7 +79,7 @@ export default class Mail {
 
     static async forgotPasswordMember(user: User, link: string | null) {
         await Mail.send(user.email, "Réinitialisation de votre mot de passe SPHÈRE !", "member/auth/password/forgot", {
-        // await Mail.send("sofiane.akbly@qrcode-protect.com", "Réinitialisation de votre mot de passe SPHÈRE !", "member/auth/password/forgot", {
+            // await Mail.send("sofiane.akbly@qrcode-protect.com", "Réinitialisation de votre mot de passe SPHÈRE !", "member/auth/password/forgot", {
             user: { fullName: `${capitalize(user.firstname)}` },
             url : link,
         })
@@ -73,7 +87,7 @@ export default class Mail {
 
     static async forgotPasswordPartner(user: User, link: string | null) {
         await Mail.send(user.email, "Réinitialisation de votre mot de passe SPHÈRE !", "partner/auth/password/forgot", {
-        // await Mail.send("sofiane.akbly@qrcode-protect.com", "Réinitialisation de votre mot de passe SPHÈRE !", "partner/auth/password/forgot", {
+            // await Mail.send("sofiane.akbly@qrcode-protect.com", "Réinitialisation de votre mot de passe SPHÈRE !", "partner/auth/password/forgot", {
             user: { fullName: `${capitalize(user.firstname)}` },
             url : link,
         })
@@ -82,7 +96,7 @@ export default class Mail {
     static async forgotPasswordDashUser(user: User, link: string) {
 
         await Mail.send(user.email, "Réinitialisation de votre mot de passe dashboard SPHÈRE", "dashboard/auth/password/forgot", {
-        // await Mail.send("sofiane.akbly@qrcode-protect.com", "Réinitialisation de votre mot de passe dashboard SPHÈRE", "dashboard/auth/password/forgot", {
+            // await Mail.send("sofiane.akbly@qrcode-protect.com", "Réinitialisation de votre mot de passe dashboard SPHÈRE", "dashboard/auth/password/forgot", {
             user: { fullName: `${capitalize(user.firstname)}` },
             url : link,
             role: retrieveRole(user.roleType)
