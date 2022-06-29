@@ -46,11 +46,17 @@ export default class PartnerController extends Controller {
         // const payload = await request.validate({ schema: newPostSchema })
         //
 
-        return unknown(response, await this.service.store(<PartnerAttributes>request.body(), request.file("certificate")));
+        return unknown(response, await this.service.store(<PartnerAttributes>request.body(), {
+            certificate: request.file("certificate"),
+            avatar: request.file("avatar"),
+        }));
     }
 
     public async storeFromDashboard({ request, response }: HttpContextContract) {
-        return unknown(response, await this.service.store(<PartnerAttributes>request.body(), request.file("certificate"), true));
+        return unknown(response, await this.service.store(<PartnerAttributes>request.body(), {
+            certificate: request.file("certificate"),
+            avatar: request.file("avatar"),
+        }, true));
     }
 
     public async active({ response, params }: HttpContextContract) {

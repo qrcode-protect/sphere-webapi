@@ -95,7 +95,8 @@ export default class QuoteService extends Service {
                 if (withoutExpires === true) {
                     const expired = await query.whereSnapshot("expiresAt", moment().toDate(), "<").get()
                     const notExpired = await (this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true)).whereSnapshot("expiresAt", moment().toDate(), ">=").get()
-                    const withoutExpiresAt = expired && expired.length > 0 ? await (this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true)).whereSnapshot("expiresAt", null).whereSnapshot("id", map(expired, _item => _item.id), "not-in").orderBy("id", "desc").orderBy("createdAt", "desc").get() : []
+                    const withoutExpiredQuery = (this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true)).whereSnapshot("expiresAt", null);
+                    const withoutExpiresAt = await (expired && expired.length > 0 ? withoutExpiredQuery.whereSnapshot("id", map(expired, _item => _item.id), "not-in") : withoutExpiredQuery).orderBy("id", "desc").orderBy("createdAt", "desc").get()
                     return Result.success(orderBy(concat(withoutExpiresAt, notExpired).filter(_item => _item !== null), "createdAt", "desc"))
                 }
 
