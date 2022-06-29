@@ -24,4 +24,6 @@ export default interface PartnerAttributes {
     available?: boolean,
     uid?: string,
     partnerNumber?: string,
+    avatar: string,
+    description: string,
 }
