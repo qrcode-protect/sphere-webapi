@@ -30,6 +30,8 @@ export default class Partner extends Model {
     available: boolean;
     uid?: string;
     partnerNumber: string;
+    avatar: string;
+    description: string;
 
 
     constructor(attributes?: PartnerAttributes) {
