@@ -12,7 +12,13 @@ test.group("Activities 02 update", () => {
 
         const activity: Activity = await activityModel().store(new Activity(attributes))
 
-        const updateActivity: Activity = await activityModel().update(activity.id, { name: "test" })
+        const updateActivity: Activity = await activityModel().update(activity.id, {
+            name      : "test",
+            activities: [ new Activity({
+                name : "test2",
+                label: "test2"
+            }) ]
+        })
 
         assert.isNotNull(updateActivity);
         assert.instanceOf(updateActivity, Activity)
