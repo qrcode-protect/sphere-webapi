@@ -61,6 +61,12 @@ export default class Partner extends Model {
         if (typeof data.parnterNumber === "undefined")
             data.partnerNumber = generateNumber(data.lastname, data.phone, "PRT");
 
+        if (typeof data.activities === "string" )
+            data.activities = data.activities.toString().split(",");
+        else if (typeof data.activities === "undefined" || data.activities === null)
+            data.activities = [];
+
+
         if ((await this.where("email", data.email)) !== null) {
             throw new DuplicateEntryException()
         }
