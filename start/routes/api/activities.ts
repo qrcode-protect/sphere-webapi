@@ -23,6 +23,7 @@ Route.group(() => {
     }).middleware("admin")
 
     Route.get("", "ActivityController.all")
+    Route.get("/:id", "ActivityController.findById")
 
 })
     .namespace("QRCP/Sphere/Activity")
