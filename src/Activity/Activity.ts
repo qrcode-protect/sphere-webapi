@@ -91,7 +91,7 @@ export default class Activity extends Model {
         delete updatable.activities
         delete updatable.createdAt
 
-        updatable.label = updatable.label?.toLowerCase()
+        updatable.label = updatable.label?.toLowerCase() ?? 'n/d'
 
         batch.update(activity, { ...updatable, ...{ updatedAt: Model._now() } })
 
