@@ -1,0 +1,31 @@
+"use strict";
+
+/*
+ * api
+ *
+ * (c) Sofiane Akbly <sofiane.akbly@qrcode-protect.com>
+ *
+ * Created by WebStorm on 09/05/2022 at 11:38
+ * File src/Partner/PartnerAttributes
+ */
+
+import { Moment }                from "moment";
+import Member                    from "QRCP/Sphere/Member/Member";
+import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
+import AddressAttributes         from "QRCP/Sphere/Address/AddressAttributes";
+
+export default interface TenderAttributes {
+    id?: string
+    description: string
+    amount: number
+    file: string
+    tender: Nullable<MultipartFileContract>
+    beginAt: Date | Moment | null
+    endAt: Date | Moment | null
+    expiresAt?: Date | Moment | null
+    publishedAt?: Date | Moment | null
+    member?: Member
+    memberId?: string
+    reporter?: string
+    address: AddressAttributes
+}
