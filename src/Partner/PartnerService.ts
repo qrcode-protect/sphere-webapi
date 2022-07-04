@@ -62,8 +62,8 @@ export default class PartnerService extends Service {
         try {
             result = await this.model.store(data)
             if (result.id) {
-                const authUser = (await this.createUser(result.id, result)).data
-                result.uid = authUser.uid;
+                result = (await this.createUser(result.id, result)).data
+                // result.uid = authUser.uid;
 
                 if (fromDashboard) {
                     await this.validate(result.id)
@@ -90,6 +90,7 @@ export default class PartnerService extends Service {
         try {
             const userService = new UserService()
             const user = (await userService.store({
+                id       : partnerId,
                 lastname : partner.lastname,
                 firstname: partner.firstname,
                 email    : partner.email,
@@ -100,8 +101,16 @@ export default class PartnerService extends Service {
 
             if (authUser instanceof User && authUser.uid) {
                 await this.model.update(partnerId, { uid: authUser.uid })
+                partner.uid = authUser.uid
+
+                if (partnerId !== authUser.uid) {
+                    partner = await this.model.store({ ...partner, id: authUser.uid, uid: authUser.uid }, false);
+                    await this.model.delete(partnerId);
+                }
+
             } else {
                 if (user.code === 419) {
+                    await this.model.delete(partnerId);
                     throw new DuplicateEntryException()
                     // const authUser2 = (await userService.findOneBy("email", partner.email)).data
                     // if (authUser2 instanceof User)
@@ -109,7 +118,7 @@ export default class PartnerService extends Service {
                 }
             }
 
-            return Result.success(authUser)
+            return Result.success(partner)
         } catch (e) {
             Log.error(e, true)
             if (e instanceof DuplicateEntryException) {

@@ -40,7 +40,7 @@ export default class Member extends Model {
         }
     }
 
-    async store(data): Promise<Member> {
+    async store(data, force = true): Promise<Member> {
         const personalInfo = cleanPersonalInformations({
             firstname: data.firstname,
             lastname : data.lastname,
@@ -63,7 +63,7 @@ export default class Member extends Model {
         if (typeof data.memberNumber === "undefined")
             data.memberNumber = generateNumber(data.lastname, data.phone, "ADH");
 
-        if ((await this.where("email", data.email)) !== null) {
+        if (force && (await this.where("email", data.email)) !== null) {
             throw new DuplicateEntryException()
         }
 
