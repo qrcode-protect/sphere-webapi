@@ -13,6 +13,7 @@ const tenderService = new TenderService()
 
 const tenderStoreService = async (member: Member) => {
     const attributes: TenderAttributes = {
+        title: "Test tender",
         address    : {
             id           : "address-tender",
             street_number: 335,
@@ -81,6 +82,7 @@ test.group("Tenders 00 create", () => {
         test("Store tender", async ({ assert }) => {
 
             const attributes: TenderAttributes = {
+                title: "Test tender",
                 address    : {
                     id           : "address-tender",
                     street_number: 335,
