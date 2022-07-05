@@ -13,7 +13,7 @@ export default {
             swagger : "2.0",
             info    : {
                 title         : "Application with swagger docs",
-                version       : "1.0.1-beta.5+1",
+                version       : "1.0.1-beta.6",
                 description   : "My application with swagger docs",
                 contact       : {
                     email: "sofiane.akbly@qrcode-protect.com",
