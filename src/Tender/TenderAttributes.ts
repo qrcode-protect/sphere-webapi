@@ -16,8 +16,9 @@ import AddressAttributes         from "QRCP/Sphere/Address/AddressAttributes";
 
 export default interface TenderAttributes {
     id?: string
+    title: string
     description: string
-    amount: number
+    amount: Nullable<number>
     file: string
     tender: Nullable<MultipartFileContract>
     beginAt: Date | Moment | null
@@ -26,7 +27,7 @@ export default interface TenderAttributes {
     publishedAt?: Date | Moment | null
     member?: Member
     memberId?: string
-    reporter?: string
+    reporter?: Nullable<string>
     address: AddressAttributes
     available?: boolean
     active?: boolean

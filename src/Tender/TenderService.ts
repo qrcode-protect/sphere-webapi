@@ -13,7 +13,7 @@ import Service                   from "QRCP/Sphere/Common/Service";
 import TenderAttributes          from "QRCP/Sphere/Tender/TenderAttributes";
 import Tender                    from "QRCP/Sphere/Tender/Tender";
 import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
-import { Result }                from "@sofiakb/adonis-response";
+import { Result, Success }       from "@sofiakb/adonis-response";
 import Log                       from "QRCP/Sphere/Common/Log";
 import { upload }                from "App/Common/file";
 import { name }                  from "App/Common/string";
@@ -26,6 +26,10 @@ export default class TenderService extends Service {
 
     constructor(model = Tender) {
         super(model);
+    }
+
+    async all(): Promise<Success> {
+        return Result.success(await this.model.orderBy("publishedAt", "desc").get());
     }
 
     public async store(data: StoreTenderAttributes, documents?: { tender?: Nullable<MultipartFileContract> }, reporter?: string) {

@@ -18,6 +18,7 @@ import { toBool }           from "App/Common";
 
 export default class Tender extends Model {
     id: string
+    title: string
     description: string
     amount: number
     file: string
@@ -52,14 +53,16 @@ export default class Tender extends Model {
         data.expiresAt = momentToFirebase(data.expiresAt)
         data.publishedAt = momentToFirebase(data.publishedAt)
 
-        data.amount = parseFloat(data.amount.toString())
+        data.amount = data.amount ? parseFloat(data.amount.toString()) : null
 
         data.available = toBool(data.available)
         data.active = toBool(data.active)
 
+        data.reporter = data.reporter ?? null
+
         const address = new Address(data.address)
 
-        data.memberId = data.member?.id
+        data.memberId = data.memberId ?? data.member?.id
         delete data.member
 
         return super.store({ ...data, address: address.toJson() });

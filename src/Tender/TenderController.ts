@@ -26,7 +26,24 @@ export default class TenderController extends Controller {
     }
 
     public async store({ request, response }: HttpContextContract) {
-        return unknown(response, await this.service.store(<TenderAttributes>request.body(), { tender: request.file("file") }, (await currentUser())?.id));
+        return unknown(response, await this.service.store(<TenderAttributes>(request.body().data), { tender: request.file("file") }, (await currentUser())?.id));
     }
+
+    public async validate({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.validate(request.param("id")));
+    }
+
+    public async deny({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.deny(request.param("id")));
+    }
+
+    public async unblock({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.unblock(request.param("id")));
+    }
+
+    public async block({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.block(request.param("id")));
+    }
+
 
 }
