@@ -17,6 +17,7 @@ import Partner      from "QRCP/Sphere/Partner/Partner";
 import Conversation from "QRCP/Sphere/_Chat/Conversation/Conversation";
 import Message      from "QRCP/Sphere/_Chat/Message/Message";
 import Quote        from "QRCP/Sphere/Quote/Quote";
+import Tender       from "QRCP/Sphere/Tender/Tender";
 
 
 export const activityModel = (): Activity => new Activity()
@@ -28,3 +29,5 @@ export const apiTokenModel = (): ApiToken => new ApiToken()
 export const conversationModel = (): Conversation => new Conversation()
 export const messageModel = (): Message => new Message()
 export const quoteModel = (): Quote => new Quote()
+
+export const tenderModel = (): Tender => new Tender()
