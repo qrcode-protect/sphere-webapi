@@ -49,4 +49,19 @@ export default class TenderService extends Service {
 
     }
 
+    public async validate(docID: string) {
+        return this.update(docID, { active: true, available: true })
+    }
+
+    public async deny(docID: string) {
+        return this.update(docID, { active: false, available: false })
+    }
+
+    public async block(docID: string) {
+        return this.update(docID, { available: false })
+    }
+
+    public async unblock(docID: string) {
+        return this.update(docID, { available: true })
+    }
 }

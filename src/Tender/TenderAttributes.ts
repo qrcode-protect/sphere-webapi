@@ -28,4 +28,6 @@ export default interface TenderAttributes {
     memberId?: string
     reporter?: string
     address: AddressAttributes
+    available?: boolean
+    active?: boolean
 }

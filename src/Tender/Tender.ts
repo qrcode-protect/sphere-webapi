@@ -14,9 +14,10 @@ import TenderAttributes     from "QRCP/Sphere/Tender/TenderAttributes";
 import Address              from "QRCP/Sphere/Address/Address";
 import { momentToFirebase } from "App/Common/date";
 import { Moment }           from "moment";
+import { toBool }           from "App/Common";
 
 export default class Tender extends Model {
-    id?: string
+    id: string
     description: string
     amount: number
     file: string
@@ -27,6 +28,8 @@ export default class Tender extends Model {
     address: Address
     memberId: string
     reporter: string
+    available: boolean
+    active: boolean
 
 
     constructor(attributes?: TenderAttributes) {
@@ -50,6 +53,9 @@ export default class Tender extends Model {
         data.publishedAt = momentToFirebase(data.publishedAt)
 
         data.amount = parseFloat(data.amount.toString())
+
+        data.available = toBool(data.available)
+        data.active = toBool(data.active)
 
         const address = new Address(data.address)
 
