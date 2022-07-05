@@ -9,24 +9,19 @@
  * File src/Member/Member
  */
 
-import Service                          from "QRCP/Sphere/Common/Service";
-import MemberAttributes                 from "QRCP/Sphere/Member/MemberAttributes";
-import Member                           from "QRCP/Sphere/Member/Member";
-import { MultipartFileContract }        from "@ioc:Adonis/Core/BodyParser";
-import Drive                            from "../../config/drive";
-import path                             from "path";
-import Application                      from "@ioc:Adonis/Core/Application";
-import { Bucket, GetSignedUrlResponse } from "@google-cloud/storage";
-import { Result }                       from "@sofiakb/adonis-response";
-import Log                              from "QRCP/Sphere/Common/Log";
-import DuplicateEntryException          from "QRCP/Sphere/Exceptions/DuplicateEntryException";
-import Config                           from "@ioc:Adonis/Core/Config";
-import UserService                      from "QRCP/Sphere/User/UserService";
-import { RoleType }                     from "QRCP/Sphere/Authentication/utils/roles";
-import AuthMail                         from "QRCP/Sphere/Authentication/AuthMail";
-import User                             from "QRCP/Sphere/User/User";
-import moment                           from "moment";
-import { name }                         from "App/Common/string";
+import Service                   from "QRCP/Sphere/Common/Service";
+import MemberAttributes          from "QRCP/Sphere/Member/MemberAttributes";
+import Member                    from "QRCP/Sphere/Member/Member";
+import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
+import { Result }                from "@sofiakb/adonis-response";
+import Log                       from "QRCP/Sphere/Common/Log";
+import DuplicateEntryException   from "QRCP/Sphere/Exceptions/DuplicateEntryException";
+import UserService               from "QRCP/Sphere/User/UserService";
+import { RoleType }              from "QRCP/Sphere/Authentication/utils/roles";
+import AuthMail                  from "QRCP/Sphere/Authentication/AuthMail";
+import User                      from "QRCP/Sphere/User/User";
+import { name }                  from "App/Common/string";
+import { upload }                from "App/Common/file";
 
 interface StoreMemberAttributes extends MemberAttributes {
     upload?: unknown
@@ -41,7 +36,10 @@ export default class MemberService extends Service {
     public async store(data: StoreMemberAttributes, certificate?: Nullable<MultipartFileContract>) {
         delete data.upload
 
-        if (certificate) {
+        if (certificate)
+            data.certificate = await upload(certificate, `members/certificates/${name(data.companyName, "-")}`)
+
+        /*if (certificate) {
             const certificateFilename = `${moment().unix()}.${certificate.extname}`;
             const certificatePath: string = Drive.disks.uploads.root
             const certificateFullPath: string = path.resolve(Drive.disks.uploads.root, certificateFilename)
@@ -60,13 +58,15 @@ export default class MemberService extends Service {
                 .catch(() => data.certificate = data.certificate = `https://firebasestorage.googleapis.com/v0/b/${Config.get("firebase.projectId")}.appspot.com/o/${encodeURIComponent(destinationPath)}?alt=media`)
 
 
-        }
+        }*/
+
+        let result
 
         try {
-            const result = await this.model.store(data)
+            result = await this.model.store(data)
             if (result.id) {
-                const authUser = (await this.createUser(result.id, result)).data
-                result.uid = authUser.uid;
+                result = (await this.createUser(result.id, result)).data
+                // result.uid = authUser.uid;
 
                 if (result.premium !== true) {
                     await this.validate(result.id)
@@ -90,6 +90,7 @@ export default class MemberService extends Service {
         try {
             const userService = new UserService()
             const user = (await userService.store({
+                id       : memberId,
                 lastname : member.lastname,
                 firstname: member.firstname,
                 email    : member.email,
@@ -100,8 +101,15 @@ export default class MemberService extends Service {
 
             if (authUser instanceof User && authUser.uid) {
                 await this.model.update(memberId, { uid: authUser.uid })
+                member.uid = authUser.uid
+
+                if (memberId !== authUser.uid) {
+                    member = await this.model.store({ ...member, id: authUser.uid, uid: authUser.uid }, false);
+                    await this.model.delete(memberId);
+                }
             } else {
                 if (user.code === 419) {
+                    await this.model.delete(memberId);
                     throw new DuplicateEntryException()
                     // const authUser2 = (await userService.findOneBy("email", member.email)).data
                     // if (authUser2 instanceof User)
@@ -109,7 +117,7 @@ export default class MemberService extends Service {
                 }
             }
 
-            return Result.success(authUser)
+            return Result.success(member)
         } catch (e) {
             Log.error(e, true)
             if (e instanceof DuplicateEntryException) {

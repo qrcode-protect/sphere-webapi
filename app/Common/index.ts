@@ -70,4 +70,4 @@ export const makeid = (length) => {
     return result;
 }
 
-export const toBool = (value: any) => value === "true" || value === true
+export const toBool = (value: unknown) => typeof value !== "undefined" && (value === "true" || value === true)

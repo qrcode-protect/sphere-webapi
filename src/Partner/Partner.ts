@@ -30,6 +30,8 @@ export default class Partner extends Model {
     available: boolean;
     uid?: string;
     partnerNumber: string;
+    avatar: string;
+    description: string;
 
 
     constructor(attributes?: PartnerAttributes) {
@@ -39,7 +41,7 @@ export default class Partner extends Model {
         }
     }
 
-    async store(data): Promise<Partner> {
+    async store(data, force = true): Promise<Partner> {
         const personalInfo = cleanPersonalInformations({
             firstname: data.firstname,
             lastname : data.lastname,
@@ -59,7 +61,12 @@ export default class Partner extends Model {
         if (typeof data.parnterNumber === "undefined")
             data.partnerNumber = generateNumber(data.lastname, data.phone, "PRT");
 
-        if ((await this.where("email", data.email)) !== null) {
+        if (typeof data.activities === "string" )
+            data.activities = data.activities.toString().split(",");
+        else if (typeof data.activities === "undefined" || data.activities === null)
+            data.activities = [];
+
+        if (force && (await this.where("email", data.email)) !== null) {
             throw new DuplicateEntryException()
         }
 

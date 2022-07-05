@@ -9,24 +9,19 @@
  * File src/Partner/Partner
  */
 
-import Service                          from "QRCP/Sphere/Common/Service";
-import PartnerAttributes                from "QRCP/Sphere/Partner/PartnerAttributes";
-import Partner                          from "QRCP/Sphere/Partner/Partner";
-import { MultipartFileContract }        from "@ioc:Adonis/Core/BodyParser";
-import Drive                            from "../../config/drive";
-import path                             from "path";
-import Application                      from "@ioc:Adonis/Core/Application";
-import { Bucket, GetSignedUrlResponse } from "@google-cloud/storage";
-import { Result }                       from "@sofiakb/adonis-response";
-import Log                              from "QRCP/Sphere/Common/Log";
-import DuplicateEntryException          from "QRCP/Sphere/Exceptions/DuplicateEntryException";
-import Config                           from "@ioc:Adonis/Core/Config";
-import UserService                      from "QRCP/Sphere/User/UserService";
-import { RoleType }                     from "QRCP/Sphere/Authentication/utils/roles";
-import AuthMail                         from "QRCP/Sphere/Authentication/AuthMail";
-import User                             from "QRCP/Sphere/User/User";
-import moment                           from "moment";
-import { name }                         from "App/Common/string";
+import Service                   from "QRCP/Sphere/Common/Service";
+import PartnerAttributes         from "QRCP/Sphere/Partner/PartnerAttributes";
+import Partner                   from "QRCP/Sphere/Partner/Partner";
+import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
+import { Result }                from "@sofiakb/adonis-response";
+import Log                       from "QRCP/Sphere/Common/Log";
+import DuplicateEntryException   from "QRCP/Sphere/Exceptions/DuplicateEntryException";
+import UserService               from "QRCP/Sphere/User/UserService";
+import { RoleType }              from "QRCP/Sphere/Authentication/utils/roles";
+import AuthMail                  from "QRCP/Sphere/Authentication/AuthMail";
+import User                      from "QRCP/Sphere/User/User";
+import { name }                  from "App/Common/string";
+import { upload }                from "App/Common/file";
 
 interface StorePartnerAttributes extends PartnerAttributes {
     upload?: unknown
@@ -50,35 +45,25 @@ export default class PartnerService extends Service {
         }
     }
 
-    public async store(data: StorePartnerAttributes, certificate?: Nullable<MultipartFileContract>, fromDashboard = false) {
+    public async store(data: StorePartnerAttributes, documents?: Nullable<{ certificate: Nullable<MultipartFileContract>, avatar: Nullable<MultipartFileContract> }>, fromDashboard = false) {
         delete data.upload
 
-        if (certificate) {
-            const certificateFilename = `${moment().unix()}.${certificate.extname}`;
-            const certificatePath: string = Drive.disks.uploads.root
-            const certificateFullPath: string = path.resolve(Drive.disks.uploads.root, certificateFilename)
-            const destinationPath = `partners/certificates/${name(data.companyName, "-")}/${certificateFilename}`
-            await certificate.move(certificatePath, { name: certificateFilename })
+        if (documents) {
 
-            const bucket: Bucket = <Bucket>Application.container.use("firebase.storage")
+            if (documents.certificate)
+                data.certificate = await upload(documents.certificate, `partners/certificates/${name(data.companyName, "-")}`)
 
-            await bucket.upload(certificateFullPath, {
-                destination: destinationPath,
-            });
-
-            await bucket.file(destinationPath)
-                .getSignedUrl({ action: "read", expires: "01-01-2491" })
-                .then((signedUrl: GetSignedUrlResponse) => data.certificate = signedUrl[0])
-                .catch(() => data.certificate = data.certificate = `https://firebasestorage.googleapis.com/v0/b/${Config.get("firebase.projectId")}.appspot.com/o/${encodeURIComponent(destinationPath)}?alt=media`)
-
-
+            if (documents.avatar)
+                data.avatar = await upload(documents.avatar, `partners/avatars/${name(data.companyName, "-")}`)
         }
 
+        let result
+
         try {
-            const result = await this.model.store(data)
+            result = await this.model.store(data)
             if (result.id) {
-                const authUser = (await this.createUser(result.id, result)).data
-                result.uid = authUser.uid;
+                result = (await this.createUser(result.id, result)).data
+                // result.uid = authUser.uid;
 
                 if (fromDashboard) {
                     await this.validate(result.id)
@@ -90,6 +75,9 @@ export default class PartnerService extends Service {
         } catch (e) {
             Log.error(e, true)
             if (e instanceof DuplicateEntryException) {
+                if (result && result.id) {
+                    await this.model.delete(result.id)
+                }
                 return Result.duplicate("Un espace existe déjà avec cette adresse e-mail")
             }
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
@@ -102,6 +90,7 @@ export default class PartnerService extends Service {
         try {
             const userService = new UserService()
             const user = (await userService.store({
+                id       : partnerId,
                 lastname : partner.lastname,
                 firstname: partner.firstname,
                 email    : partner.email,
@@ -112,8 +101,16 @@ export default class PartnerService extends Service {
 
             if (authUser instanceof User && authUser.uid) {
                 await this.model.update(partnerId, { uid: authUser.uid })
+                partner.uid = authUser.uid
+
+                if (partnerId !== authUser.uid) {
+                    partner = await this.model.store({ ...partner, id: authUser.uid, uid: authUser.uid }, false);
+                    await this.model.delete(partnerId);
+                }
+
             } else {
                 if (user.code === 419) {
+                    await this.model.delete(partnerId);
                     throw new DuplicateEntryException()
                     // const authUser2 = (await userService.findOneBy("email", partner.email)).data
                     // if (authUser2 instanceof User)
@@ -121,7 +118,7 @@ export default class PartnerService extends Service {
                 }
             }
 
-            return Result.success(authUser)
+            return Result.success(partner)
         } catch (e) {
             Log.error(e, true)
             if (e instanceof DuplicateEntryException) {

@@ -74,6 +74,7 @@ test.group("Members 00 create", () => {
         assert.equal(member.email, "sofiane.akbly2@gmail.com")
         assert.equal(member.username, "sakbly")
         assert.equal(member.phone, "0223456789")
+        assert.equal(member.uid, member.id)
     });
 
     // test("Store member controller", async ({ assert,client }) => {

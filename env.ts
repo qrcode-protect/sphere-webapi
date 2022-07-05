@@ -41,6 +41,8 @@ export default Env.rules({
     SMTP_USERNAME: Env.schema.string(),
     SMTP_PASSWORD: Env.schema.string(),
 
+    MAIL_CONTACT_RECIPIENTS: Env.schema.string(),
+
     JWT_SECRET: Env.schema.string(),
     JWT_TTL: Env.schema.number.optional(),
 })

@@ -10,6 +10,7 @@ test.group("Partners 00 create", () => {
     test("Store partner", async ({ assert }) => {
 
         const attributes: PartnerAttributes = {
+            avatar     : "", description: "",
             certificate: "", companyName: "qrcode-protect", siret: "",
             firstname  : "sOfi-àne",
             lastname   : "ak-bly",
@@ -33,6 +34,7 @@ test.group("Partners 00 create", () => {
     test("Store duplicate partner", async ({ assert }) => {
 
         const attributes: PartnerAttributes = {
+            avatar     : "", description: "",
             certificate: "", companyName: "qrcode-protect", siret: "",
             firstname  : "sOfi-àne",
             lastname   : "ak-bly",
@@ -53,6 +55,7 @@ test.group("Partners 00 create", () => {
     test("Store partner service", async ({ assert }) => {
 
         const attributes: PartnerAttributes = {
+            avatar     : "", description: "",
             certificate: "", companyName: "qrcode-protect", siret: "",
             firstname  : "sOfi-àne",
             lastname   : "ak-bly2",
@@ -74,6 +77,7 @@ test.group("Partners 00 create", () => {
         assert.equal(partner.email, "sofiane.akbly2.partner@gmail.com")
         assert.equal(partner.username, "sakbly")
         assert.equal(partner.phone, "0223456789")
+        assert.equal(partner.uid, partner.id)
     });
 
     // test("Store partner controller", async ({ assert,client }) => {

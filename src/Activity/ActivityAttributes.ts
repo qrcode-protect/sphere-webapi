@@ -9,8 +9,12 @@
  * File src/Activity/ActivityAttributes
  */
 
+import Activity from "QRCP/Sphere/Activity/Activity";
+
 export default interface ActivityAttributes {
     id?: string,
     name?: string,
-    label: string
+    label?: string,
+    activities?: Activity[]
+    createdAt?: Date
 }

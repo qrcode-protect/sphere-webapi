@@ -46,6 +46,8 @@ test.group("Messages 00 create", () => {
         const partnerAttributes: PartnerAttributes = {
             activityId : "",
             certificate: "",
+            description: "",
+            avatar: "",
             companyName: "",
             email      : "contact.sofiakb@gmail.com",
             firstname  : "partenaire",
@@ -56,7 +58,7 @@ test.group("Messages 00 create", () => {
         }
 
         const partnerService = new PartnerService()
-        const partnerServiceResult = await partnerService.store(new Member(partnerAttributes))
+        const partnerServiceResult = await partnerService.store(new Partner(partnerAttributes))
         const partner: Partner | any = partnerServiceResult.data
 
         assert.isNotNull(partnerServiceResult);

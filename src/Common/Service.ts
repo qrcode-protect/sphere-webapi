@@ -10,7 +10,7 @@
  */
 
 import { Result }           from "@sofiakb/adonis-response";
-import { size, each }       from "lodash"
+import { each, size }       from "lodash"
 import Log                  from "QRCP/Sphere/Common/Log";
 import Model                from "QRCP/Sphere/Common/Model";
 import { ClassConstructor } from "class-transformer";
@@ -21,8 +21,9 @@ export default class Service {
 
     public model
 
-    constructor(model: ClassConstructor<Model>) {
-        this.model = new model
+    constructor(model?: ClassConstructor<Model>) {
+        if (model)
+            this.model = new model
     }
 
     public async all() {
