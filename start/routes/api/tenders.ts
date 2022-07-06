@@ -19,6 +19,9 @@ Route.group(() => {
     }).middleware("auth")
 
     Route.group(() => {
+        Route.get("/active", "TenderController.active")
+        Route.get("/inactive", "TenderController.inactive")
+
         Route.put("/unblock/:id", "TenderController.unblock")
         Route.put("/block/:id", "TenderController.block")
         Route.put("/validate/:id", "TenderController.validate")
