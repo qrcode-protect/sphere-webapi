@@ -13,7 +13,7 @@ const tenderService = new TenderService()
 
 const tenderStoreService = async (member: Member) => {
     const attributes: TenderAttributes = {
-        title: "Test tender",
+        title      : "Test tender",
         address    : {
             id           : "address-tender",
             street_number: 335,
@@ -21,6 +21,8 @@ const tenderStoreService = async (member: Member) => {
             address2     : "appartement 142",
             zipcode      : "59500",
             city         : "douai",
+            lat          : 0,
+            lng          : 0
         },
         amount     : 100,
         beginAt    : moment(),
@@ -59,6 +61,7 @@ test.group("Tenders 00 create", () => {
     test("Init tender test", async ({ assert }) => {
 
         const memberAttributes: MemberAttributes = {
+            premium: true,
             activityId : "",
             certificate: "",
             companyName: "",
@@ -82,7 +85,7 @@ test.group("Tenders 00 create", () => {
         test("Store tender", async ({ assert }) => {
 
             const attributes: TenderAttributes = {
-                title: "Test tender",
+                title      : "Test tender",
                 address    : {
                     id           : "address-tender",
                     street_number: 335,
@@ -90,6 +93,8 @@ test.group("Tenders 00 create", () => {
                     address2     : "appartement 142",
                     zipcode      : "59500",
                     city         : "douai",
+                    lat          : 0,
+                    lng          : 0
                 },
                 amount     : 100,
                 beginAt    : moment(),
@@ -139,9 +144,9 @@ test.group("Tenders 00 create", () => {
 
             await tenderService.deny(tender.id)
             const tmpTender = (await fetchTender(tender))
-            assert.isNotNull(tmpTender)
-            assert.isFalse(tmpTender.active)
-            assert.isFalse(tmpTender.available)
+            assert.isNull(tmpTender)
+            // assert.isFalse(tmpTender.active)
+            // assert.isFalse(tmpTender.available)
         }).tags([ "tender-unit" ]);
 
         test("Block tender service", async ({ assert }) => {

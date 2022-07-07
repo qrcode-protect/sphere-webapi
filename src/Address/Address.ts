@@ -31,6 +31,8 @@ export default class Address {
         this.zipcode = attributes.zipcode
         this.city = attributes.city
         this.country = (attributes.country ?? "FRANCE").toUpperCase()
+        this.lat = attributes.lat
+        this.lng = attributes.lng
     }
 
     toJson() {

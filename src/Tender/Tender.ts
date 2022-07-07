@@ -62,8 +62,6 @@ export default class Tender extends Model {
 
         const address = new Address(data.address)
 
-        console.log(data.address)
-
         data.memberId = data.memberId ?? data.member?.id
         delete data.member
 
