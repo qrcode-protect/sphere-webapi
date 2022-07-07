@@ -13,6 +13,7 @@ import Controller              from "QRCP/Sphere/Common/Controller";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import ContactService          from "QRCP/Sphere/Contact/ContactService";
 import { unknown }             from "@sofiakb/adonis-response";
+import ContactAttributes       from "QRCP/Sphere/Contact/ContactAttributes";
 
 
 export default class ContactController extends Controller {
@@ -24,7 +25,9 @@ export default class ContactController extends Controller {
     }
 
     async send({ request, response }: HttpContextContract): Promise<any> {
-        return unknown(response, await this.service.send(request.body().data));
+        return unknown(response, await this.service.send(request.body() as ContactAttributes, {
+            file: request.file("file"),
+        }));
     }
 
 }

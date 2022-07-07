@@ -9,12 +9,13 @@
  * File src/Mail/Mail
  */
 
-import Application          from "@ioc:Adonis/Core/Application";
-import MailAddons           from "@ioc:Adonis/Addons/Mail";
-import User                 from "QRCP/Sphere/User/User";
-import { retrieveRole }     from "QRCP/Sphere/Authentication/utils/roles";
-import { capitalize, each } from "lodash";
-import mailConfig           from "Config/mail";
+import Application               from "@ioc:Adonis/Core/Application";
+import MailAddons                from "@ioc:Adonis/Addons/Mail";
+import User                      from "QRCP/Sphere/User/User";
+import { retrieveRole }          from "QRCP/Sphere/Authentication/utils/roles";
+import { capitalize, each }      from "lodash";
+import mailConfig                from "Config/mail";
+import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
 
 export default class Mail {
 
@@ -37,12 +38,19 @@ export default class Mail {
         })
     }
 
-    static async text(to: string | string[], subject: string, content: string) {
+    static async text(to: string | string[], subject: string, content: string, file?: Nullable<MultipartFileContract>) {
         await MailAddons.send((message) => {
 
             if (Array.isArray(to)) {
                 each(to, recipient => message.to(recipient))
             } else message.to(to)
+
+            console.log(file)
+
+            if (file && file.tmpPath) {
+                console.log(file.tmpPath)
+                message.attach(file.tmpPath , {filename: file.clientName, contentType: file.headers["content-type"]})
+            }
 
             message
                 .from(mailConfig.mailers.smtp.auth?.user ?? "noreply@reseau-sphere.com", "SPHÈRE")
