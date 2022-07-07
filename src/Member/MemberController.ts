@@ -65,6 +65,10 @@ export default class MemberController extends Controller {
         return super.findBy("premium", true, httpContextContract);
     }
 
+    public async premiumByEmail({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.premiumByEmail((request.body()).email));
+    }
+
     public async validate({ request, response }: HttpContextContract) {
         return unknown(response, await this.service.validate(request.param("id")));
     }

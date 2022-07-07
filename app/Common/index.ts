@@ -71,3 +71,10 @@ export const makeid = (length) => {
 }
 
 export const toBool = (value: unknown) => typeof value !== "undefined" && (value === "true" || value === true)
+export const toJson = (value: any) => {
+    try {
+        return JSON.parse(value);
+    } catch (e) {
+        return value
+    }
+}

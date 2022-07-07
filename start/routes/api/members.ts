@@ -22,6 +22,8 @@ Route.group(() => {
             Route.get("/inactive", "MemberController.inactive")
             Route.get("/premium", "MemberController.premium")
 
+            Route.post("/search/premium-by-email", "MemberController.premiumByEmail")
+
             Route.put("/validate/:id", "MemberController.validate")
             Route.put("/deny/:id", "MemberController.deny")
             Route.put("/:id", "MemberController.update")

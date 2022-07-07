@@ -13,7 +13,7 @@ import Model                from "QRCP/Sphere/Common/Model";
 import TenderAttributes     from "QRCP/Sphere/Tender/TenderAttributes";
 import Address              from "QRCP/Sphere/Address/Address";
 import { momentToFirebase } from "App/Common/date";
-import { Moment }           from "moment";
+import moment, { Moment }   from "moment";
 import { toBool }           from "App/Common";
 
 export default class Tender extends Model {
@@ -51,7 +51,7 @@ export default class Tender extends Model {
         data.beginAt = momentToFirebase(data.beginAt)
         data.endAt = momentToFirebase(data.endAt)
         data.expiresAt = momentToFirebase(data.expiresAt)
-        data.publishedAt = momentToFirebase(data.publishedAt)
+        data.publishedAt = momentToFirebase( moment().valueOf())
 
         data.amount = data.amount ? parseFloat(data.amount.toString()) : null
 
@@ -61,6 +61,8 @@ export default class Tender extends Model {
         data.reporter = data.reporter ?? null
 
         const address = new Address(data.address)
+
+        console.log(data.address)
 
         data.memberId = data.memberId ?? data.member?.id
         delete data.member

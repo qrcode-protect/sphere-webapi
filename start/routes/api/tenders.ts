@@ -21,11 +21,17 @@ Route.group(() => {
     Route.group(() => {
         Route.get("/active", "TenderController.active")
         Route.get("/inactive", "TenderController.inactive")
+        Route.get("/:id", "TenderController.findById")
 
         Route.put("/unblock/:id", "TenderController.unblock")
         Route.put("/block/:id", "TenderController.block")
         Route.put("/validate/:id", "TenderController.validate")
         Route.put("/deny/:id", "TenderController.deny")
+
+        Route.delete("/:id", "TenderController.destroy")
+
+        Route.post("/from-dashboard", "TenderController.storeFromDashboard")
+        Route.post("/from-dashboard/:id", "TenderController.editFromDashboard")
     }).middleware("admin")
 
     Route.post("", "TenderController.store")

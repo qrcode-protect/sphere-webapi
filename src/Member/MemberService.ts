@@ -184,4 +184,17 @@ export default class MemberService extends Service {
         }
     }
 
+    public async premiumByEmail(email: string) {
+        try {
+            console.log(email)
+            const data = await this.model.whereSnapshot("premium", true)
+                .whereSnapshot("email", email, ">=")
+                .where("email", email + "\uf8ff", "<=") || []
+            return Result.success(data)
+        } catch (e) {
+            Log.error(e, true)
+            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+        }
+    }
+
 }

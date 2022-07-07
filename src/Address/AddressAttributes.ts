@@ -17,4 +17,6 @@ export default interface AddressAttributes {
     zipcode: string
     city: string
     country?: string
+    lat: number
+    lng: number
 }

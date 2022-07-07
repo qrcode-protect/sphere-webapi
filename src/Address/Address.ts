@@ -19,6 +19,8 @@ export default class Address {
     zipcode: string
     city: string
     country?: string
+    lat: number
+    lng: number
 
 
     constructor(attributes: AddressAttributes) {
