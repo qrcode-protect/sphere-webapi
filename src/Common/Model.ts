@@ -9,7 +9,7 @@
  * File src/Common/Model
  */
 
-import Application          from "@ioc:Adonis/Core/Application"
+import Application                   from "@ioc:Adonis/Core/Application"
 import {
     CollectionReference,
     DocumentData,
@@ -22,10 +22,11 @@ import {
     QueryDocumentSnapshot,
     QuerySnapshot,
     WhereFilterOp
-}                           from "@google-cloud/firestore";
-import { ClassConstructor } from "class-transformer";
-import { firestore }        from "firebase-admin";
-import { groupBy, Dictionary }          from "lodash";
+}                                    from "@google-cloud/firestore";
+import { ClassConstructor }          from "class-transformer";
+import { firestore }                 from "firebase-admin";
+import { Dictionary, groupBy, size } from "lodash";
+import Partner                       from "QRCP/Sphere/Partner/Partner";
 
 interface ModelConstructor {
     collectionName: string;
@@ -214,5 +215,22 @@ export default class Model {
         }
 
         return result;
+    }
+
+    async count() {
+        return size(await this.collection.listDocuments())
+    }
+
+    async truncate() {
+        const items: Partner[] = await this.all()
+
+        if (items.length > 0) {
+
+            // await Drive.put(`backup/truncate/${moment().format("YYYYMMDDHHmmss")}.json`, JSON.stringify(items))
+
+            for (const item of items) {
+                await this.delete(item.id);
+            }
+        }
     }
 }
