@@ -9,19 +9,21 @@
  * File src/Member/Member
  */
 
-import Service                   from "QRCP/Sphere/Common/Service";
-import MemberAttributes          from "QRCP/Sphere/Member/MemberAttributes";
-import Member                    from "QRCP/Sphere/Member/Member";
-import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
-import { Result }                from "@sofiakb/adonis-response";
-import Log                       from "QRCP/Sphere/Common/Log";
-import DuplicateEntryException   from "QRCP/Sphere/Exceptions/DuplicateEntryException";
-import UserService               from "QRCP/Sphere/User/UserService";
-import { RoleType }              from "QRCP/Sphere/Authentication/utils/roles";
-import AuthMail                  from "QRCP/Sphere/Authentication/AuthMail";
-import User                      from "QRCP/Sphere/User/User";
-import { name }                  from "App/Common/string";
-import { upload }                from "App/Common/file";
+import Service                            from "QRCP/Sphere/Common/Service";
+import MemberAttributes                   from "QRCP/Sphere/Member/MemberAttributes";
+import Member                             from "QRCP/Sphere/Member/Member";
+import { MultipartFileContract }          from "@ioc:Adonis/Core/BodyParser";
+import { Result }                         from "@sofiakb/adonis-response";
+import Log                                from "QRCP/Sphere/Common/Log";
+import DuplicateEntryException            from "QRCP/Sphere/Exceptions/DuplicateEntryException";
+import UserService                        from "QRCP/Sphere/User/UserService";
+import { RoleType }                       from "QRCP/Sphere/Authentication/utils/roles";
+import AuthMail                           from "QRCP/Sphere/Authentication/AuthMail";
+import User                               from "QRCP/Sphere/User/User";
+import { name }                           from "App/Common/string";
+import { upload }                         from "App/Common/file";
+import { uniqBy }                         from "lodash";
+import { findActive, findActiveByNumber } from "App/Common/partner-member";
 
 interface StoreMemberAttributes extends MemberAttributes {
     upload?: unknown
@@ -31,6 +33,17 @@ export default class MemberService extends Service {
 
     constructor(model = Member) {
         super(model);
+    }
+
+    async all(force = true) {
+
+        const members = await this.model.all();
+
+        if (force) {
+            return Result.success(members);
+        }
+        return Result.success(uniqBy(members, "memberNumber"))
+
     }
 
     public async store(data: StoreMemberAttributes, certificate?: Nullable<MultipartFileContract>) {
@@ -173,20 +186,16 @@ export default class MemberService extends Service {
     }
 
     public async findActive(activityId?: string) {
-        try {
-            const query = this.model.whereSnapshot("active", true)
+        return findActive("memberNumber", this.model, activityId)
+    }
 
-            const data = await (activityId ? query.where("activityId", activityId) : query.get()) || []
-            return Result.success(data)
-        } catch (e) {
-            Log.error(e, true)
-            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
-        }
+    public async findActiveByNumber(memberNumber: string) {
+        console.log(memberNumber, "heyyy")
+        return findActiveByNumber("memberNumber",memberNumber, this.model);
     }
 
     public async premiumByEmail(email: string) {
         try {
-            console.log(email)
             const data = await this.model.whereSnapshot("premium", true)
                 .whereSnapshot("email", email, ">=")
                 .where("email", email + "\uf8ff", "<=") || []

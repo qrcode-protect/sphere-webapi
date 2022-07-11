@@ -9,19 +9,20 @@
  * File src/Partner/Partner
  */
 
-import Service                   from "QRCP/Sphere/Common/Service";
-import PartnerAttributes         from "QRCP/Sphere/Partner/PartnerAttributes";
-import Partner                   from "QRCP/Sphere/Partner/Partner";
-import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
-import { Result }                from "@sofiakb/adonis-response";
-import Log                       from "QRCP/Sphere/Common/Log";
-import DuplicateEntryException   from "QRCP/Sphere/Exceptions/DuplicateEntryException";
-import UserService               from "QRCP/Sphere/User/UserService";
-import { RoleType }              from "QRCP/Sphere/Authentication/utils/roles";
-import AuthMail                  from "QRCP/Sphere/Authentication/AuthMail";
-import User                      from "QRCP/Sphere/User/User";
-import { name }                  from "App/Common/string";
-import { upload }                from "App/Common/file";
+import Service                            from "QRCP/Sphere/Common/Service";
+import PartnerAttributes                  from "QRCP/Sphere/Partner/PartnerAttributes";
+import Partner                            from "QRCP/Sphere/Partner/Partner";
+import { MultipartFileContract }          from "@ioc:Adonis/Core/BodyParser";
+import { Result }                         from "@sofiakb/adonis-response";
+import Log                                from "QRCP/Sphere/Common/Log";
+import DuplicateEntryException            from "QRCP/Sphere/Exceptions/DuplicateEntryException";
+import UserService                        from "QRCP/Sphere/User/UserService";
+import { RoleType }                       from "QRCP/Sphere/Authentication/utils/roles";
+import AuthMail                           from "QRCP/Sphere/Authentication/AuthMail";
+import User                               from "QRCP/Sphere/User/User";
+import { name }                           from "App/Common/string";
+import { upload }                         from "App/Common/file";
+import { findActive, findActiveByNumber } from "App/Common/partner-member";
 
 interface StorePartnerAttributes extends PartnerAttributes {
     upload?: unknown
@@ -34,15 +35,11 @@ export default class PartnerService extends Service {
     }
 
     public async findActive(activityId?: string) {
-        try {
-            const query = this.model.whereSnapshot("active", true)
+        return findActive("partnerNumber", this.model, activityId)
+    }
 
-            const data = await (activityId ? query.where("activityId", activityId) : query.get()) || []
-            return Result.success(data)
-        } catch (e) {
-            Log.error(e, true)
-            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
-        }
+    public async findActiveByNumber(partnerNumber: string) {
+        return findActiveByNumber("partnerNumber", partnerNumber, this.model);
     }
 
     public async store(data: StorePartnerAttributes, documents?: Nullable<{ certificate: Nullable<MultipartFileContract>, avatar: Nullable<MultipartFileContract> }>, fromDashboard = false) {

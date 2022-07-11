@@ -18,6 +18,7 @@ Route.group(() => {
 
         Route.group(() => {
             Route.get("", "MemberController.all")
+            Route.get("/active/by-number/:memberNumber?", "MemberController.activeByNumber")
             Route.get("/active/:activityId?", "MemberController.active")
             Route.get("/inactive", "MemberController.inactive")
             Route.get("/premium", "MemberController.premium")

@@ -14,6 +14,7 @@ import MemberAttributes                            from "QRCP/Sphere/Member/Memb
 import DuplicateEntryException                     from "QRCP/Sphere/Exceptions/DuplicateEntryException";
 import { cleanPersonalInformations, personalKeys } from "App/Common";
 import { generateNumber, name, stripAccents }      from "App/Common/string";
+import { updateAll }                               from "App/Common/partner-member";
 
 export default class Member extends Model {
     id: string;
@@ -55,6 +56,23 @@ export default class Member extends Model {
         data.name = stripAccents(data.companyName);
         data.name = name(data.name.toLowerCase(), "-");
 
+        const parentsMembers = (await this.where("name", data.name))
+        let parentMember
+
+        if (parentsMembers !== null && parentsMembers[0]) {
+            parentMember = parentsMembers[0]
+            data.memberNumber = parentMember.memberNumber;
+            data.activities = parentMember.activities
+            data.activityId = parentMember.activityId
+            data.active = parentMember.active
+            data.available = parentMember.available
+            data.avatar = parentMember.avatar
+            data.certificate = parentMember.certificate
+            data.companyName = parentMember.companyName
+            data.description = parentMember.description
+            data.siret = parentMember.siret
+        }
+
         if (typeof data.active === "undefined")
             data.active = false;
 
@@ -65,8 +83,7 @@ export default class Member extends Model {
             data.premium = false;
 
         if (typeof data.memberNumber === "undefined") {
-            const parentsMembers = (await this.where("name", data.name))
-            data.memberNumber = parentsMembers !== null && parentsMembers[0] ? parentsMembers[0].memberNumber : generateNumber(await this.count(), "ADH");
+            data.memberNumber = generateNumber(await this.count(), "ADH");
         }
 
         if (force && (await this.where("email", data.email)) !== null) {
@@ -74,6 +91,10 @@ export default class Member extends Model {
         }
 
         return super.store(data);
+    }
+
+    async update(docID: string, data, force = false): Promise<any> {
+        return updateAll(this, super.update, "memberNumber", docID, data, force);
     }
 
 

@@ -16,6 +16,7 @@ Route.group(() => {
 
     Route.group(() => {
         Route.get("", "PartnerController.all")
+        Route.get("/active/by-number/:partnerNumber?", "PartnerController.activeByNumber")
         Route.get("/active/:activityId?", "PartnerController.active")
         Route.get("/inactive", "PartnerController.inactive")
         Route.get("/group-by/:group", "PartnerController.groupBy")
