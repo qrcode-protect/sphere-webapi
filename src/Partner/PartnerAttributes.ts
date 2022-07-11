@@ -26,4 +26,5 @@ export default interface PartnerAttributes {
     partnerNumber?: string,
     avatar: string,
     description: string,
+    name?: string,
 }

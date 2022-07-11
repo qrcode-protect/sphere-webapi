@@ -13,7 +13,7 @@ import Model                                       from "QRCP/Sphere/Common/Mode
 import MemberAttributes                            from "QRCP/Sphere/Member/MemberAttributes";
 import DuplicateEntryException                     from "QRCP/Sphere/Exceptions/DuplicateEntryException";
 import { cleanPersonalInformations, personalKeys } from "App/Common";
-import { generateNumber }                          from "App/Common/string";
+import { generateNumber, name, stripAccents }      from "App/Common/string";
 
 export default class Member extends Model {
     id: string;
@@ -31,6 +31,7 @@ export default class Member extends Model {
     uid?: string;
     premium = false;
     memberNumber: string;
+    name: string;
 
 
     constructor(attributes?: MemberAttributes) {
@@ -51,6 +52,9 @@ export default class Member extends Model {
 
         personalKeys.forEach((key) => data[key] = personalInfo[key])
 
+        data.name = stripAccents(data.companyName);
+        data.name = name(data.name.toLowerCase(), "-");
+
         if (typeof data.active === "undefined")
             data.active = false;
 
@@ -60,8 +64,10 @@ export default class Member extends Model {
         if (typeof data.premium === "undefined")
             data.premium = false;
 
-        if (typeof data.memberNumber === "undefined")
-            data.memberNumber = generateNumber(data.lastname, data.phone, "ADH");
+        if (typeof data.memberNumber === "undefined") {
+            const parentsMembers = (await this.where("name", data.name))
+            data.memberNumber = parentsMembers !== null && parentsMembers[0] ? parentsMembers[0].memberNumber : generateNumber(await this.count(), "ADH");
+        }
 
         if (force && (await this.where("email", data.email)) !== null) {
             throw new DuplicateEntryException()
