@@ -13,7 +13,8 @@ import Model                                       from "QRCP/Sphere/Common/Mode
 import PartnerAttributes                           from "QRCP/Sphere/Partner/PartnerAttributes";
 import DuplicateEntryException                     from "QRCP/Sphere/Exceptions/DuplicateEntryException";
 import { cleanPersonalInformations, personalKeys } from "App/Common";
-import { generateNumber }                          from "App/Common/string";
+import { generateNumber, name, stripAccents }      from "App/Common/string";
+import { updateAll }                               from "App/Common/partner-member";
 
 export default class Partner extends Model {
     id: string;
@@ -31,6 +32,7 @@ export default class Partner extends Model {
     uid?: string;
     partnerNumber: string;
     avatar: string;
+    name: string;
     description: string;
 
 
@@ -52,16 +54,38 @@ export default class Partner extends Model {
 
         personalKeys.forEach((key) => data[key] = personalInfo[key])
 
+        data.name = stripAccents(data.companyName);
+        data.name = name(data.name.toLowerCase(), "-");
+
+        const parentsPartners = (await this.where("name", data.name))
+        let parentPartner
+
+        if (parentsPartners !== null && parentsPartners[0]) {
+            parentPartner = parentsPartners[0]
+            data.partnerNumber = parentPartner.partnerNumber;
+            data.activities = parentPartner.activities
+            data.activityId = parentPartner.activityId
+            data.active = parentPartner.active
+            data.available = parentPartner.available
+            data.avatar = parentPartner.avatar
+            data.certificate = parentPartner.certificate
+            data.companyName = parentPartner.companyName
+            data.description = parentPartner.description
+            data.siret = parentPartner.siret
+        }
+
         if (typeof data.active === "undefined")
             data.active = false;
 
         if (typeof data.available === "undefined")
             data.available = false;
 
-        if (typeof data.parnterNumber === "undefined")
-            data.partnerNumber = generateNumber(data.lastname, data.phone, "PRT");
+        if (typeof data.partnerNumber === "undefined") {
+            data.partnerNumber = generateNumber(await this.count(), "PRT");
+        }
+        // data.partnerNumber = generateNumber(data.lastname, data.phone, "PRT");
 
-        if (typeof data.activities === "string" )
+        if (typeof data.activities === "string")
             data.activities = data.activities.toString().split(",");
         else if (typeof data.activities === "undefined" || data.activities === null)
             data.activities = [];
@@ -71,6 +95,10 @@ export default class Partner extends Model {
         }
 
         return super.store(data);
+    }
+
+    async update(docID: string, data, force = false): Promise<any> {
+        return updateAll(this, super.update, "partnerNumber", docID, data, force);
     }
 
 

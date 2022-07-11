@@ -118,11 +118,10 @@ test.group("Messages 00 create", () => {
         }).tags([ "create-message" ]);
 
         test("Clean member & partner & conversation", async () => {
-            await userModel().delete(member.uid)
-            await userModel().delete(partner.uid)
-            await memberModel().delete(member.id)
-            await partnerModel().delete(partner.id)
-            await conversationModel().delete(conversation.id)
+            await userModel().truncate()
+            await memberModel().truncate()
+            await partnerModel().truncate()
+            await conversationModel().truncate()
         }).tags([ "create-message" ]);
 
     }).tags([ "create-message" ]);

@@ -11,7 +11,7 @@ test.group("Partners 00 create", () => {
 
         const attributes: PartnerAttributes = {
             avatar     : "", description: "",
-            certificate: "", companyName: "qrcode-protect", siret: "",
+            certificate: "", companyName: "qrcodE-protèct", siret: "",
             firstname  : "sOfi-àne",
             lastname   : "ak-bly",
             email      : "sofiane.AkblY.partner@gmail.com",
@@ -19,6 +19,7 @@ test.group("Partners 00 create", () => {
             activityId : "strest"
         }
 
+        await partnerModel().truncate()
         const partner = await partnerModel().store(new Partner(attributes))
 
         assert.isNotNull(partner);
@@ -28,7 +29,8 @@ test.group("Partners 00 create", () => {
         assert.equal(partner.email, "sofiane.akbly.partner@gmail.com")
         assert.equal(partner.username, "sakbly")
         assert.equal(partner.phone, "0123456789")
-        assert.equal(partner.partnerNumber, "PRT-00YLB987")
+        assert.equal(partner.partnerNumber, "PRT-000001")
+        assert.equal(partner.name, "qrcode-protect")
     });
 
     test("Store duplicate partner", async ({ assert }) => {
@@ -78,6 +80,8 @@ test.group("Partners 00 create", () => {
         assert.equal(partner.username, "sakbly")
         assert.equal(partner.phone, "0223456789")
         assert.equal(partner.uid, partner.id)
+        assert.equal(partner.partnerNumber, "PRT-000001")
+        assert.equal(partner.name, "qrcode-protect")
     });
 
     // test("Store partner controller", async ({ assert,client }) => {

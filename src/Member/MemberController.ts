@@ -53,6 +53,10 @@ export default class MemberController extends Controller {
         return unknown(response, await this.service.findActive(params.activityId));
     }
 
+    public async activeByNumber({ response, params }: HttpContextContract) {
+        return unknown(response, await this.service.findActiveByNumber(params.memberNumber));
+    }
+
     public async inactive(httpContextContract: HttpContextContract) {
         return super.findBy("active", false, httpContextContract);
     }

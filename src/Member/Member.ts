@@ -13,7 +13,8 @@ import Model                                       from "QRCP/Sphere/Common/Mode
 import MemberAttributes                            from "QRCP/Sphere/Member/MemberAttributes";
 import DuplicateEntryException                     from "QRCP/Sphere/Exceptions/DuplicateEntryException";
 import { cleanPersonalInformations, personalKeys } from "App/Common";
-import { generateNumber }                          from "App/Common/string";
+import { generateNumber, name, stripAccents }      from "App/Common/string";
+import { updateAll }                               from "App/Common/partner-member";
 
 export default class Member extends Model {
     id: string;
@@ -31,6 +32,7 @@ export default class Member extends Model {
     uid?: string;
     premium = false;
     memberNumber: string;
+    name: string;
 
 
     constructor(attributes?: MemberAttributes) {
@@ -51,6 +53,26 @@ export default class Member extends Model {
 
         personalKeys.forEach((key) => data[key] = personalInfo[key])
 
+        data.name = stripAccents(data.companyName);
+        data.name = name(data.name.toLowerCase(), "-");
+
+        const parentsMembers = (await this.where("name", data.name))
+        let parentMember
+
+        if (parentsMembers !== null && parentsMembers[0]) {
+            parentMember = parentsMembers[0]
+            data.memberNumber = parentMember.memberNumber;
+            data.activities = parentMember.activities
+            data.activityId = parentMember.activityId
+            data.active = parentMember.active
+            data.available = parentMember.available
+            data.avatar = parentMember.avatar
+            data.certificate = parentMember.certificate
+            data.companyName = parentMember.companyName
+            data.description = parentMember.description
+            data.siret = parentMember.siret
+        }
+
         if (typeof data.active === "undefined")
             data.active = false;
 
@@ -60,14 +82,19 @@ export default class Member extends Model {
         if (typeof data.premium === "undefined")
             data.premium = false;
 
-        if (typeof data.memberNumber === "undefined")
-            data.memberNumber = generateNumber(data.lastname, data.phone, "ADH");
+        if (typeof data.memberNumber === "undefined") {
+            data.memberNumber = generateNumber(await this.count(), "ADH");
+        }
 
         if (force && (await this.where("email", data.email)) !== null) {
             throw new DuplicateEntryException()
         }
 
         return super.store(data);
+    }
+
+    async update(docID: string, data, force = false): Promise<any> {
+        return updateAll(this, super.update, "memberNumber", docID, data, force);
     }
 
 

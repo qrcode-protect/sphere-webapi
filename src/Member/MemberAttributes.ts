@@ -24,5 +24,6 @@ export default interface MemberAttributes {
     available?: boolean,
     uid?: string,
     premium?: boolean,
-    memberNumber?: string
+    memberNumber?: string,
+    name?: string,
 }

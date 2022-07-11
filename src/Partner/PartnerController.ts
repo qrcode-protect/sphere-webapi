@@ -48,19 +48,23 @@ export default class PartnerController extends Controller {
 
         return unknown(response, await this.service.store(<PartnerAttributes>request.body(), {
             certificate: request.file("certificate"),
-            avatar: request.file("avatar"),
+            avatar     : request.file("avatar"),
         }));
     }
 
     public async storeFromDashboard({ request, response }: HttpContextContract) {
         return unknown(response, await this.service.store(<PartnerAttributes>request.body(), {
             certificate: request.file("certificate"),
-            avatar: request.file("avatar"),
+            avatar     : request.file("avatar"),
         }, true));
     }
 
     public async active({ response, params }: HttpContextContract) {
         return unknown(response, await this.service.findActive(params.activityId));
+    }
+
+    public async activeByNumber({ response, params }: HttpContextContract) {
+        return unknown(response, await this.service.findActiveByNumber(params.partnerNumber));
     }
 
     public async inactive(httpContextContract: HttpContextContract) {
