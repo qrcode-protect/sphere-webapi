@@ -24,9 +24,9 @@ import {
     WhereFilterOp
 }                                    from "@google-cloud/firestore";
 import { ClassConstructor }          from "class-transformer";
-import { firestore }                 from "firebase-admin";
-import { Dictionary, groupBy, size } from "lodash";
-import Partner                       from "QRCP/Sphere/Partner/Partner";
+import { firestore }                         from "firebase-admin";
+import { Dictionary, groupBy, pickBy, size } from "lodash";
+import Partner                               from "QRCP/Sphere/Partner/Partner";
 
 interface ModelConstructor {
     collectionName: string;
@@ -110,6 +110,8 @@ export default class Model {
         data.createdAt = Model._now();
         data.updatedAt = Model._now();
 
+        data = pickBy(data, v => v !== undefined)
+
         const documentReference: DocumentReference = await (data.id && data.id.trim() !== "" ? this.collection.doc(data.id) : this.collection.doc());
         await documentReference.set({ ...this.cleanup(data), id: documentReference.id })
 
@@ -124,6 +126,7 @@ export default class Model {
         const documentReference: DocumentReference = (await this.collection.doc(docID))
         data.updatedAt = Model._now();
         delete data.createdAt
+        data = pickBy(data, v => v !== undefined)
         if (force) {
             await documentReference.set({ ...this.cleanup(data) })
         } else {
