@@ -62,14 +62,13 @@ export default class Member extends Model {
         if (parentsMembers !== null && parentsMembers[0]) {
             parentMember = parentsMembers[0]
             data.memberNumber = parentMember.memberNumber ?? data.memberNumber;
-            data.activities = parentMember.activities ?? data.activities
             data.activityId = parentMember.activityId ?? data.activityId
             data.active = parentMember.active ?? data.active
             data.available = parentMember.available ?? data.available
-            data.avatar = parentMember.avatar ?? data.avatar
+            // data.avatar = parentMember.avatar ?? data.avatar
             data.certificate = parentMember.certificate ?? data.certificate
             data.companyName = parentMember.companyName ?? data.companyName
-            data.description = parentMember.description ?? data.description
+            // data.description = parentMember.description ?? data.description
             data.siret = parentMember.siret ?? data.siret
         }
 
