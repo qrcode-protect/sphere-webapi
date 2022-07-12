@@ -82,7 +82,7 @@ export default class MemberController extends Controller {
     }
 
     public async storeFromDashboard({ request, response }: HttpContextContract) {
-        return unknown(response, await this.service.store(<MemberAttributes>request.body(), request.file("certificate")));
+        return unknown(response, await this.service.store(<MemberAttributes>request.body(), request.file("certificate"), true));
     }
 
 }

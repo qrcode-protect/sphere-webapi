@@ -46,7 +46,7 @@ export default class MemberService extends Service {
 
     }
 
-    public async store(data: StoreMemberAttributes, certificate?: Nullable<MultipartFileContract>) {
+    public async store(data: StoreMemberAttributes, certificate?: Nullable<MultipartFileContract>, fromDashboard = false) {
         delete data.upload
 
         if (certificate)
@@ -81,7 +81,7 @@ export default class MemberService extends Service {
                 result = (await this.createUser(result.id, result)).data
                 // result.uid = authUser.uid;
 
-                if (result.premium !== true) {
+                if (fromDashboard) {
                     await this.validate(result.id)
                 }
 
