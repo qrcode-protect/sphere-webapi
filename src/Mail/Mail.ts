@@ -45,10 +45,7 @@ export default class Mail {
                 each(to, recipient => message.to(recipient))
             } else message.to(to)
 
-            console.log(file)
-
             if (file && file.tmpPath) {
-                console.log(file.tmpPath)
                 message.attach(file.tmpPath , {filename: file.clientName, contentType: file.headers["content-type"]})
             }
 
