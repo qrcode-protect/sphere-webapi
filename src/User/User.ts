@@ -27,6 +27,7 @@ export default class User extends Model {
     uid: string
     roleType: RoleType
     role: Role
+    partnerId?: string
 
 
     constructor(attributes?: UserAttributes) {

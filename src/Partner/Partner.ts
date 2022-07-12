@@ -43,6 +43,19 @@ export default class Partner extends Model {
         }
     }
 
+    async parentBy(column: string, value: string) {
+        const partners = await this.whereSnapshot(column, value).orderBy("id").orderBy("createdAt").get()
+        return partners ? partners[0] : null
+    }
+
+    async parentByName(partnerName: string) {
+        return await this.parentBy("name", partnerName)
+    }
+
+    async parentByNumber(partnerNumber: string) {
+        return await this.parentBy("partnerNumber", partnerNumber)
+    }
+
     async store(data, force = true): Promise<Partner> {
         const personalInfo = cleanPersonalInformations({
             firstname: data.firstname,
@@ -57,21 +70,19 @@ export default class Partner extends Model {
         data.name = stripAccents(data.companyName);
         data.name = name(data.name.toLowerCase(), "-");
 
-        const parentsPartners = (await this.where("name", data.name))
-        let parentPartner
+        const parentPartner = await this.parentByName(data.name)
 
-        if (parentsPartners !== null && parentsPartners[0]) {
-            parentPartner = parentsPartners[0]
-            data.partnerNumber = parentPartner.partnerNumber;
-            data.activities = parentPartner.activities
-            data.activityId = parentPartner.activityId
-            data.active = parentPartner.active
-            data.available = parentPartner.available
-            data.avatar = parentPartner.avatar
-            data.certificate = parentPartner.certificate
-            data.companyName = parentPartner.companyName
-            data.description = parentPartner.description
-            data.siret = parentPartner.siret
+        if (parentPartner !== null) {
+            data.partnerNumber = parentPartner.partnerNumber ?? data.partnerNumber;
+            data.activities = parentPartner.activities ?? data.activities
+            data.activityId = parentPartner.activityId ?? data.activityId
+            data.active = parentPartner.active ?? data.active
+            data.available = parentPartner.available ?? data.available
+            data.avatar = parentPartner.avatar ?? data.avatar
+            data.certificate = parentPartner.certificate ?? data.certificate
+            data.companyName = parentPartner.companyName ?? data.companyName
+            data.description = parentPartner.description ?? data.description
+            data.siret = parentPartner.siret ?? data.siret
         }
 
         if (typeof data.active === "undefined")
@@ -98,8 +109,11 @@ export default class Partner extends Model {
     }
 
     async update(docID: string, data, force = false): Promise<any> {
-        return updateAll(this, super.update, "partnerNumber", docID, data, force);
+        return updateAll(this, "partnerNumber", docID, data, force);
     }
 
+    async updateItem(docID: string, data, force = false): Promise<any> {
+        return super.update(docID, data, force)
+    }
 
 }

@@ -26,6 +26,7 @@ Route.group(() => {
          ****** USER ROUTES *******
          ****************************/
         Route.get("/user/current", "Auth/AuthController.user")
+        Route.get("/user/current/partner", "Auth/AuthController.userPartner")
 
         /****************************
          ****** ROLES ROUTES *******

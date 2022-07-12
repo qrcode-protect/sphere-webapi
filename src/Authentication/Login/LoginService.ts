@@ -43,6 +43,10 @@ export default class LoginService extends AuthService {
                 return this.notExists();
         }
 
+        if (user.password === null) {
+            return this.wrongPassword()
+        }
+
         if (!bcrypt.compareSync(password, user.password)) {
             return this.wrongPassword()
         }

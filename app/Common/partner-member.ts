@@ -17,7 +17,6 @@ import Member           from "QRCP/Sphere/Member/Member";
 import { each, uniqBy } from "lodash";
 
 export const findActiveByNumber = async (numberColumn: string, personNumber: string, model: Partner | Member) => {
-    console.log(numberColumn, personNumber)
     try {
         const query = model.whereSnapshot(numberColumn, personNumber)
 
@@ -40,11 +39,11 @@ export const findActive = async (uniqField: string, model: Partner | Member, act
     }
 }
 
-export const updateAll = async (model: Partner | Member, superUpdate: CallableFunction, numberColumn: string, docID: string, updatable, force = false) => {
+export const updateAll = async (model: Partner | Member, numberColumn: string, docID: string, updatable, force = false) => {
     const dataItem = (await (await model.collection.doc(docID)).get()).data()
     const dataItems = dataItem ? await model.whereSnapshot("id", docID, "!=").where(numberColumn, dataItem[numberColumn]) : null
 
-    const updated = superUpdate(docID, updatable, force);
+    const updated = model.updateItem(docID, updatable, force);
 
     delete updatable.firstname
     delete updatable.lastname
@@ -53,7 +52,7 @@ export const updateAll = async (model: Partner | Member, superUpdate: CallableFu
     delete updatable.id
     delete updatable.uid
 
-    each(dataItems, (item) => superUpdate(item.id, updatable, force))
+    each(dataItems, (item) => model.updateItem(item.id, updatable, force))
 
     return updated;
 }

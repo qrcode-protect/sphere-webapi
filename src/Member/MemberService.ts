@@ -190,7 +190,6 @@ export default class MemberService extends Service {
     }
 
     public async findActiveByNumber(memberNumber: string) {
-        console.log(memberNumber, "heyyy")
         return findActiveByNumber("memberNumber",memberNumber, this.model);
     }
 

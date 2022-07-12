@@ -35,6 +35,18 @@ export default class AuthController extends Controller {
             return success(response, { user })
         else return unknown(response, user)
     }
+    /**
+     * Retrieve current partner user.
+     *
+     * @return string
+     */
+    async userPartner({ request, response }: HttpContextContract) {
+        const user = await this.service.userPartner(bearerToken(request));
+
+        if (user instanceof User)
+            return success(response, { user })
+        else return unknown(response, user)
+    }
 
     /**
      * Know if token is available.

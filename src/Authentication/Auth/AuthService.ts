@@ -13,9 +13,9 @@ import Service                           from "QRCP/Sphere/Common/Service";
 import { Auth }                          from "firebase-admin/auth";
 import Application                       from "@ioc:Adonis/Core/Application";
 import { Error as SofiakbError, Result } from "@sofiakb/adonis-response";
-import User                              from "QRCP/Sphere/User/User";
-import { apiTokenModel, userModel }      from "App/Common/model";
-import { Auth as firebaseAuth }          from "firebase/auth";
+import User                                       from "QRCP/Sphere/User/User";
+import { apiTokenModel, partnerModel, userModel } from "App/Common/model";
+import { Auth as firebaseAuth }                   from "firebase/auth";
 import Jwt                               from "QRCP/Sphere/Authentication/Jwt";
 import ApiToken                          from "QRCP/Sphere/Authentication/ApiToken/ApiToken";
 import { currentApiToken, currentUser }  from "App/Common/auth";
@@ -63,6 +63,22 @@ export default class AuthService extends Service {
 
             return resolve(user);
         });
+    }
+
+    /**
+     * Retrieve current user.
+     *
+     * @return Promise<User|SofiakbError>
+     */
+    public async userPartner(bearerToken: string | null): Promise<User | SofiakbError> {
+
+        const user = await this.user(bearerToken)
+
+        if (user instanceof User) {
+            const partner = (await partnerModel().doc(user.id))
+            user.partnerId = (await partnerModel().parentByNumber(partner.partnerNumber)).id
+            return user
+        } else return user
     }
 
     /**
