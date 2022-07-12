@@ -40,32 +40,36 @@ export default class Tender extends Model {
         }
     }
 
-    async store(data: TenderAttributes): Promise<Tender> {
-
-        // data.accepted = typeof data.accepted === "undefined" ? false : toBool(data.accepted);
-        // data.declined = typeof data.declined === "undefined" ? false : toBool(data.declined);
-
-        if (typeof data.publishedAt === "undefined")
+    prepareData(data: TenderAttributes, update = false) {
+        if (typeof data.publishedAt === "undefined" && !update)
             data.publishedAt = Model._now();
 
-        data.beginAt = momentToFirebase(data.beginAt)
-        data.endAt = momentToFirebase(data.endAt)
-        data.expiresAt = momentToFirebase(data.expiresAt)
-        data.publishedAt = momentToFirebase( moment().valueOf())
+        data.beginAt = typeof data.beginAt === "undefined" && update ? data.beginAt : momentToFirebase(data.beginAt)
+        data.endAt = typeof data.endAt === "undefined" && update ? data.endAt : momentToFirebase(data.endAt)
+        data.expiresAt = typeof data.expiresAt === "undefined" && update ? data.expiresAt : momentToFirebase(data.expiresAt)
+        data.publishedAt = typeof data.publishedAt === "undefined" && update ? data.publishedAt : momentToFirebase(moment().valueOf())
 
-        data.amount = data.amount ? parseFloat(data.amount.toString()) : null
+        data.amount = typeof data.amount === "undefined" && update ? data.amount : (data.amount ? parseFloat(data.amount.toString()) : null)
 
-        data.available = toBool(data.available)
-        data.active = toBool(data.active)
+        data.available = typeof data.available === "undefined" && update ? data.available : toBool(data.available)
+        data.active = typeof data.active === "undefined" && update ? data.active : toBool(data.active)
 
-        data.reporter = data.reporter ?? null
+        data.reporter = typeof data.reporter === "undefined" && update ? data.reporter ?? null : data.reporter
 
-        const address = new Address(data.address)
+        const address = typeof data.address === "undefined" && update ? data.address : new Address(data.address)
 
         data.memberId = data.memberId ?? data.member?.id
         delete data.member
 
-        return super.store({ ...data, address: address.toJson() });
+        return address instanceof Address ? { ...data, address: address.toJson() } : data
+    }
+
+    async store(data: TenderAttributes): Promise<Tender> {
+        return super.store(this.prepareData(data));
+    }
+
+    async update(docID: string, data, force = false): Promise<Tender> {
+        return super.update(docID, this.prepareData(data, true), force);
     }
 
 
