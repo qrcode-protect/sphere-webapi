@@ -56,21 +56,21 @@ export default class Member extends Model {
         data.name = stripAccents(data.companyName);
         data.name = name(data.name.toLowerCase(), "-");
 
-        const parentsMembers = (await this.where("name", data.name))
+        const parentsMembers = (await this.whereSnapshot("name", data.name).orderBy("id").orderBy("createdAt").get())
         let parentMember
 
         if (parentsMembers !== null && parentsMembers[0]) {
             parentMember = parentsMembers[0]
-            data.memberNumber = parentMember.memberNumber;
-            data.activities = parentMember.activities
-            data.activityId = parentMember.activityId
-            data.active = parentMember.active
-            data.available = parentMember.available
-            data.avatar = parentMember.avatar
-            data.certificate = parentMember.certificate
-            data.companyName = parentMember.companyName
-            data.description = parentMember.description
-            data.siret = parentMember.siret
+            data.memberNumber = parentMember.memberNumber ?? data.memberNumber;
+            data.activities = parentMember.activities ?? data.activities
+            data.activityId = parentMember.activityId ?? data.activityId
+            data.active = parentMember.active ?? data.active
+            data.available = parentMember.available ?? data.available
+            data.avatar = parentMember.avatar ?? data.avatar
+            data.certificate = parentMember.certificate ?? data.certificate
+            data.companyName = parentMember.companyName ?? data.companyName
+            data.description = parentMember.description ?? data.description
+            data.siret = parentMember.siret ?? data.siret
         }
 
         if (typeof data.active === "undefined")
@@ -94,8 +94,11 @@ export default class Member extends Model {
     }
 
     async update(docID: string, data, force = false): Promise<any> {
-        return updateAll(this, super.update, "memberNumber", docID, data, force);
+        return updateAll(this, "memberNumber", docID, data, force);
     }
 
+    async updateItem(docID: string, data, force = false): Promise<any> {
+        return super.update(docID, data, force)
+    }
 
 }
