@@ -76,8 +76,8 @@ export default class Partner extends Model {
             data.partnerNumber = parentPartner.partnerNumber ?? data.partnerNumber;
             data.activities = parentPartner.activities ?? data.activities
             data.activityId = parentPartner.activityId ?? data.activityId
-            data.active = parentPartner.active ?? data.active
-            data.available = parentPartner.available ?? data.available
+            // data.active = parentPartner.active ?? data.active
+            // data.available = parentPartner.available ?? data.available
             data.avatar = parentPartner.avatar ?? data.avatar
             data.certificate = parentPartner.certificate ?? data.certificate
             data.companyName = parentPartner.companyName ?? data.companyName
