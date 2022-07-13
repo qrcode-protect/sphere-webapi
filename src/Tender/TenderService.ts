@@ -53,9 +53,9 @@ export default class TenderService extends Service {
     public async store(data: StoreTenderAttributes, documents?: { tender?: Nullable<MultipartFileContract> }, reporter?: string, admin = true) {
         data = await this.upload(data, documents)
 
-        if (data.member?.premium !== true) {
-            return Result.forbidden()
-        }
+        // if (data.member?.premium !== true) {
+        //     return Result.forbidden()
+        // }
 
         try {
             data.address = toJson(data.address)

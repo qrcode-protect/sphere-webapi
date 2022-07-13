@@ -73,6 +73,14 @@ export default class MemberController extends Controller {
         return unknown(response, await this.service.premiumByEmail((request.body()).email));
     }
 
+    public async byEmail({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.byEmail((request.body()).email));
+    }
+
+    public async allForTender({ response }: HttpContextContract) {
+        return unknown(response, await this.service.all(false));
+    }
+
     public async validate({ request, response }: HttpContextContract) {
         return unknown(response, await this.service.validate(request.param("id")));
     }

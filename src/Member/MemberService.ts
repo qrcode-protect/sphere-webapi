@@ -190,7 +190,7 @@ export default class MemberService extends Service {
     }
 
     public async findActiveByNumber(memberNumber: string) {
-        return findActiveByNumber("memberNumber",memberNumber, this.model);
+        return findActiveByNumber("memberNumber", memberNumber, this.model);
     }
 
     public async premiumByEmail(email: string) {
@@ -199,6 +199,19 @@ export default class MemberService extends Service {
                 .whereSnapshot("email", email, ">=")
                 .where("email", email + "\uf8ff", "<=") || []
             return Result.success(data)
+        } catch (e) {
+            Log.error(e, true)
+            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+        }
+    }
+
+    public async byEmail(email: string) {
+        try {
+            const data = await this.model.whereSnapshot("email", email, ">=")
+                .whereSnapshot("email", email + "\uf8ff", "<=")
+                .orderBy("createdAt")
+                .get() || []
+            return Result.success(uniqBy(data, "memberNumber"))
         } catch (e) {
             Log.error(e, true)
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
