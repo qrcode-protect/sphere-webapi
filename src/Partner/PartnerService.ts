@@ -97,7 +97,7 @@ export default class PartnerService extends Service {
             const authUser = user.data
 
             if (authUser instanceof User && authUser.uid) {
-                await this.model.update(partnerId, { uid: authUser.uid })
+                await this.model.updateItem(partnerId, { uid: authUser.uid })
                 partner.uid = authUser.uid
 
                 if (partnerId !== authUser.uid) {

@@ -113,7 +113,7 @@ export default class MemberService extends Service {
             const authUser = user.data
 
             if (authUser instanceof User && authUser.uid) {
-                await this.model.update(memberId, { uid: authUser.uid })
+                await this.model.updateItem(memberId, { uid: authUser.uid })
                 member.uid = authUser.uid
 
                 if (memberId !== authUser.uid) {
@@ -126,7 +126,7 @@ export default class MemberService extends Service {
                     throw new DuplicateEntryException()
                     // const authUser2 = (await userService.findOneBy("email", member.email)).data
                     // if (authUser2 instanceof User)
-                    //     await this.model.update(memberId, { uid: authUser2.uid })
+                    //     await this.model.updateItem(memberId, { uid: authUser2.uid })
                 }
             }
 
@@ -143,7 +143,7 @@ export default class MemberService extends Service {
 
     public async validate(docID: string) {
         try {
-            const result = await this.model.update(docID, { active: true, available: true })
+            const result = await this.model.updateItem(docID, { active: true, available: true })
             if (result.id) {
                 const user = (await (new UserService()).enableWithUid(result.uid)).data
 
