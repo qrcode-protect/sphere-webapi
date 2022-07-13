@@ -27,4 +27,7 @@ export default class ConversationController extends Controller {
     async store({ request, response }: HttpContextContract): Promise<any> {
         return unknown(response, await this.service.store(request.body().data, (await currentUser())?.id))
     }
+    async history({ response }: HttpContextContract): Promise<any> {
+        return unknown(response, await this.service.history())
+    }
 }
