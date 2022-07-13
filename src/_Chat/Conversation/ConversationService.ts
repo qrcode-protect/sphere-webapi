@@ -10,10 +10,12 @@
  */
 
 import Service                                    from "QRCP/Sphere/Common/Service";
-import Conversation                                    from "QRCP/Sphere/_Chat/Conversation/Conversation";
-import { Result, Success, Error as SofiakbError } from "@sofiakb/adonis-response";
+import Conversation                               from "QRCP/Sphere/_Chat/Conversation/Conversation";
+import { Error as SofiakbError, Result, Success } from "@sofiakb/adonis-response";
 import Log                                        from "QRCP/Sphere/Common/Log";
 import ConversationAttributes                     from "QRCP/Sphere/_Chat/Conversation/ConversationAttributes";
+import { memberModel, partnerModel }              from "App/Common/model";
+import { map }                                    from "lodash";
 
 export default class ConversationService extends Service {
 
@@ -37,10 +39,17 @@ export default class ConversationService extends Service {
 
     }
 
-    public async findByNetworkId(networkId?: string): Promise<Success | SofiakbError> {
+    public async history(): Promise<Success | SofiakbError> {
         try {
-            const data = await this.model.findByNetworkId(networkId) ?? []
-            return Result.success(data)
+            const data = await this.model.all() ?? []
+
+            const result = await Promise.all(map(data, async (item) => {
+                item.partner = await partnerModel().whereSnapshot("id", item.users, "in").limit(1).first()
+                item.member = await memberModel().whereSnapshot("id", item.users, "in").limit(1).first()
+                return item
+            }))
+
+            return Result.success(result)
         } catch (e) {
             Log.error(e, true)
             return Result.error("Une erreur est survenue, merci de réessayer plus tard.")

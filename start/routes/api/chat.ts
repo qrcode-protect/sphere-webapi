@@ -28,3 +28,11 @@ Route.group(() => {
 })
     .middleware("auth")
     .prefix("/chat")
+
+
+Route.group(() => {
+    Route.get("/history", "ConversationController.history")
+})
+    .namespace("QRCP/Sphere/_Chat/Conversation")
+    .middleware("admin")
+    .prefix("/conversations")

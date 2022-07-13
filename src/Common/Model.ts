@@ -209,6 +209,18 @@ export default class Model {
         return this
     }
 
+    limit(_limit: number): this {
+        this.snapshot = (this.snapshot ?? this.collection).limit(_limit)
+
+        return this
+    }
+
+    async first() {
+        const data = await this.limit(1).get()
+        console.log(data)
+        return data ? data[0] ?? null : null
+    }
+
     async groupBy(fieldPath: string | FieldPath) {
         const orderedResult = await this.orderBy(fieldPath).get()
         let result: Nullable<Dictionary<any[]>> = null

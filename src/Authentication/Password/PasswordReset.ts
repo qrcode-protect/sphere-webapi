@@ -31,13 +31,13 @@ export default class PasswordReset extends Model {
     }
 
     async firstOrCreate(): Promise<PasswordReset> {
-        const tomorrow = moment()
-        tomorrow.add(1, "day")
+        const expireDay = moment()
+        expireDay.add(3, "day")
         return await this.update(this.userId, {
             userId : this.userId,
             token  : this.token,
             email: this.email,
-            expires: tomorrow.unix(),
+            expires: expireDay.unix(),
             redirectTo: this.redirectTo
         }, true)
     }
