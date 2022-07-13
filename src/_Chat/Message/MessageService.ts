@@ -15,6 +15,7 @@ import Message           from "QRCP/Sphere/_Chat/Message/Message";
 import { Result }        from "@sofiakb/adonis-response";
 import Log               from "QRCP/Sphere/Common/Log";
 import ChatMail          from "QRCP/Sphere/_Chat/ChatMail";
+import { partnerModel }  from "App/Common/model";
 
 export default class MessageService extends Service {
 
@@ -28,9 +29,16 @@ export default class MessageService extends Service {
                 return Result.badRequest("Sender ID is missing.")
             }
 
+            const partner = await partnerModel().whereSnapshot("uid", senderId).first()
+
+            if (partner !== null) {
+                const mainPartner = await partnerModel().parentByNumber(partner.partnerNumber)
+                senderId = mainPartner?.id ?? senderId
+            }
+
             const message = await this.model.store({ ...data, sender: senderId })
 
-            if (message=== null) {
+            if (message === null) {
                 return Result.error();
             }
 
