@@ -9,12 +9,12 @@
  * File src/Member/Member
  */
 
-import Model                                       from "QRCP/Sphere/Common/Model";
-import MemberAttributes                            from "QRCP/Sphere/Member/MemberAttributes";
-import DuplicateEntryException                     from "QRCP/Sphere/Exceptions/DuplicateEntryException";
-import { cleanPersonalInformations, personalKeys } from "App/Common";
-import { generateNumber, name, stripAccents }      from "App/Common/string";
-import { updateAll }                               from "App/Common/partner-member";
+import Model                                           from "QRCP/Sphere/Common/Model";
+import MemberAttributes                                from "QRCP/Sphere/Member/MemberAttributes";
+import DuplicateEntryException                         from "QRCP/Sphere/Exceptions/DuplicateEntryException";
+import { cleanPersonalInformations, personalKeys }     from "App/Common";
+import { generateNumber, stripAccents, withoutSpaces } from "App/Common/string";
+import { updateAll }                                   from "App/Common/partner-member";
 
 export default class Member extends Model {
     id: string;
@@ -53,8 +53,8 @@ export default class Member extends Model {
 
         personalKeys.forEach((key) => data[key] = personalInfo[key])
 
-        data.name = stripAccents(data.companyName);
-        data.name = name(data.name.toLowerCase(), "-");
+        data.name = stripAccents(data.siret);
+        data.name = withoutSpaces(data.name.toLowerCase(), "-");
 
         const parentsMembers = (await this.whereSnapshot("name", data.name).orderBy("id").orderBy("createdAt").get())
         let parentMember
@@ -82,7 +82,7 @@ export default class Member extends Model {
             data.premium = false;
 
         if (typeof data.memberNumber === "undefined") {
-            data.memberNumber = generateNumber(await this.count(), "ADH");
+            data.memberNumber = generateNumber(data.siret, "ADH");
         }
 
         if (force && (await this.where("email", data.email)) !== null) {
