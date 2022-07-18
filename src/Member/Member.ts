@@ -54,7 +54,7 @@ export default class Member extends Model {
         personalKeys.forEach((key) => data[key] = personalInfo[key])
 
         data.name = stripAccents(data.siret);
-        data.name = withoutSpaces(data.name.toLowerCase(), "-");
+        data.name = "member-" + withoutSpaces(data.name.toLowerCase(), "-");
 
         const parentsMembers = (await this.whereSnapshot("name", data.name).orderBy("id").orderBy("createdAt").get())
         let parentMember

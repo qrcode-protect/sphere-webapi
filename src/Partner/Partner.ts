@@ -69,7 +69,7 @@ export default class Partner extends Model {
         personalKeys.forEach((key) => data[key] = personalInfo[key])
 
         data.name = stripAccents(data.siret);
-        data.name = withoutSpaces(data.name.toLowerCase(), "-");
+        data.name = "partner-" + withoutSpaces(data.name.toLowerCase(), "-");
 
         const parentPartner = await this.parentByName(data.name)
 
