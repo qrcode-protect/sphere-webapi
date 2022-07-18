@@ -9,12 +9,13 @@
  * File src/Partner/Partner
  */
 
-import Model                                       from "QRCP/Sphere/Common/Model";
-import PartnerAttributes                           from "QRCP/Sphere/Partner/PartnerAttributes";
-import DuplicateEntryException                     from "QRCP/Sphere/Exceptions/DuplicateEntryException";
-import { cleanPersonalInformations, personalKeys } from "App/Common";
-import { generateNumber, name, stripAccents }      from "App/Common/string";
-import { updateAll }                               from "App/Common/partner-member";
+import Model                                           from "QRCP/Sphere/Common/Model";
+import PartnerAttributes                               from "QRCP/Sphere/Partner/PartnerAttributes";
+import DuplicateEntryException                         from "QRCP/Sphere/Exceptions/DuplicateEntryException";
+import { cleanPersonalInformations, personalKeys }     from "App/Common";
+import { generateNumber, stripAccents, withoutSpaces } from "App/Common/string";
+import { updateAll }                                   from "App/Common/partner-member";
+import PartnerActivity                                 from "QRCP/Sphere/PartnerActivity/PartnerActivity";
 
 export default class Partner extends Model {
     id: string;
@@ -67,8 +68,8 @@ export default class Partner extends Model {
 
         personalKeys.forEach((key) => data[key] = personalInfo[key])
 
-        data.name = stripAccents(data.companyName);
-        data.name = name(data.name.toLowerCase(), "-");
+        data.name = stripAccents(data.siret);
+        data.name = withoutSpaces(data.name.toLowerCase(), "-");
 
         const parentPartner = await this.parentByName(data.name)
 
@@ -92,7 +93,7 @@ export default class Partner extends Model {
             data.available = false;
 
         if (typeof data.partnerNumber === "undefined") {
-            data.partnerNumber = generateNumber(await this.count(), "PRT");
+            data.partnerNumber = generateNumber(data.siret, "PRT");
         }
         // data.partnerNumber = generateNumber(data.lastname, data.phone, "PRT");
 
@@ -105,6 +106,10 @@ export default class Partner extends Model {
             throw new DuplicateEntryException()
         }
 
+        data.id = this.collection.doc().id
+
+        await (new PartnerActivity()).storeMultiple(data.activities, data.id);
+
         return super.store(data);
     }
 
@@ -113,7 +118,13 @@ export default class Partner extends Model {
     }
 
     async updateItem(docID: string, data, force = false): Promise<any> {
-        return super.update(docID, data, force)
+        const result = super.update(docID, data, force)
+
+        if (data.activities) {
+            await (new PartnerActivity()).updateMultiple(data.activities, docID)
+        }
+
+        return result
     }
 
 }
