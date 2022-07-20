@@ -176,7 +176,7 @@ export default class QuoteService extends Service {
         return this.answer(docId, userId, false)
     }
 
-    public async searchByPartner(query: string) {
+    public async search(query: string) {
         try {
             return Result.success(await this.model.search(query))
         } catch (e) {

@@ -25,7 +25,7 @@ Route.group(() => {
         Route.get("/by-current-transmitter/expired", "QuoteController.expiredByCurrentTransmitter")
 
 
-        Route.post("/search/by-partner", "QuoteController.searchByPartner")
+        Route.post("/search/by-partner", "QuoteController.search")
 
     }).middleware("auth")
 })

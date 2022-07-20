@@ -84,17 +84,9 @@ export default class Quote extends Model {
         return super.where("transmitter", transmitterId);
     }
 
-    async byPartnerEmail(email: string) {
-        return  await partnerModel().whereSnapshot("email", email, ">=")
-            .whereSnapshot("email", email + "\uf8ff", "<=")
-            .limit(10)
-            .get() || []
-    }
-
     async search(query: string) {
         const partners = await partnerModel().search(query)
         const members = await memberModel().search(query)
-
 
         const byPartner = partners && partners.length > 0 ? await this.where("transmitter", map(partners, partner => partner.id), "in") : []
         const byMember = members && members.length > 0 ? await this.where("customer", map(members, member => member.id), "in") : []
