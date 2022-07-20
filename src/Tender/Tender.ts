@@ -61,6 +61,8 @@ export default class Tender extends Model {
         data.memberId = data.memberId ?? data.member?.id
         delete data.member
 
+        data.activities = typeof data.activities === "string" ? data.activities.toString().split(",") : data.activities
+
         return address instanceof Address ? { ...data, address: address.toJson() } : data
     }
 
