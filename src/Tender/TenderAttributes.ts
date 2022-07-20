@@ -31,6 +31,7 @@ export default interface TenderAttributes {
     address: AddressAttributes
     available?: boolean
     active?: boolean
+    public?: boolean
     activityId?: string | null
     activities?: string[] | string
 }
