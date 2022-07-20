@@ -183,6 +183,15 @@ export default class Model {
         return this;
     }
 
+    findBy(column: string, value: string): this {
+        return this.whereSnapshot(column, value)
+    }
+
+    searchBy(column: string, value: string, limit: Nullable<number> = null): this {
+        const query = this.whereSnapshot(column, value, ">=").whereSnapshot(column, value + "\uf8ff", "<=")
+        return limit ? query.limit(limit) : query
+    }
+
     public async findOneBy(column: string, value: string): Promise<any> {
         const data = await this.where(column, value)
         return data ? data[0] || null : data
