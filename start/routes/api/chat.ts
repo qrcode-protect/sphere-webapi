@@ -32,6 +32,7 @@ Route.group(() => {
 
 Route.group(() => {
     Route.get("/history", "ConversationController.history")
+    Route.get("/history/:conversationId", "ConversationController.historyByConversationId")
 })
     .namespace("QRCP/Sphere/_Chat/Conversation")
     .middleware("admin")
