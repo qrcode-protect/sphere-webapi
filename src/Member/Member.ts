@@ -15,6 +15,7 @@ import DuplicateEntryException                         from "QRCP/Sphere/Excepti
 import { cleanPersonalInformations, personalKeys }     from "App/Common";
 import { generateNumber, stripAccents, withoutSpaces } from "App/Common/string";
 import { updateAll }                                   from "App/Common/partner-member";
+import { concat, uniqBy }                              from "lodash";
 
 export default class Member extends Model {
     id: string;
@@ -40,6 +41,25 @@ export default class Member extends Model {
         if (attributes) {
             super.createWithAttributes(attributes);
         }
+    }
+
+    async search(query: string) {
+        const byEmail = await this.searchByEmail(query)
+        const bySiret = await this.searchBySiret(query)
+
+        return uniqBy(concat(bySiret, byEmail), "id")
+    }
+
+    async searchByField(column: string, value: string) {
+        return (await this.searchBy(column, value, 10).get()) || []
+    }
+
+    async searchByEmail(email: string) {
+        return this.searchByField("email", email)
+    }
+
+    async searchBySiret(siret: string) {
+        return this.searchByField("siret", siret)
     }
 
     async store(data, force = true): Promise<Member> {
