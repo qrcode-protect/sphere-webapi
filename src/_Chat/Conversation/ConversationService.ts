@@ -56,4 +56,24 @@ export default class ConversationService extends Service {
         }
     }
 
+    public async historyByConversationId(conversationId: string): Promise<Success | SofiakbError> {
+        try {
+            const data = await this.model.where("id", conversationId) ?? []
+
+            const result = await Promise.all(map(data, async (item) => {
+                await item.withPartner()
+                await item.withMember()
+                await item.withMessages()
+                /*item.partner = await partnerModel().whereSnapshot("id", item.users, "in").limit(1).first()
+                item.member = await memberModel().whereSnapshot("id", item.users, "in").limit(1).first()*/
+                return item
+            }))
+
+            return Result.success(result)
+        } catch (e) {
+            Log.error(e, true)
+            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+        }
+    }
+
 }

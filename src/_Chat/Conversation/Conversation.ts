@@ -9,10 +9,13 @@
  * File src/Conversation/Conversation
  */
 
-import Model                  from "QRCP/Sphere/Common/Model";
-import ConversationAttributes from "QRCP/Sphere/_Chat/Conversation/ConversationAttributes";
-import { uniq }               from "lodash";
-import { messageModel }       from "App/Common/model";
+import Model                                       from "QRCP/Sphere/Common/Model";
+import ConversationAttributes                      from "QRCP/Sphere/_Chat/Conversation/ConversationAttributes";
+import { map, uniq }                               from "lodash";
+import { memberModel, messageModel, partnerModel } from "App/Common/model";
+import Partner                                     from "QRCP/Sphere/Partner/Partner";
+import Member                                      from "QRCP/Sphere/Member/Member";
+import Message                                     from "QRCP/Sphere/_Chat/Message/Message";
 
 export default class Conversation extends Model {
 
@@ -21,6 +24,9 @@ export default class Conversation extends Model {
     hasNewMessage: boolean
     latestMessage: Nullable<Date>
     users: string[]
+    partner?: Partner
+    member?: Member
+    messages?: Message[]
 
     constructor(attributes?: ConversationAttributes) {
         super({ collectionName: "conversations", model: Conversation });
@@ -83,5 +89,19 @@ export default class Conversation extends Model {
 
     async updateMessage(docID: string, messageId: string, data, force= false): Promise<any> {
         return super.update(`${docID}/${messageModel().collection.path}/${messageId}`, data, force);
+    }
+
+    async withPartner() {
+        this.partner = await partnerModel().whereSnapshot("id", this.users, "in").limit(1).first()
+    }
+
+    async withMember() {
+        this.member = await memberModel().whereSnapshot("id", this.users, "in").limit(1).first()
+    }
+
+    async withMessages() {
+        const messages = (await (await this.collection.doc(this.id).collection("messages")).listDocuments())
+        console.log(this.id, messages)
+        this.messages = await Promise.all(map(messages, async (message) => messageModel().casting((await message.get()).data(), this.id)))
     }
 }
