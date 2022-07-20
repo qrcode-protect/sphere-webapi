@@ -9,14 +9,15 @@
  * File src/Quote/Quote
  */
 
-import Model           from "QRCP/Sphere/Common/Model";
-import QuoteAttributes from "QRCP/Sphere/Quote/QuoteAttributes";
+import Model                         from "QRCP/Sphere/Common/Model";
+import QuoteAttributes               from "QRCP/Sphere/Quote/QuoteAttributes";
 import { toBool }                    from "App/Common";
 import { memberModel, partnerModel } from "App/Common/model";
 import Member                        from "QRCP/Sphere/Member/Member";
-import { firestore }   from "firebase-admin";
-import Log             from "QRCP/Sphere/Common/Log";
-import Partner         from "QRCP/Sphere/Partner/Partner";
+import { firestore }                 from "firebase-admin";
+import Log                           from "QRCP/Sphere/Common/Log";
+import Partner                 from "QRCP/Sphere/Partner/Partner";
+import { concat, map, uniqBy } from "lodash";
 
 export default class Quote extends Model {
     id: string
@@ -81,6 +82,24 @@ export default class Quote extends Model {
 
     async findByTransmitterId(transmitterId: string): Promise<any> {
         return super.where("transmitter", transmitterId);
+    }
+
+    async byPartnerEmail(email: string) {
+        return  await partnerModel().whereSnapshot("email", email, ">=")
+            .whereSnapshot("email", email + "\uf8ff", "<=")
+            .limit(10)
+            .get() || []
+    }
+
+    async search(query: string) {
+        const partners = await partnerModel().search(query)
+        const members = await memberModel().search(query)
+
+
+        const byPartner = partners && partners.length > 0 ? await this.where("transmitter", map(partners, partner => partner.id), "in") : []
+        const byMember = members && members.length > 0 ? await this.where("customer", map(members, member => member.id), "in") : []
+
+        return uniqBy(concat(byMember, byPartner), "id").filter((item) => item)
     }
 
 

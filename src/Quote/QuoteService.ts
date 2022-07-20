@@ -84,11 +84,11 @@ export default class QuoteService extends Service {
     }
 
     public async byCurrentTransmitterWithStatus({
-        accepted,
-        declined,
-        withoutExpires,
-        onlyExpired,
-    }: FetchByStatusParameters, currentTransmitterId?: string) {
+                                                    accepted,
+                                                    declined,
+                                                    withoutExpires,
+                                                    onlyExpired,
+                                                }: FetchByStatusParameters, currentTransmitterId?: string) {
         try {
             if (currentTransmitterId) {
 
@@ -174,6 +174,15 @@ export default class QuoteService extends Service {
 
     public async decline(docId: string, userId: string) {
         return this.answer(docId, userId, false)
+    }
+
+    public async searchByPartner(query: string) {
+        try {
+            return Result.success(await this.model.search(query))
+        } catch (e) {
+            Log.error(e, true)
+            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+        }
     }
 
 }

@@ -45,6 +45,10 @@ export default class QuoteController extends Controller {
         return unknown(response, await this.service.expiredByCurrentTransmitter((await currentUser())?.id));
     }
 
+    public async searchByPartner({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.searchByPartner((request.body()).data?.query));
+    }
+
 
 
 }
