@@ -23,6 +23,10 @@ Route.group(() => {
         Route.get("/by-current-transmitter/declined", "QuoteController.declinedByCurrentTransmitter")
         Route.get("/by-current-transmitter/pending", "QuoteController.pendingByCurrentTransmitter")
         Route.get("/by-current-transmitter/expired", "QuoteController.expiredByCurrentTransmitter")
+
+
+        Route.post("/search/by-partner", "QuoteController.search")
+
     }).middleware("auth")
 })
     .namespace("QRCP/Sphere/Quote")
