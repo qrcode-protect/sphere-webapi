@@ -11,11 +11,12 @@
 
 import Model           from "QRCP/Sphere/Common/Model";
 import QuoteAttributes from "QRCP/Sphere/Quote/QuoteAttributes";
-import { toBool }      from "App/Common";
-import { memberModel } from "App/Common/model";
-import Member          from "QRCP/Sphere/Member/Member";
+import { toBool }                    from "App/Common";
+import { memberModel, partnerModel } from "App/Common/model";
+import Member                        from "QRCP/Sphere/Member/Member";
 import { firestore }   from "firebase-admin";
 import Log             from "QRCP/Sphere/Common/Log";
+import Partner         from "QRCP/Sphere/Partner/Partner";
 
 export default class Quote extends Model {
     id: string
@@ -44,6 +45,12 @@ export default class Quote extends Model {
 
         if (memberReference) {
             data.member = memberReference;
+        }
+
+        const partnerReference: Partner | null = await partnerModel().findOneBy("uid", data.transmitter);
+
+        if (partnerReference) {
+            data.partner = partnerReference;
         }
 
         return super.casting(data);

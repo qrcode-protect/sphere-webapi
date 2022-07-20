@@ -21,9 +21,10 @@ import { Result }                       from "@sofiakb/adonis-response";
 import Log                              from "QRCP/Sphere/Common/Log";
 import Config                           from "@ioc:Adonis/Core/Config";
 import moment                           from "moment";
-import { conversationModel }            from "App/Common/model";
+import { conversationModel, userModel } from "App/Common/model";
 import Model                            from "QRCP/Sphere/Common/Model";
 import { concat, map, orderBy }         from "lodash";
+import { RoleType }                     from "QRCP/Sphere/Authentication/utils/roles";
 
 interface StoreQuoteAttributes extends QuoteAttributes {
     upload?: unknown
@@ -90,17 +91,26 @@ export default class QuoteService extends Service {
     }: FetchByStatusParameters, currentTransmitterId?: string) {
         try {
             if (currentTransmitterId) {
+
+                const user = await userModel().doc(currentTransmitterId)
+                const isAdmin = user?.roleType === RoleType.admin
+
                 const query = this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true);
 
                 if (withoutExpires === true) {
                     const expired = await query.whereSnapshot("expiresAt", moment().toDate(), "<").get()
                     const notExpired = await (this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true)).whereSnapshot("expiresAt", moment().toDate(), ">=").get()
                     const withoutExpiredQuery = (this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true)).whereSnapshot("expiresAt", null);
-                    const withoutExpiresAt = await (expired && expired.length > 0 ? withoutExpiredQuery.whereSnapshot("id", map(expired, _item => _item.id), "not-in") : withoutExpiredQuery).orderBy("id", "desc").orderBy("createdAt", "desc").get()
+                    const withoutExpiresAtQuery = (expired && expired.length > 0 ? withoutExpiredQuery.whereSnapshot("id", map(expired, _item => _item.id), "not-in") : withoutExpiredQuery).orderBy("id", "desc").orderBy("createdAt", "desc")
+
+                    const withoutExpiresAt = await (isAdmin ? withoutExpiredQuery : withoutExpiresAtQuery.whereSnapshot("transmitter", currentTransmitterId)).get()
+
                     return Result.success(orderBy(concat(withoutExpiresAt, notExpired).filter(_item => _item !== null), "createdAt", "desc"))
                 }
 
-                return Result.success(await (onlyExpired === true ? query.whereSnapshot("expiresAt", moment().toDate(), "<") : query).orderBy("expiresAt", "desc").orderBy("createdAt", "desc").get())
+                const prequery = (onlyExpired === true ? query.whereSnapshot("expiresAt", moment().toDate(), "<") : query);
+
+                return Result.success(await (isAdmin ? prequery : prequery.whereSnapshot("transmitter", currentTransmitterId)).orderBy("expiresAt", "desc").orderBy("createdAt", "desc").get())
             }
             throw new Error(`Target [currentTransmitterId] is missing ${currentTransmitterId}`)
         } catch (e) {
