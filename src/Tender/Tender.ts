@@ -31,6 +31,9 @@ export default class Tender extends Model {
     reporter: string
     available: boolean
     active: boolean
+    public: boolean
+    activityId: string
+    activities: string[]
 
 
     constructor(attributes?: TenderAttributes) {
@@ -53,6 +56,7 @@ export default class Tender extends Model {
 
         data.available = typeof data.available === "undefined" && update ? data.available : toBool(data.available)
         data.active = typeof data.active === "undefined" && update ? data.active : toBool(data.active)
+        data.public = typeof data.public === "undefined" && update ? data.public : toBool(data.public)
 
         data.reporter = typeof data.reporter === "undefined" && update ? data.reporter ?? null : data.reporter
 

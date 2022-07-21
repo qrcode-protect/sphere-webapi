@@ -28,6 +28,8 @@ Route.group(() => {
         Route.put("/validate/:id", "TenderController.validate")
         Route.put("/deny/:id", "TenderController.deny")
 
+        Route.put("/:id", "TenderController.update")
+
         Route.delete("/:id", "TenderController.destroy")
 
         Route.post("/from-dashboard", "TenderController.storeFromDashboard")

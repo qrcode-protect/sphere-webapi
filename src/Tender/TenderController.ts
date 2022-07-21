@@ -53,12 +53,12 @@ export default class TenderController extends Controller {
         return unknown(response, await this.service.block(request.param("id")));
     }
 
-    public async active(httpContextContract: HttpContextContract) {
-        return super.findBy("active", true, httpContextContract);
+    public async active({ response }: HttpContextContract) {
+        return unknown(response, await this.service.fetchActive());
     }
 
-    public async inactive(httpContextContract: HttpContextContract) {
-        return super.findBy("active", false, httpContextContract);
+    public async inactive({ response }: HttpContextContract) {
+        return unknown(response, await this.service.fetchInactive());
     }
 
 

@@ -96,6 +96,14 @@ export default class TenderService extends Service {
 
     }
 
+    public async fetchActive() {
+        return Result.success(await this.model.whereSnapshot("active", true).orderBy("publishedAt", "desc").get());
+    }
+
+    public async fetchInactive() {
+        return Result.success(await this.model.whereSnapshot("active", false).orderBy("publishedAt", "desc").get());
+    }
+
     public async validate(docID: string) {
         return this.update(docID, { active: true, available: true })
     }
