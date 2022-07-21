@@ -18,6 +18,7 @@ export default class Activity extends Model {
     id: string;
     name?: Nullable<string> = null;
     label: string;
+    avatar: string;
     activities?: Activity[]
 
 
@@ -58,6 +59,7 @@ export default class Activity extends Model {
             id       : activity.id,
             name     : data.name,
             label    : data.label.toLowerCase(),
+            avatar    : data.avatar ?? null,
             createdAt: Model._now(),
             updatedAt: Model._now(),
         })
@@ -91,7 +93,7 @@ export default class Activity extends Model {
         delete updatable.activities
         delete updatable.createdAt
 
-        updatable.label = updatable.label?.toLowerCase() ?? 'n/d'
+        updatable.label = updatable.label?.toLowerCase() ?? "n/d"
 
         batch.update(activity, { ...updatable, ...{ updatedAt: Model._now() } })
 

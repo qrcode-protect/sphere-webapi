@@ -15,6 +15,7 @@ export default interface ActivityAttributes {
     id?: string,
     name?: string,
     label?: string,
+    avatar?: string,
     activities?: Activity[]
     createdAt?: Date
 }
