@@ -19,6 +19,7 @@ import Message         from "QRCP/Sphere/_Chat/Message/Message";
 import Quote           from "QRCP/Sphere/Quote/Quote";
 import Tender          from "QRCP/Sphere/Tender/Tender";
 import ProductCategory from "QRCP/Sphere/ProductCategory/ProductCategory";
+import Product         from "QRCP/Sphere/Product/Product";
 
 
 //// General
@@ -38,3 +39,4 @@ export const tenderModel = (): Tender => new Tender()
 
 //// Produits
 export const productCategoryModel = (): ProductCategory => new ProductCategory()
+export const productModel = (): Product => new Product()
