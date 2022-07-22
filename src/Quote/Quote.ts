@@ -94,5 +94,11 @@ export default class Quote extends Model {
         return uniqBy(concat(byMember, byPartner), "id").filter((item) => item)
     }
 
+    async searchByMemberAndTransmitterId(query: string, transmitterId: string) {
+        const members = await memberModel().search(query)
+
+        return  members && members.length > 0 ? await this.whereSnapshot("transmitter", transmitterId).where("customer", map(members, member => member.id), "in") : []
+    }
+
 
 }

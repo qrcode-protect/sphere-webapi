@@ -16,6 +16,7 @@ Route.group(() => {
 
     Route.group(() => {
         Route.post("", "QuoteController.store")
+        Route.post("/search/by-member-current", "QuoteController.searchByMemberCurrent")
     }).middleware("partner")
 
     Route.group(() => {
@@ -24,10 +25,11 @@ Route.group(() => {
         Route.get("/by-current-transmitter/pending", "QuoteController.pendingByCurrentTransmitter")
         Route.get("/by-current-transmitter/expired", "QuoteController.expiredByCurrentTransmitter")
 
-
-        Route.post("/search/by-partner", "QuoteController.search")
-
     }).middleware("auth")
+
+    Route.group(() => {
+        Route.post("/search/by-partner", "QuoteController.search")
+    }).middleware("admin")
 })
     .namespace("QRCP/Sphere/Quote")
     .prefix("/quotes")

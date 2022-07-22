@@ -185,4 +185,13 @@ export default class QuoteService extends Service {
         }
     }
 
+    public async searchByMemberCurrent(query: string, transmitterId?: string) {
+        try {
+            return transmitterId ? Result.success(await this.model.searchByMemberAndTransmitterId(query, transmitterId)) : Result.unauthorized()
+        } catch (e) {
+            Log.error(e, true)
+            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+        }
+    }
+
 }
