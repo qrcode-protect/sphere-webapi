@@ -46,7 +46,7 @@ export default class ProductCategory extends Model {
         return super.store(data);
     }
 
-    async update(docID: string, data, force = false): Promise<ProductCategory | Error> {
+    async update(docID: string, data, force = false): Promise<ProductCategory> {
 
         if (typeof data.label !== "undefined") {
             if (data.label !== data.label.toUpperCase()) {
@@ -59,7 +59,7 @@ export default class ProductCategory extends Model {
         const productCategory = await this.doc(docID)
 
         if (!productCategory || productCategory.partnerId === data.partnerId)
-            return new Error("degage")
+            throw new Error("degage")
 
         return super.update(docID, data, force);
     }
