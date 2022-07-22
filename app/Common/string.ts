@@ -15,7 +15,9 @@ export const lower = (value: string): string => value?.toLowerCase();
 
 export const name = (value: string, replaceValue = "") => lower(value)?.replace(/[^A-Za-zàáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ-]/g, replaceValue)
 
-export const withoutSpaces = (value: string, replaceValue = "") => lower(value)?.replace(/ /g, replaceValue)
+export const nameWithNumber = (value: string, replaceValue = "") => withoutSpaces(value)?.replace(/[^A-Za-zàáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ\d-]/g, replaceValue)
+
+export const withoutSpaces = (value: string, replaceValue = "") => lower(value)?.replace(/ /g, " ")?.replace(/ /g, replaceValue)
 
 export const normalize = (value: Nullable<string>) => value?.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 
