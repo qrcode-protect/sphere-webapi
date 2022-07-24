@@ -1,0 +1,37 @@
+"use strict";
+
+/*
+ * sphere-api
+ *
+ * (c) Sofiane Akbly <sofiane.akbly@qrcode-protect.com>
+ *
+ * Created by WebStorm on 12/05/2022 at 11:59
+ * File src/Product/ProductController
+ */
+
+import Controller                from "QRCP/Sphere/Common/Controller";
+import { HttpContextContract }   from "@ioc:Adonis/Core/HttpContext";
+import ProductService    from "QRCP/Sphere/Product/ProductService";
+import { unknown }               from "@sofiakb/adonis-response";
+import ProductAttributes from "./ProductAttributes";
+import { currentUser }           from "App/Common/auth";
+
+
+export default class ProductController extends Controller {
+
+    protected service: ProductService
+
+    constructor() {
+        super(new ProductService())
+    }
+
+    public async store({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.store(<ProductAttributes>(request.body()), (await currentUser())?.id));
+    }
+
+    public async update({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.update(request.param("id"), request.body().data, (await currentUser())?.id));
+    }
+
+
+}
