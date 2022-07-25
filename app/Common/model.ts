@@ -20,6 +20,7 @@ import Quote           from "QRCP/Sphere/Quote/Quote";
 import Tender          from "QRCP/Sphere/Tender/Tender";
 import ProductCategory from "QRCP/Sphere/ProductCategory/ProductCategory";
 import Product         from "QRCP/Sphere/Product/Product";
+import PartnerService  from "QRCP/Sphere/PartnerService/PartnerService";
 
 
 //// General
@@ -40,3 +41,6 @@ export const tenderModel = (): Tender => new Tender()
 //// Produits
 export const productCategoryModel = (): ProductCategory => new ProductCategory()
 export const productModel = (): Product => new Product()
+
+//// Services
+export const partnerServiceModel = (): PartnerService => new PartnerService()

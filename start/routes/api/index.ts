@@ -28,6 +28,7 @@ Route.group(() => {
     require("./quotes")
     require("./contact")
     require("./tenders")
+    require("./partner-services")
     /*******************************
      FIN ROLE AUTORISES
      ******************************/

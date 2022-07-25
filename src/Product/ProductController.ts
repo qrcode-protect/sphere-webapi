@@ -26,7 +26,7 @@ export default class ProductController extends Controller {
     }
 
     public async store({ request, response }: HttpContextContract) {
-        return unknown(response, await this.service.store(<ProductAttributes>(request.body()), (await currentUser())?.id));
+        return unknown(response, await this.service.store(<ProductAttributes>(request.body().data), (await currentUser())?.id));
     }
 
     public async update({ request, response }: HttpContextContract) {
