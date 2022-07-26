@@ -18,7 +18,7 @@ test.group("Quotes accept / decline", () => {
         }
 
         const quoteService = new QuoteService()
-        const quote: Quote = (await quoteService.store(new Quote(attributes), null, "user-id-test")).data
+        const quote: Quote = (await quoteService.store(<QuoteAttributes>(new Quote(attributes)), null, "user-id-test")).data
 
         assert.instanceOf(quote, Quote)
 
@@ -48,7 +48,7 @@ test.group("Quotes accept / decline", () => {
         }
 
         const quoteService = new QuoteService()
-        const quote: Quote = (await quoteService.store(new Quote(attributes), null, "user-id-test")).data
+        const quote: Quote = (await quoteService.store(<QuoteAttributes>(new Quote(attributes)), null, "user-id-test")).data
 
         assert.instanceOf(quote, Quote)
 
