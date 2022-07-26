@@ -16,6 +16,7 @@ import { retrieveRole }          from "QRCP/Sphere/Authentication/utils/roles";
 import { capitalize, each }      from "lodash";
 import mailConfig                from "Config/mail";
 import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
+import Drive                     from "@ioc:Adonis/Core/Drive";
 
 export default class Mail {
 
@@ -45,14 +46,16 @@ export default class Mail {
                 each(to, recipient => message.to(recipient))
             } else message.to(to)
 
-            if (file && file.tmpPath) {
-                message.attach(file.tmpPath , {filename: file.clientName, contentType: file.headers["content-type"]})
+            if (file && (file.tmpPath || file.filePath)) {
+                const filePath = file.filePath && Drive.exists(file.filePath) ? file.filePath : file.tmpPath
+                if (filePath)
+                    message.attach(filePath, { filename: file.clientName, contentType: file.headers["content-type"] })
             }
 
             message
                 .from(mailConfig.mailers.smtp.auth?.user ?? "noreply@reseau-sphere.com", "SPHÈRE")
                 .subject(subject)
-                .text(content)
+                .text(`${content} \n\nCordialement, L'équipe SPHÈRE`)
         })
     }
 

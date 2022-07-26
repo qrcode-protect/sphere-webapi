@@ -21,7 +21,7 @@ import { Result }                       from "@sofiakb/adonis-response";
 import Log                              from "QRCP/Sphere/Common/Log";
 import Config                           from "@ioc:Adonis/Core/Config";
 import moment                           from "moment";
-import { conversationModel, userModel } from "App/Common/model";
+import { userModel }                    from "App/Common/model";
 import Model                            from "QRCP/Sphere/Common/Model";
 import { concat, map, orderBy }         from "lodash";
 import { RoleType }                     from "QRCP/Sphere/Authentication/utils/roles";
@@ -66,13 +66,18 @@ export default class QuoteService extends Service {
         }
 
         try {
-            const result = await this.model.store({ ...data, transmitter })
+            const result = await this.model.store({
+                ...data,
+                transmitter,
+                partnerId: transmitter,
+                memberId : data.customer
+            })
             if (result.id) {
-                if (quote)
-                    await conversationModel().updateMessage(data.conversationId, data.messageId, {
-                        attachmentID: result.id,
-                        attachment  : data.file
-                    })
+                // if (quote)
+                //     await conversationModel().updateMessage(data.conversationId, data.messageId, {
+                //         attachmentID: result.id,
+                //         attachment  : data.file
+                //     })
                 return Result.success(result)
             }
             throw new Error("Error while saving")

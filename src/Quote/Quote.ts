@@ -16,8 +16,9 @@ import { memberModel, partnerModel } from "App/Common/model";
 import Member                        from "QRCP/Sphere/Member/Member";
 import { firestore }                 from "firebase-admin";
 import Log                           from "QRCP/Sphere/Common/Log";
-import Partner                 from "QRCP/Sphere/Partner/Partner";
-import { concat, map, uniqBy } from "lodash";
+import Partner                       from "QRCP/Sphere/Partner/Partner";
+import { concat, map, uniqBy }       from "lodash";
+import { Timestamp }                 from "@firebase/firestore";
 
 export default class Quote extends Model {
     id: string
@@ -28,7 +29,7 @@ export default class Quote extends Model {
     declined = false
     acceptedAt: Date
     declinedAt: Date
-    expiresAt: Date
+    expiresAt: Date | Timestamp
     file: string
     conversationId: string
     messageId: string
@@ -42,7 +43,7 @@ export default class Quote extends Model {
     }
 
     async casting(data): Promise<any> {
-        const memberReference: Member | null = await memberModel().findOneBy("uid", data.customer);
+        const memberReference: Member | null = data.customer ? await memberModel().findOneBy("uid", data.customer) : null;
 
         if (memberReference) {
             data.member = memberReference;
@@ -97,8 +98,11 @@ export default class Quote extends Model {
     async searchByMemberAndTransmitterId(query: string, transmitterId: string) {
         const members = await memberModel().search(query)
 
-        return  members && members.length > 0 ? await this.whereSnapshot("transmitter", transmitterId).where("customer", map(members, member => member.id), "in") : []
+        return members && members.length > 0 ? await this.whereSnapshot("transmitter", transmitterId).where("customer", map(members, member => member.id), "in") : []
     }
 
+    toString(): string {
+        return `Montant : ${this.amount}€\n\nDate d'expiration : ${this.expiresAt instanceof Timestamp ? this.expiresAt?.toDate()?.toDateString() ?? "Aucune" : "Aucune"}`
+    }
 
 }
