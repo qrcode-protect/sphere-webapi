@@ -45,7 +45,7 @@ export default class Model {
     constructor({ collectionName, firebaseAppName, model }: ModelConstructor) {
         this.firebaseAppName = firebaseAppName;
         this.instance = Application.container.use("db");
-        this.collection = this.instance.collection(collectionName);
+        this.collection = this.instance.collection(collectionName)
         this.model = model;
     }
 
@@ -223,6 +223,15 @@ export default class Model {
 
         return this
     }
+
+    /*offset(_offset: Nullable<DocumentSnapshot>, orderBy?: Nullable<string | FieldPath>, orderDirection?: Nullable<OrderByDirection>): this {
+    // offset(_offset: number, orderBy?: Nullable<string | FieldPath>, orderDirection?: Nullable<OrderByDirection>): this {
+        console.log(orderDirection, orderBy)
+        this.snapshot = (this.snapshot ?? this.collection).orderBy(orderBy ?? "id", orderDirection ?? "desc").st
+        // this.snapshot = (this.snapshot ?? this.collection).orderBy(orderBy ?? "id", orderDirection ?? "desc").startAt(_offset)
+
+        return this
+    }*/
 
     async first() {
         const data = await this.limit(1).get()

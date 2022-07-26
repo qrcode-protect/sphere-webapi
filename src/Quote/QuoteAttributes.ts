@@ -11,15 +11,15 @@
 
 export default interface QuoteAttributes {
     id?: string
-    transmitter: string
+    transmitter?: string
     customer: string
     amount: number | string
-    accepted: boolean | string
-    declined: boolean | string
+    accepted?: boolean | string
+    declined?: boolean | string
     acceptedAt?: Date
     declinedAt?: Date
     expiresAt?: Date
-    file: string
-    conversationId: string
-    messageId: string
+    file?: string
+    conversationId?: string
+    messageId?: string
 }

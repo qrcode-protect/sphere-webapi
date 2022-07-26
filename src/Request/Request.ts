@@ -6,76 +6,100 @@
  * (c) Sofiane Akbly <sofiane.akbly@qrcode-protect.com>
  *
  * Created by WebStorm on 12/05/2022 at 10:54
- * File src/Tender/Tender
+ * File src/Request/Request
  */
 
-import Model                from "QRCP/Sphere/Common/Model";
-import TenderAttributes     from "QRCP/Sphere/Tender/TenderAttributes";
-import Address              from "QRCP/Sphere/Address/Address";
-import { momentToFirebase } from "App/Common/date";
-import moment, { Moment }   from "moment";
-import { toBool }           from "App/Common";
+import Model                                                                     from "QRCP/Sphere/Common/Model";
+import RequestAttributes                                                         from "QRCP/Sphere/Request/RequestAttributes";
+import Member                                                                    from "QRCP/Sphere/Member/Member";
+import Partner                                                                   from "QRCP/Sphere/Partner/Partner";
+import PartnerService                                                            from "QRCP/Sphere/PartnerService/PartnerService";
+import Quote                                                                     from "QRCP/Sphere/Quote/Quote";
+import { memberModel, partnerModel, partnerServiceModel, quoteModel, userModel } from "App/Common/model";
+import { RoleType }                                                              from "QRCP/Sphere/Role/RoleType";
 
 export default class Request extends Model {
     id: string
-    title: string
-    description: string
-    amount: number
-    file: string
-    beginAt: Moment
-    endAt: Moment
-    expiresAt?: Moment
-    publishedAt?: Moment
-    address: Address
     memberId: string
-    reporter: string
-    available: boolean
-    active: boolean
-    public: boolean
-    activityId: string
-    activities: string[]
+    partnerId: string
+    serviceId: string
+    quotationId: Nullable<string>
+    description: string
+    title: string
+
+    status: string
+
+    member: Member
+    partner: Partner
+    service: PartnerService
+
+    quote: Nullable<Quote>
 
 
-    constructor(attributes?: TenderAttributes) {
-        super({ collectionName: "tenders", model: Request });
+    constructor(attributes?: RequestAttributes) {
+        super({ collectionName: "requests", model: Request });
         if (attributes) {
             super.createWithAttributes(attributes);
         }
     }
 
-    prepareData(data: TenderAttributes, update = false) {
-        if (typeof data.publishedAt === "undefined" && !update)
-            data.publishedAt = Model._now();
+    async casting(data): Promise<any> {
 
-        data.beginAt = typeof data.beginAt === "undefined" && update ? data.beginAt : momentToFirebase(data.beginAt)
-        data.endAt = typeof data.endAt === "undefined" && update ? data.endAt : momentToFirebase(data.endAt)
-        data.expiresAt = typeof data.expiresAt === "undefined" && update ? data.expiresAt : momentToFirebase(data.expiresAt)
-        data.publishedAt = typeof data.publishedAt === "undefined" && update ? data.publishedAt : momentToFirebase(moment().valueOf())
+        data.partner = await this.withPartner(data.partnerId);
+        data.member = await this.withMember(data.memberId);
+        data.service = await this.withService(data.serviceId);
+        data.quote = await this.withQuotation(data.quotationId);
 
-        data.amount = typeof data.amount === "undefined" && update ? data.amount : (data.amount ? parseFloat(data.amount.toString()) : null)
+        data.pending = this.pending(data.status)
+        data.accepted = this.accepted(data.status)
+        data.declined = this.declined(data.status)
 
-        data.available = typeof data.available === "undefined" && update ? data.available : toBool(data.available)
-        data.active = typeof data.active === "undefined" && update ? data.active : toBool(data.active)
-        data.public = typeof data.public === "undefined" && update ? data.public : toBool(data.public)
-
-        data.reporter = typeof data.reporter === "undefined" && update ? data.reporter ?? null : data.reporter
-
-        const address = typeof data.address === "undefined" && update ? data.address : new Address(data.address)
-
-        data.memberId = data.memberId ?? data.member?.id
-        delete data.member
-
-        data.activities = typeof data.activities === "string" ? data.activities.toString().split(",") : data.activities
-
-        return address instanceof Address ? { ...data, address: address.toJson() } : data
+        return super.casting(data);
     }
 
-    async store(data: TenderAttributes): Promise<Request> {
-        return super.store(this.prepareData(data));
+    async byUserId(partnerId?: string): Promise<this> {
+        const admin = partnerId ? (await userModel().whereSnapshot("roleType", RoleType.admin).findOneBy("uid", partnerId)) : null
+        return admin ? this : this.whereSnapshot("partnerId", partnerId ?? null);
     }
 
-    async update(docID: string, data, force = false): Promise<Request> {
-        return super.update(docID, this.prepareData(data, true), force);
+    async withPartner(partnerId: string): Promise<any> {
+        return <Nullable<Partner>>(await partnerModel().findOneBy("uid", partnerId));
+    }
+
+    async withMember(memberId: string): Promise<any> {
+        return <Nullable<Partner>>(await memberModel().findOneBy("uid", memberId));
+    }
+
+    async withService(serviceId: string): Promise<any> {
+        return <Nullable<Partner>>(await partnerServiceModel().findOneBy("id", serviceId));
+    }
+
+    async withQuotation(quotationId: string): Promise<any> {
+        return quotationId ? <Nullable<Partner>>(await quoteModel().findOneBy("id", quotationId)) : null;
+    }
+
+    // async update(docID: string, data, force = false): Promise<Request> {
+    //     return super.update(docID, this.prepareData(data, true), force);
+    // }
+
+    public accepted(status?:string ): boolean {
+        return (status ?? this.status).toUpperCase() === "ACCEPTED"
+    }
+
+    public declined(status?:string ): boolean {
+        return (status ?? this.status).toUpperCase() === "DECLINED"
+    }
+
+    public pending(status?:string ): boolean {
+        return !(this.accepted(status) || this.declined(status))
+    }
+
+    async accept(docID: string, quotationId: string) {
+        return this.update(docID, { status: "ACCEPTED", quotationId })
+    }
+
+    async decline(docID: string) {
+        return this.update(docID, { status: "DECLINED" })
     }
 
 

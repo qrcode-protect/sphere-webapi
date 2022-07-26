@@ -9,29 +9,27 @@
  * File src/Partner/PartnerAttributes
  */
 
-import { Moment }                from "moment";
-import Member                    from "QRCP/Sphere/Member/Member";
-import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
-import AddressAttributes         from "QRCP/Sphere/Address/AddressAttributes";
+import Member         from "QRCP/Sphere/Member/Member";
+import Partner        from "QRCP/Sphere/Partner/Partner";
+import PartnerService from "QRCP/Sphere/PartnerService/PartnerService";
+import Quote          from "QRCP/Sphere/Quote/Quote";
 
 export default interface RequestAttributes {
-    id?: string
-    title: string
+    id: string
+    memberId: string
+    partnerId: string
+    serviceId: string
+    quoteId: Nullable<string>
     description: string
-    amount: Nullable<number>
-    file: string
-    tender: Nullable<MultipartFileContract>
-    beginAt: Date | Moment | null
-    endAt: Date | Moment | null
-    expiresAt?: Date | Moment | null
-    publishedAt?: Date | Moment | null
-    member?: Member
-    memberId?: string
-    reporter?: Nullable<string>
-    address: AddressAttributes
-    available?: boolean
-    active?: boolean
-    public?: boolean
-    activityId?: string | null
-    activities?: string[] | string
+    title: string
+    amount: number
+    expiresAt?: Date
+
+    status: string
+
+    member: Member
+    partner: Partner
+    service: PartnerService
+
+    quote: Nullable<Quote>
 }

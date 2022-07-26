@@ -6,59 +6,100 @@
  * (c) Sofiane Akbly <sofiane.akbly@qrcode-protect.com>
  *
  * Created by WebStorm on 12/05/2022 at 11:59
- * File src/Tender/TenderController
+ * File src/Request/RequestController
  */
 
-import Controller              from "QRCP/Sphere/Common/Controller";
+import Controller from "QRCP/Sphere/Common/Controller";
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import TenderService            from "QRCP/Sphere/Tender/TenderService";
-import { unknown }       from "@sofiakb/adonis-response";
-import RequestAttributes from "./RequestAttributes";
-import { currentUser }   from "App/Common/auth";
+import RequestService from "QRCP/Sphere/Request/RequestService";
+import { unknown } from "@sofiakb/adonis-response";
+import { currentUser } from "App/Common/auth";
+import RequestAttributes from "QRCP/Sphere/Request/RequestAttributes";
 
 
 export default class RequestController extends Controller {
 
-    protected service: TenderService
+    protected service: RequestService
 
     constructor() {
-        super(new TenderService())
+        super(new RequestService())
     }
 
-    public async store({ request, response }: HttpContextContract) {
-        return unknown(response, await this.service.store(<RequestAttributes>(request.body()), { tender: request.file("file") }, (await currentUser())?.id));
+    public async all({ response }: HttpContextContract) {
+        return unknown(response, await this.service.all((await currentUser())?.id));
     }
 
-    public async storeFromDashboard({ request, response }: HttpContextContract) {
-        return unknown(response, await this.service.store(<RequestAttributes>(request.body()), { tender: request.file("file") }, (await currentUser())?.id, true));
+    public async accept({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.accept(request.param("id"), <RequestAttributes>request.body(), request.file("quotation"), (await currentUser())?.id));
     }
 
-    public async editFromDashboard({ request, response, params }: HttpContextContract) {
-        return unknown(response, await this.service.edit(params.id, <RequestAttributes>(request.body()), { tender: request.file("file") }));
+    public async decline({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.decline(request.param("id")));
     }
 
-    public async validate({ request, response }: HttpContextContract) {
-        return unknown(response, await this.service.validate(request.param("id")));
+    public async accepted({ response }: HttpContextContract) {
+        return unknown(response, await this.service.accepted((await currentUser())?.id));
     }
 
-    public async deny({ request, response }: HttpContextContract) {
-        return unknown(response, await this.service.deny(request.param("id")));
+    public async declined({ response }: HttpContextContract) {
+        return unknown(response, await this.service.declined((await currentUser())?.id));
     }
 
-    public async unblock({ request, response }: HttpContextContract) {
-        return unknown(response, await this.service.unblock(request.param("id")));
+    public async pending({ response }: HttpContextContract) {
+        return unknown(response, await this.service.pending((await currentUser())?.id));
     }
 
-    public async block({ request, response }: HttpContextContract) {
-        return unknown(response, await this.service.block(request.param("id")));
+    public async terminated({ response }: HttpContextContract) {
+        return unknown(response, await this.service.terminated((await currentUser())?.id));
     }
 
-    public async active({ response }: HttpContextContract) {
-        return unknown(response, await this.service.fetchActive());
+    public async deniedByMember({ response }: HttpContextContract) {
+        return unknown(response, await this.service.deniedByMember((await currentUser())?.id));
     }
 
-    public async inactive({ response }: HttpContextContract) {
-        return unknown(response, await this.service.fetchInactive());
+    async paginate({ request, response }: HttpContextContract): Promise<any> {
+        return unknown(response, await this.service.paginate(request.input("page", 1), request.input("limit", 10)));
+    }
+
+    async acceptedPaginate({ request, response }: HttpContextContract): Promise<any> {
+        return unknown(response, await this.service.accepted((await currentUser())?.id, {
+            paginate: true,
+            page    : request.input("page", 1),
+            limit   : request.input("limit", 10)
+        }));
+    }
+
+    async declinedPaginate({ request, response }: HttpContextContract): Promise<any> {
+        return unknown(response, await this.service.declined((await currentUser())?.id, {
+            paginate: true,
+            page    : request.input("page", 1),
+            limit   : request.input("limit", 10)
+        }));
+    }
+
+    async pendingPaginate({ request, response }: HttpContextContract): Promise<any> {
+        return unknown(response, await this.service.pending((await currentUser())?.id, {
+            paginate: true,
+            page    : request.input("page", 1),
+            limit   : request.input("limit", 10)
+        }));
+    }
+
+
+    async terminatedPaginate({ request, response }: HttpContextContract): Promise<any> {
+        return unknown(response, await this.service.terminated((await currentUser())?.id, {
+            paginate: true,
+            page    : request.input("page", 1),
+            limit   : request.input("limit", 10)
+        }));
+    }
+
+    async deniedByMemberPaginate({ request, response }: HttpContextContract): Promise<any> {
+        return unknown(response, await this.service.deniedByMember((await currentUser())?.id, {
+            paginate: true,
+            page    : request.input("page", 1),
+            limit   : request.input("limit", 10)
+        }));
     }
 
 

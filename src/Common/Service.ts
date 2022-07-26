@@ -9,12 +9,12 @@
  * File src/Common/Service
  */
 
-import { Result }           from "@sofiakb/adonis-response";
-import { each, size }       from "lodash"
-import Log                  from "QRCP/Sphere/Common/Log";
-import Model                from "QRCP/Sphere/Common/Model";
-import { ClassConstructor } from "class-transformer";
-import { FieldPath }        from "@google-cloud/firestore";
+import { Result }                      from "@sofiakb/adonis-response";
+import { chunk, each, size }           from "lodash"
+import Log                             from "QRCP/Sphere/Common/Log";
+import Model                           from "QRCP/Sphere/Common/Model";
+import { ClassConstructor }            from "class-transformer";
+import { FieldPath, OrderByDirection } from "@google-cloud/firestore";
 
 
 export default class Service {
@@ -70,15 +70,48 @@ export default class Service {
         return Result.success(await queryBuilder)
     }
 
-    public async paginate(page: number, limit: number) {
-        const total = await this.model.count();
+    public async paginate(page = 1, limit = 10, orderBy?: Nullable<string>, orderDirection?: Nullable<OrderByDirection>) {
+
+        /*page = parseInt(page.toString())
+        if (page === 0)
+            page = 1
+        // page = Math.max(page - 1, 0)
+
+        limit = parseInt(limit.toString())*/
+
+        return this.paginateData(await this.model.limit(page > 0 ? page * limit : limit).orderBy(orderBy ?? "id", orderDirection ?? "asc").get(), page, limit)
+        // const data = await this.model.limit(limit).offset(page * limit, orderBy, orderDirection).get()
+
+        /*const total = data.length;
         const latest = Math.ceil(total / limit);
 
-        page = Math.max(page - 1, 0)
+        return Result.success({
+            page : page,
+            data : chunk(data, limit)[page - 1] ?? null,//: await this.model.limit(limit).offset(page * limit, orderBy, orderDirection).get(),
+            first: 0,
+            latest,
+            per  : limit,
+            prev : page <= 0 ? null : page,
+            next : page + 1 >= latest ? null : page + 2,
+            total
+        });*/
+    }
+
+    public async paginateData(data: any[], page = 1, limit = 10) {
+
+        page = parseInt(page.toString())
+        if (page === 0)
+            page = 1
+        // page = Math.max(page - 1, 0)
+
+        limit = parseInt(limit.toString())
+
+        const total = data.length;
+        const latest = Math.ceil(total / limit);
 
         return Result.success({
-            page : page + 1,
-            data : await this.model.query().offset(page * limit).limit(limit),
+            page : page,
+            data : chunk(data, limit)[page - 1] ?? null,//: await this.model.limit(limit).offset(page * limit, orderBy, orderDirection).get(),
             first: 0,
             latest,
             per  : limit,

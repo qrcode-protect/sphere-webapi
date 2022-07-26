@@ -6,117 +6,167 @@
  * (c) Sofiane Akbly <sofiane.akbly@qrcode-protect.com>
  *
  * Created by WebStorm on 12/05/2022 at 10:54
- * File src/Tender/Tender
+ * File src/Request/Request
  */
 
-import Service                   from "QRCP/Sphere/Common/Service";
-import TenderAttributes          from "QRCP/Sphere/Tender/TenderAttributes";
-import Tender                    from "QRCP/Sphere/Tender/Tender";
-import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
-import { Result, Success }       from "@sofiakb/adonis-response";
-import Log                       from "QRCP/Sphere/Common/Log";
-import { upload }                from "App/Common/file";
-import { name }                  from "App/Common/string";
-import { memberModel }    from "App/Common/model";
-import { toJson } from "App/Common";
+import Service                                     from "QRCP/Sphere/Common/Service";
+import Request                                     from "QRCP/Sphere/Request/Request";
+import { Error as SofiakbError, Result, Success, } from "@sofiakb/adonis-response";
+import { MultipartFileContract }                   from "@ioc:Adonis/Core/BodyParser";
+import RequestAttributes                           from "QRCP/Sphere/Request/RequestAttributes";
+import QuoteService                                from "QRCP/Sphere/Quote/QuoteService";
+import { filter, indexOf, map }                    from "lodash";
+import RequestMail                                 from "QRCP/Sphere/Request/RequestMail";
 
-interface StoreTenderAttributes extends TenderAttributes {
-    upload?: unknown
-}
+// interface StoreRequestAttributes extends RequestAttributes {
+//     upload?: unknown
+// }
 
 export default class RequestService extends Service {
 
-    constructor(model = Tender) {
+    constructor(model = Request) {
         super(model);
     }
 
-    async all(): Promise<Success> {
-        return Result.success(await this.model.orderBy("publishedAt", "desc").get());
+    async all(partnerId?: string) {
+        // (await this.model.byUserId(partnerId))
+        return partnerId ? Result.success(await (await this.model.byUserId(partnerId)).orderBy("createdAt", "desc").get()) : Result.unauthorized();
     }
 
-    async upload(data: StoreTenderAttributes, documents?: { tender?: Nullable<MultipartFileContract> }) {
-        delete data.upload
-
-        if (!data.member && data.memberId) {
-            const tmp = await memberModel().where("id", data.memberId);
-            data.member = tmp?.length ? tmp[0] : []
-        }
-
-        if (documents) {
-            if (documents.tender)
-                data.file = await upload(documents.tender, `members/tenders/${name(data.member?.companyName ?? "unknown", "-")}`)
-        }
-
-        return data
+    async accepted(partnerId?: string, options ?: { paginate: boolean, page: number, limit: number }) {
+        (await this.model.byUserId(partnerId)).whereSnapshot("status", "ACCEPTED")/*.orderBy("createdAt", "desc")*/.get()
+        return options?.paginate ? this.paginate() : Result.success(await this.model.orderBy("createdAt", "desc").get());
+        // return Result.success(await (await this.model.byUserId(partnerId)).whereSnapshot("status", "ACCEPTED").orderBy("createdAt", "desc").get());
     }
 
-    public async store(data: StoreTenderAttributes, documents?: { tender?: Nullable<MultipartFileContract> }, reporter?: string, admin = true) {
-        data = await this.upload(data, documents)
+    async declined(partnerId?: string, options ?: { paginate: boolean, page: number, limit: number }) {
+        (await this.model.byUserId(partnerId)).whereSnapshot("status", "DECLINED")/*.orderBy("createdAt", "desc")*/.get()
+        return options?.paginate ? this.paginate() : Result.success(await this.model.orderBy("createdAt", "desc").get());
+        // return Result.success(await (await this.model.byUserId(partnerId)).whereSnapshot("status", "DECLINED").orderBy("createdAt", "desc").get());
+    }
 
-        // if (data.member?.premium !== true) {
-        //     return Result.forbidden()
-        // }
+    async pending(partnerId?: string, options ?: { paginate: boolean, page: number, limit: number }) {
+        (await this.model.byUserId(partnerId)).whereSnapshot("status", "PENDING")/*.orderBy("createdAt", "desc")*/.get()
+        return options?.paginate ? this.paginate() : Result.success(await this.model.orderBy("createdAt", "desc").get());
+        // return Result.success(await (await this.model.byUserId(partnerId)).whereSnapshot("status", "PENDING").orderBy("createdAt", "desc").get());
+    }
 
-        try {
-            data.address = toJson(data.address)
+    private async quoteResponse(results: { requestsService: SofiakbError | Success, quotationService: SofiakbError | Success }, options ?: { paginate: boolean, page: number, limit: number }) {
+        if (results.requestsService instanceof SofiakbError)
+            return results.requestsService;
 
-            const result = await this.model.store({ ...data, reporter })
-            if (result.id) {
-                if (admin) {
-                    await this.validate(result.id)
-                }
+        // const quotationServiceResult = await (new QuoteService()).acceptedByCurrentTransmitter(partnerId ?? undefined)
+        if (results.quotationService instanceof SofiakbError)
+            return results.quotationService;
 
-                return Result.success(result)
+        const quotationIdentifiers = map(results.quotationService.message, item => item.id)
+
+        console.log(quotationIdentifiers)
+
+        const result = filter(results.requestsService.message, item => {
+            const _index = indexOf(quotationIdentifiers, item.quotationId)
+            console.log(item.quotationId, results.requestsService.message)
+
+            if (_index >= 0) {
+                quotationIdentifiers.splice(_index, 1)
+                return item;
             }
-            throw new Error("Error while saving")
-        } catch (e) {
-            Log.error(e, true)
-            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
-        }
+        })
 
+        return options?.paginate ? this.paginateData(result, options.page, options.limit) : result
     }
 
-    public async edit(id: string, data: StoreTenderAttributes, documents?: { tender?: Nullable<MultipartFileContract> }) {
-        data = await this.upload(data, documents)
+    async terminated(partnerId?: string, options ?: { paginate: boolean, page: number, limit: number }) {
+        return this.quoteResponse({
+            requestsService : await this.accepted(partnerId),
+            quotationService: await (new QuoteService()).acceptedByCurrentTransmitter(partnerId)
+        }, options)
+        /*const requestsServiceResult = await this.accepted(partnerId)
+        if (requestsServiceResult instanceof SofiakbError)
+            return requestsServiceResult;
 
-        delete data.member
+        const quotationServiceResult = await (new QuoteService()).acceptedByCurrentTransmitter(partnerId)
+        if (quotationServiceResult instanceof SofiakbError)
+            return quotationServiceResult;
 
-        try {
-            data.address = toJson(data.address)
+        const quotationIdentifiers = map(quotationServiceResult.message, item => item.id)
 
-            const result = await this.model.update(id, data)
-            if (result.id) {
-                return Result.success(result)
+        /!*return Result.success(filter(requestsServiceResult.message, item => {
+            const _index = indexOf(quotationIdentifiers, item.quotationId)
+
+            if (_index >= 0) {
+                quotationIdentifiers.splice(_index, 1)
+                return item;
             }
-            throw new Error("Error while updating")
-        } catch (e) {
-            Log.error(e, true)
-            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+        }));*!/
+
+        return this.paginateData(filter(requestsServiceResult.message, item => {
+            const _index = indexOf(quotationIdentifiers, item.quotationId)
+
+            if (_index >= 0) {
+                quotationIdentifiers.splice(_index, 1)
+                return item;
+            }
+        }))*/
+    }
+
+    async deniedByMember(partnerId?: string, options ?: { paginate: boolean, page: number, limit: number }) {
+        return this.quoteResponse({
+            requestsService : await this.accepted(partnerId),
+            quotationService: await (new QuoteService()).declinedByCurrentTransmitter(partnerId)
+        }, options)
+        /*const requestsServiceResult = await this.accepted(partnerId)
+        if (requestsServiceResult instanceof SofiakbError)
+            return requestsServiceResult;
+
+        const quotationServiceResult = await (new QuoteService()).declinedByCurrentTransmitter(partnerId)
+        if (quotationServiceResult instanceof SofiakbError)
+            return quotationServiceResult;
+
+        const quotationIdentifiers = map(quotationServiceResult.message, item => item.id)
+
+        return Result.success(filter(requestsServiceResult.message, item => {
+            const _index = indexOf(quotationIdentifiers, item.quotationId)
+
+            if (_index >= 0) {
+                quotationIdentifiers.splice(_index, 1)
+                return item;
+            }
+        }));*/
+    }
+
+    public async accept(docID: string, data: RequestAttributes, quote?: Nullable<MultipartFileContract>, partnerId?: string) {
+
+        const quoteServiceResult = await (new QuoteService()).store({
+            amount   : data.amount,
+            expiresAt: data.expiresAt,
+            customer : data.memberId
+        }, quote, partnerId)
+        if (!(quoteServiceResult instanceof SofiakbError)) {
+            const quotation = quoteServiceResult.data
+
+            console.log("send mail to partner, member and admin")
+
+            const request = await this.model.accept(docID, quotation.id)
+
+            RequestMail.sendQuotation(request, quotation, quote)
+                .then(() => RequestMail.quotationSent(request, quote))
+
+            return Result.success(request)
         }
 
+        return quoteServiceResult
+        // return this.model.accept(docID, { quotation: data.quote })
     }
 
-    public async fetchActive() {
-        return Result.success(await this.model.whereSnapshot("active", true).orderBy("publishedAt", "desc").get());
+    public async decline(docID: string) {
+        const request = await this.model.decline(docID)
+        RequestMail.declined(request)
+        return Result.success(request)
     }
 
-    public async fetchInactive() {
-        return Result.success(await this.model.whereSnapshot("active", false).orderBy("publishedAt", "desc").get());
+    async paginate(page = 1, limit = 1): Promise<any> {
+        return super.paginate(page, limit, "createdAt", "desc");
     }
 
-    public async validate(docID: string) {
-        return this.update(docID, { active: true, available: true })
-    }
-
-    public async deny(docID: string) {
-        return this.destroy(docID)
-    }
-
-    public async block(docID: string) {
-        return this.update(docID, { available: false })
-    }
-
-    public async unblock(docID: string) {
-        return this.update(docID, { available: true })
-    }
 }
