@@ -106,7 +106,7 @@ export default class Service {
 
         limit = parseInt(limit.toString())
 
-        const total = data.length;
+        const total = data?.length ?? 0;
         const latest = Math.ceil(total / limit);
 
         return Result.success({
