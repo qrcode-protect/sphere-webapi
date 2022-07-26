@@ -29,8 +29,8 @@ test.group("Partners 00 create", () => {
         assert.equal(partner.email, "sofiane.akbly.partner@gmail.com")
         assert.equal(partner.username, "sakbly")
         assert.equal(partner.phone, "0123456789")
-        assert.equal(partner.partnerNumber, "PRT-000001")
-        assert.equal(partner.name, "qrcode-protect")
+        assert.equal(partner.partnerNumber, "PRT-000000000")
+        assert.equal(partner.name, "partner-")
     });
 
     test("Store duplicate partner", async ({ assert }) => {

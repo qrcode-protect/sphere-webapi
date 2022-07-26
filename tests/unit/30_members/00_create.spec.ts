@@ -28,7 +28,7 @@ test.group("Members 00 create", () => {
         assert.equal(member.email, "sofiane.akbly@gmail.com")
         assert.equal(member.username, "sakbly")
         assert.equal(member.phone, "0123456789")
-        assert.equal(member.memberNumber, "ADH-000001")
+        assert.equal(member.memberNumber, "ADH-000000000")
     });
 
     test("Store duplicate member", async ({ assert }) => {
