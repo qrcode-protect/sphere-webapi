@@ -9,6 +9,8 @@
  * File src/Partner/PartnerAttributes
  */
 
+import Partner from "QRCP/Sphere/Partner/Partner";
+
 export default interface ProductAttributes {
     id?: string
     label: string
@@ -20,5 +22,6 @@ export default interface ProductAttributes {
     price?: Nullable<number>
     discount?: Nullable<number>
     partnerId?: string
+    partner?: Partner
     active?: Nullable<boolean>
 }

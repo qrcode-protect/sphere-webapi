@@ -72,6 +72,7 @@ export default class ProductService extends Service {
                     .then(async (products: any[]) => {
                         console.log("finished")
                         await this.model.storeMultiple(products, partnerId);
+                        console.log("stored")
                         await ProductMail.product((await partnerModel().doc(partnerId)))
                     }, async () => await ProductMail.failed((await partnerModel().doc(partnerId))))
 

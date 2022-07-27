@@ -18,7 +18,7 @@ export default class ProductMail extends Mail {
      * @param partner
      */
     public static async product(partner: Partner) {
-        return super.text(partner.email, "Nouveau message depuis reseau-sphere.com", "Vos produits ont bien été ajouté.")
+        return super.text(partner.email, "Nouveau message depuis reseau-sphere.com", "Vos produits ont bien été ajoutés.")
     }
 
     /**

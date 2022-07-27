@@ -14,7 +14,7 @@ import ProductAttributes               from "QRCP/Sphere/Product/ProductAttribut
 import { nameWithNumber }              from "App/Common/string";
 import { partnerModel }                from "App/Common/model";
 import { toBool }                      from "App/Common";
-import { chunk, each, map }            from "lodash";
+import { chunk, each }                 from "lodash";
 import InvalidProductCsvEntryException from "QRCP/Sphere/Exceptions/InvalidProductCsvEntryException";
 import moment                          from "moment";
 
@@ -49,8 +49,7 @@ export default class Product extends Model {
             data.label = data.label.toLowerCase();
         }
 
-        const partner = await partnerModel().findOneBy("id", data.partnerId!)
-
+        const partner = data.partner ?? await partnerModel().findOneBy("id", data.partnerId!)
         if (partner) {
             const partnerParent = await partnerModel().parentByName(partner.name)
             data.partnerId = partnerParent.id
@@ -77,48 +76,49 @@ export default class Product extends Model {
             return valid
         }
 
-        const productsChunks = chunk(products, 500)
+        const productsChunks = chunk(products, 250)
 
-        await Promise.all(
-            map(productsChunks, async (productsChunk) => {
-                const batch = this.instance.batch()
+        const partner = await partnerModel().findOneBy("id", partnerId!)
+        if (!partner) {
+            return false
+        }
+        const partnerParent = await partnerModel().parentByName(partner.name)
 
-                await Promise.all(
-                    map(productsChunk, async (product) => {
-                        if (!isValid(product))
-                            throw new InvalidProductCsvEntryException()
+        for (const productsChunk of productsChunks) {
+            const batch = this.instance.batch()
 
+            for await(const product of productsChunk) {
+                if (!isValid(product))
+                    throw new InvalidProductCsvEntryException()
 
-                        const productRef = this.collection.doc()
-                        const productData = await this.store({
-                            label      : product.nom,
-                            description: product.description,
-                            quantity   : product.quantite,
-                            price      : product.montant,
-                            avatar     : product.image,
-                            partnerId  : partnerId
-                        }, false)
+                const productRef = this.collection.doc()
+                const productData = await this.store({
+                    label      : product.nom,
+                    description: product.description,
+                    quantity   : product.quantite,
+                    price      : product.montant,
+                    avatar     : product.image,
+                    partner    : partnerParent
+                }, false)
 
-                        batch.set(productRef, {
-                            id         : productRef.id,
-                            label      : productData.label,
-                            description: productData.description,
-                            quantity   : productData.quantity,
-                            price      : productData.price,
-                            avatar     : productData.avatar,
-                            partnerId  : productData.partnerId,
-                            name       : productData.name,
-                            discount   : productData.discount,
-                            active     : productData.active,
-                            createdAt  : Model._now(),
-                            updatedAt  : Model._now(),
-                        })
-                    })
-                )
+                batch.set(productRef, {
+                    id         : productRef.id,
+                    label      : productData.label,
+                    description: productData.description,
+                    quantity   : productData.quantity,
+                    price      : productData.price,
+                    avatar     : productData.avatar,
+                    partnerId  : productData.partnerId,
+                    name       : productData.name,
+                    discount   : productData.discount,
+                    active     : productData.active,
+                    createdAt  : Model._now(),
+                    updatedAt  : Model._now(),
+                })
+            }
 
-                await batch.commit()
-            })
-        )
+            await batch.commit()
+        }
 
         return true;
 
