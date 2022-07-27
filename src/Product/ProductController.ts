@@ -33,5 +33,17 @@ export default class ProductController extends Controller {
         return unknown(response, await this.service.update(request.param("id"), request.body().data, (await currentUser())?.id));
     }
 
+    public async unblock({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.unblock(request.param("id"), (await currentUser())?.id));
+    }
+
+    public async block({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.block(request.param("id"), (await currentUser())?.id));
+    }
+
+    public async importCsv({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.importCsv(request.file("file"), (await currentUser())?.id));
+    }
+
 
 }

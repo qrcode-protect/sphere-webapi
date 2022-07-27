@@ -19,4 +19,6 @@ export default interface ProductAttributes {
     quantity?: Nullable<number>
     price?: Nullable<number>
     discount?: Nullable<number>
+    partnerId?: string
+    active?: Nullable<boolean>
 }
