@@ -80,6 +80,8 @@ export default class ProductService extends Service {
             return Result.success()
         } catch (e) {
             Log.error(e, true)
+            if (partnerId)
+                await ProductMail.failed((await partnerModel().doc(partnerId)))
             if (e instanceof InvalidProductCsvEntryException) {
                 return Result.badRequest("Votre fichier est incorrect")
             }
