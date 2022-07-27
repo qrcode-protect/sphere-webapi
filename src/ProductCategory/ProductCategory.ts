@@ -12,6 +12,7 @@
 import Model                     from "QRCP/Sphere/Common/Model";
 import ProductCategoryAttributes from "QRCP/Sphere/ProductCategory/ProductCategoryAttributes";
 import { nameWithNumber }        from "App/Common/string";
+import moment                    from "moment";
 
 export default class ProductCategory extends Model {
     id: string
@@ -30,7 +31,7 @@ export default class ProductCategory extends Model {
     }
 
     private createName(label?: string, partnerId?: string) {
-        return `${nameWithNumber(label ?? this.label, "-")}${partnerId ?? this.partnerId ? "-" + (partnerId ?? this.partnerId) : ""}`
+        return `${nameWithNumber(label ?? this.label, "-")}${partnerId ?? this.partnerId ? "-" + (partnerId ?? this.partnerId) : ""}${moment().unix()}`
     }
 
     async store(data: ProductCategoryAttributes): Promise<ProductCategory> {

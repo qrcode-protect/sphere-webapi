@@ -15,6 +15,7 @@ import { nameWithNumber }       from "App/Common/string";
 import { partnerModel }         from "App/Common/model";
 import Partner                  from "QRCP/Sphere/Partner/Partner";
 import { toBool }               from "App/Common";
+import moment                   from "moment";
 
 export default class PartnerService extends Model {
     id: string
@@ -35,7 +36,7 @@ export default class PartnerService extends Model {
     }
 
     private createName(label?: string, partnerId?: string) {
-        return `${nameWithNumber(label ?? this.label, "-")}${partnerId ?? this.partnerId ? "-" + (partnerId ?? this.partnerId) : ""}`
+        return `${nameWithNumber(label ?? this.label, "-")}${partnerId ?? this.partnerId ? "-" + (partnerId ?? this.partnerId) : ""}${moment().unix()}`
     }
 
     async casting(data): Promise<any> {

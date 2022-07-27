@@ -30,6 +30,7 @@ Route.group(() => {
     require("./tenders")
     require("./requests")
     require("./partner-services")
+    require("./products")
     /*******************************
      FIN ROLE AUTORISES
      ******************************/
