@@ -250,7 +250,12 @@ export default class Model {
     }
 
     async count() {
-        return size(await this.collection.listDocuments())
+        return size(this.snapshot ? await this.snapshot?.get() : await this.collection.listDocuments())
+    }
+
+    async countSnapshot() {
+        return (await this.snapshot?.get())?.size ?? 0
+        // return this.snapshot ? size(await (await this.snapshot?.get()).size) : null
     }
 
     async truncate() {

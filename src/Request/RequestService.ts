@@ -34,20 +34,20 @@ export default class RequestService extends Service {
     }
 
     async accepted(partnerId?: string, options ?: { paginate: boolean, page: number, limit: number }) {
-        (await this.model.byUserId(partnerId)).whereSnapshot("status", "ACCEPTED")/*.orderBy("createdAt", "desc")*/.get()
-        return options?.paginate ? this.paginate() : Result.success(await this.model.orderBy("createdAt", "desc").get());
+        (await this.model.byUserId(partnerId)).whereSnapshot("status", "ACCEPTED")/*.orderBy("createdAt", "desc").get()*/
+        return options?.paginate ? this.paginate(options.page, options.limit) : Result.success(await this.model.orderBy("createdAt", "desc").get());
         // return Result.success(await (await this.model.byUserId(partnerId)).whereSnapshot("status", "ACCEPTED").orderBy("createdAt", "desc").get());
     }
 
     async declined(partnerId?: string, options ?: { paginate: boolean, page: number, limit: number }) {
-        (await this.model.byUserId(partnerId)).whereSnapshot("status", "DECLINED")/*.orderBy("createdAt", "desc")*/.get()
-        return options?.paginate ? this.paginate() : Result.success(await this.model.orderBy("createdAt", "desc").get());
+        (await this.model.byUserId(partnerId)).whereSnapshot("status", "DECLINED")/*.orderBy("createdAt", "desc").get()*/
+        return options?.paginate ? this.paginate(options.page, options.limit) : Result.success(await this.model.orderBy("createdAt", "desc").get());
         // return Result.success(await (await this.model.byUserId(partnerId)).whereSnapshot("status", "DECLINED").orderBy("createdAt", "desc").get());
     }
 
     async pending(partnerId?: string, options ?: { paginate: boolean, page: number, limit: number }) {
-        (await this.model.byUserId(partnerId)).whereSnapshot("status", "PENDING")/*.orderBy("createdAt", "desc")*/.get()
-        return options?.paginate ? this.paginate() : Result.success(await this.model.orderBy("createdAt", "desc").get());
+        (await this.model.byUserId(partnerId)).whereSnapshot("status", "PENDING")/*.orderBy("createdAt", "desc").get()*/
+        return options?.paginate ? this.paginate(options.page, options.limit) : Result.success(await this.model.orderBy("createdAt", "desc").get());
         // return Result.success(await (await this.model.byUserId(partnerId)).whereSnapshot("status", "PENDING").orderBy("createdAt", "desc").get());
     }
 
@@ -61,11 +61,8 @@ export default class RequestService extends Service {
 
         const quotationIdentifiers = map(results.quotationService.message, item => item.id)
 
-        console.log(quotationIdentifiers)
-
         const result = filter(results.requestsService.message, item => {
             const _index = indexOf(quotationIdentifiers, item.quotationId)
-            console.log(item.quotationId, results.requestsService.message)
 
             if (_index >= 0) {
                 quotationIdentifiers.splice(_index, 1)
@@ -165,8 +162,8 @@ export default class RequestService extends Service {
         return Result.success(request)
     }
 
-    async paginate(page = 1, limit = 1): Promise<any> {
-        return super.paginate(page, limit, "createdAt", "desc");
+    async paginate(page = 1, limit = 10): Promise<any> {
+        return super.paginate(page, limit, { orderBy: "createdAt", orderDirection: "desc" });
     }
 
 }

@@ -70,7 +70,7 @@ export default class Service {
         return Result.success(await queryBuilder)
     }
 
-    public async paginate(page = 1, limit = 10, orderBy?: Nullable<string>, orderDirection?: Nullable<OrderByDirection>) {
+    public async paginate(page = 1, limit = 10, options?: {orderBy?: Nullable<string>, orderDirection?: Nullable<OrderByDirection>, count?:number}) {
 
         /*page = parseInt(page.toString())
         if (page === 0)
@@ -79,7 +79,7 @@ export default class Service {
 
         limit = parseInt(limit.toString())*/
 
-        return this.paginateData(await this.model.limit(page > 0 ? page * limit : limit).orderBy(orderBy ?? "id", orderDirection ?? "asc").get(), page, limit)
+        return this.paginateData(await this.model.limit(page > 0 ? page * limit : limit).orderBy(options?.orderBy ?? "id", options?.orderDirection ?? "asc").get(), page, limit, options?.count ?? await this.model.count())
         // const data = await this.model.limit(limit).offset(page * limit, orderBy, orderDirection).get()
 
         /*const total = data.length;
@@ -97,7 +97,7 @@ export default class Service {
         });*/
     }
 
-    public async paginateData(data: any[], page = 1, limit = 10) {
+    public async paginateData(data: any[], page = 1, limit = 10, count?: number) {
 
         page = parseInt(page.toString())
         if (page === 0)
@@ -106,7 +106,7 @@ export default class Service {
 
         limit = parseInt(limit.toString())
 
-        const total = data?.length ?? 0;
+        const total = count ?? data?.length ?? 0;
         const latest = Math.ceil(total / limit);
 
         return Result.success({

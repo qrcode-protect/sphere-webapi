@@ -101,6 +101,7 @@ export default class QuoteService extends Service {
                 const isAdmin = user?.roleType === RoleType.admin
 
                 const query = this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true);
+                // const query = this.model.whereSnapshot("accepted", accepted === true).whereSnapshot("declined", declined === true);
 
                 if (withoutExpires === true) {
                     const expired = await query.whereSnapshot("expiresAt", moment().toDate(), "<").get()
