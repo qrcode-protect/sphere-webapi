@@ -46,7 +46,8 @@ export default class Service {
 
     public async findOneBy(column: string, value: unknown) {
         try {
-            const data = (await this.model.where(column, value))[0] || null
+            const whereResult = (await this.model.where(column, value))
+            const data = whereResult ? whereResult[0] ?? null : null
             return data === null ? Result.notFound(`La ressource #${value} demandée n'existe pas.`) : Result.success(data)
         } catch (e) {
             Log.error(e, true)
