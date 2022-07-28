@@ -14,7 +14,7 @@ import ProductAttributes               from "QRCP/Sphere/Product/ProductAttribut
 import { nameWithNumber }              from "App/Common/string";
 import { partnerModel }                from "App/Common/model";
 import { toBool }                      from "App/Common";
-import { chunk, each }                 from "lodash";
+import { chunk, concat, each, uniqBy } from "lodash";
 import InvalidProductCsvEntryException from "QRCP/Sphere/Exceptions/InvalidProductCsvEntryException";
 import moment                          from "moment";
 
@@ -41,6 +41,25 @@ export default class Product extends Model {
 
     private createName(label?: string, categoryId?: string) {
         return `${nameWithNumber(label ?? this.label, "-")}${categoryId ?? this.categoryId ? "-" + (categoryId ?? this.categoryId) : ""}${moment().unix()}`
+    }
+
+    async search(query: string) {
+        const byDescription = await this.searchByDescription(query)
+        const byLabel = await this.searchByLabel(query)
+
+        return uniqBy(concat(byLabel, byDescription), "id")
+    }
+
+    async searchByField(column: string, value: string) {
+        return (await this.searchBy(column, value, 20).get()) || []
+    }
+
+    async searchByDescription(description: string) {
+        return this.searchByField("description", description)
+    }
+
+    async searchByLabel(label: string) {
+        return this.searchByField("label", label)
     }
 
     async store(data: ProductAttributes, store = true): Promise<Product> {

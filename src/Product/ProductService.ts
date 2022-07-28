@@ -19,7 +19,7 @@ import InvalidProductCsvEntryException from "QRCP/Sphere/Exceptions/InvalidProdu
 import ProductMail                     from "QRCP/Sphere/Product/ProductMail";
 import { partnerModel }                from "App/Common/model";
 
-const csv = require('csvtojson')
+const csv = require("csvtojson")
 
 
 interface StoreProductAttributes extends ProductAttributes {
@@ -105,5 +105,14 @@ export default class ProductService extends Service {
 
     public async unblock(docID: string, partnerId?: string) {
         return this.update(docID, { active: true }, partnerId)
+    }
+
+    public async searchProduct(query: string, partnerId?: string) {
+        try {
+            return Result.success(await this.model.whereSnapshot("partnerId", partnerId ?? null).search(query))
+        } catch (e) {
+            Log.error(e, true)
+            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+        }
     }
 }

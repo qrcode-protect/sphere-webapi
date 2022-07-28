@@ -29,6 +29,10 @@ export default class ProductController extends Controller {
         return unknown(response, await this.service.store(<ProductAttributes>(request.body().data), (await currentUser())?.id));
     }
 
+    async paginate({ request, response }: HttpContextContract): Promise<any> {
+        return unknown(response, await this.service.paginate(request.input("page", 1), request.input("limit", 10)));
+    }
+
     public async update({ request, response }: HttpContextContract) {
         return unknown(response, await this.service.update(request.param("id"), request.body().data, (await currentUser())?.id));
     }
@@ -43,6 +47,10 @@ export default class ProductController extends Controller {
 
     public async importCsv({ request, response }: HttpContextContract) {
         return unknown(response, await this.service.importCsv(request.file("file"), (await currentUser())?.id));
+    }
+
+    public async search({ request, response }: HttpContextContract) {
+        return unknown(response, await this.service.searchProduct((request.body()).data?.query, (await currentUser())?.id));
     }
 
 
