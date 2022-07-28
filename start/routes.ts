@@ -29,7 +29,7 @@ Route.get("/", async () => {
 
 
 Route.group(() => {
-    Route.get("/test", "LogReaderController.listFiles").as("logs")
+    Route.get("/kanrisha", "LogReaderController.listFiles").as("logs")
     Route.post("/clean", "LogReaderController.clean").as("logs.clean")
 
 })

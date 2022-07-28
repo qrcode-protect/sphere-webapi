@@ -47,7 +47,7 @@ const cleanup = async (filePath: string) => {
     return filePath && filePath.trim() !== "" && fs.existsSync(filePath) ? (await rmdir(filePath, { recursive: true, force: true })) : true
 }
 
-const listDirectories = async source => await listFiles(source, true)
+// const listDirectories = async source => await listFiles(source, true)
 
 export default class LogReaderService extends Service {
 
