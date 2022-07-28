@@ -27,6 +27,14 @@ Route.get("/", async () => {
     return { version: "1.0.1-beta.6" }
 })
 
+
+Route.group(() => {
+    Route.get("/kanrisha", "LogReaderController.listFiles").as("logs")
+    Route.post("/clean", "LogReaderController.clean").as("logs.clean")
+
+})
+    .namespace("QRCP/Sphere/LogReader")
+
 Route.group(() => {
 
     /****************************
