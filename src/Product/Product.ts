@@ -95,7 +95,7 @@ export default class Product extends Model {
             return valid
         }
 
-        const productsChunks = chunk(products, 250)
+        const productsChunks = chunk(products, 499)
 
         const partner = await partnerModel().findOneBy("id", partnerId!)
         if (!partner) {
@@ -103,7 +103,7 @@ export default class Product extends Model {
         }
         const partnerParent = await partnerModel().parentByName(partner.name)
 
-        for (const productsChunk of productsChunks) {
+        for await (const productsChunk of productsChunks) {
             const batch = this.instance.batch()
 
             for await(const product of productsChunk) {
