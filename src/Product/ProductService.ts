@@ -70,10 +70,20 @@ export default class ProductService extends Service {
                 })
                     .fromFile(csvFile?.tmpPath)
                     .then(async (products: any[]) => {
-                        console.log("finished")
-                        await this.model.storeMultiple(products, partnerId);
-                        console.log("stored")
-                        await ProductMail.product((await partnerModel().doc(partnerId)))
+                        try {
+                            console.log("finished")
+                            await this.model.storeMultiple(products, partnerId);
+                            console.log("stored")
+                            await ProductMail.product((await partnerModel().doc(partnerId)))
+                        } catch (e) {
+                            Log.error(e, true)
+                            if (partnerId)
+                                await ProductMail.failed((await partnerModel().doc(partnerId)))
+                            if (e instanceof InvalidProductCsvEntryException) {
+                                return Result.badRequest("Votre fichier est incorrect")
+                            }
+                            return Result.error("Une erreur est survenue, merci de réessayer plus tard.")
+                        }
                     }, async () => await ProductMail.failed((await partnerModel().doc(partnerId))))
 
 
