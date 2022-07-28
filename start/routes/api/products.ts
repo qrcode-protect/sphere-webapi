@@ -16,11 +16,13 @@ Route.group(() => {
 
     Route.group(() => {
         Route.get("", "ProductController.all")
+        Route.get("/paginate", "ProductController.paginate")
 
         Route.get("/:id", "ProductController.findById")
 
         Route.post("", "ProductController.store")
         Route.post("/csv/import", "ProductController.importCsv")
+        Route.post("/search", "ProductController.search")
 
         Route.put("/:id", "ProductController.update")
 
